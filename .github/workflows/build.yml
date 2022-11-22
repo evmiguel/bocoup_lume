@@ -19,7 +19,7 @@ jobs:
 
       - name: Build site
         run: |
-          deno task build
+          deno task build --location=https://aleenaloves.github.io/bocoup_lume/
 
       - name: Deploy
         uses: crazy-max/ghaction-github-pages@v2.0.1
