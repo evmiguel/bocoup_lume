@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Long Division In Javascript</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Long Division In Javascript</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>We are exploring the possibility of developing a workshop to help high-school students solidify their knowledge of core mathematical concepts using a computer to write Javascript code.</p>
+<p>The best way for a student to demonstrate and reinforce knowledge of mathematical concepts is to be able to teach them or explain them to another person. We think that teaching mathematical concepts to a computer enables students to do so. We believe that this will both serve as a strong tool for engaging young math students, and provide valuable skills for the workplace.</p>
+<p>For example, students could express the algorithms that they use to perform long division with Javascript code. This would provide a means, other than repetition, for students to demonstrate and reinforce their understanding of the mathematical concept.</p>
+<p>Implementing the classic long division algorithm in Javascript might look something like this:</p>
+<pre lang="javascript">function longDivision(n,d){
+    var num = n + "",
+        numLength = num.length,
+        remainder = 0,
+        answer = '',
+        i = 0;
+
+    while( i &lt; numLength + 3){
+        var digit = i &lt; numLength ? parseInt(num[i]) : 0;
+
+        if (i == numLength){
+            answer = answer + ".";
+        }
+
+        answer = answer + Math.floor((digit + (remainder * 10))/d);
+        remainder = (digit + (remainder * 10))%d;
+        i++;
+    }
+    return parseFloat(answer);
+}
+
+longDivision(356,8);
+</pre>
+<p>Students could also design their own method for performing long division, and implement it in Javascript the way it makes sense to them. This idea can be applied to all levels of mathematics from multiplication to calculus. We think this approach to learning mathematical concepts is enormously powerful because it teaches students how to construct an algorithm, not just how to use one.</p>
+<p>We are not sure if Javascript is the right language to use. Teaching high-school math students concepts like object types is outside the scope of a high-school math class. We are thinking of building some kind of a framework that offers a more palatable syntax and takes care of the details. On the other hand, learning real world Javascript skills could be a great way to engage students.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/faster-javascript-part-2/" rel="prev">Faster Javascript &amp;#8211; Part 2</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/compiling-clarksons-hull-in-os-x/" rel="next">Compiling Clarkson&amp;#8217;s Hull in OS X</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/long-division-in-javascript/ -->
+  
+
+</body></html>

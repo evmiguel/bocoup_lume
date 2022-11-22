@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padding a Time Series in R</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Padding a Time Series in R</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/data analysis/" class="tag">data analysis</a>
+    
+      <a href="/bocoup_lume/tags/data visualization/" class="tag">data visualization</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>When analyzing and visualizing a new dataset, you’ll often find yourself working with data over time. Most software assumes that the data in a time series is collected at regular intervals, without gaps in the data: while this is usually true of data collected in a laboratory experiment, this assumption is often wrong when working with “dirty” data sources found in the wild.</p>
+<p>This can lead to irregularities in many charts. For example, imagine the following dataset:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Observations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>2011/11/01</code></td>
+<td><code>12</code></td>
+</tr>
+<tr>
+<td><code>2011/12/01</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><code>2012/01/01</code></td>
+<td><code>320</code></td>
+</tr>
+<tr>
+<td><code>2012/06/01</code></td>
+<td><code>7</code></td>
+</tr>
+</tbody>
+</table>
+<p>Note that the gaps between the data points vary in size, from 1 month to 5 months. When we visualize this using <a href="http://d3js.org/">d3</a>, the assumption will be to connect the data points in a way that indicates a gradual shift from one value to another.</p>
+<p><iframe style="width: 100%; height: 300px" src="https://jsfiddle.net/iros/Nup5q/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<p>While this might work for some cases, you may actually want to fill in the gaps in the data like so:</p>
+<table>
+<thead>
+<tr>
+<th>Time</th>
+<th>Observations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>2011/11/01</code></td>
+<td><code>12</code></td>
+</tr>
+<tr>
+<td><code>2011/12/01</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><code>2012/01/01</code></td>
+<td><code>320</code></td>
+</tr>
+<tr>
+<td><i><code>2011/02/01</code></i></td>
+<td><i><code>0</code></i></td>
+</tr>
+<tr>
+<td><i><code>2011/03/01</code></i></td>
+<td><i><code>0</code></i></td>
+</tr>
+<tr>
+<td><i><code>2011/04/01</code></i></td>
+<td><i><code>0</code></i></td>
+</tr>
+<tr>
+<td><i><code>2011/05/01</code></i></td>
+<td><i><code>0</code></i></td>
+</tr>
+<tr>
+<td><code>2012/06/01</code></td>
+<td><code>7</code></td>
+</tr>
+</tbody>
+</table>
+<p>Which would result in a much different chart!</p>
+<p><iframe style="width: 100%; height: 300px" src="https://jsfiddle.net/iros/D7sjt/embedded/result,js,html,css/" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<p>There are many ways to pad the data. I have written scripts in many languages to accomplish this, but settled on R as the quickest way to transform my data. <a href="http://en.wikipedia.org/wiki/R_(programming_language)">R</a> is an open source programming language and software environment for statistical computing and graphics.</p>
+<p>Here’s a quick way to pad your dataset with zero values for missing dates:</p>
+<pre><code class="r hljs language-r"><span class="hljs-comment"># Read a comma-delimited file that has the following content</span>
+<span class="hljs-comment"># time,observations</span>
+<span class="hljs-comment"># 2011/11/01,12</span>
+<span class="hljs-comment"># 2012/01/01,320</span>
+<span class="hljs-comment"># 2011/12/01,100</span>
+<span class="hljs-comment"># 2012/06/01,7</span>
+raw.data <span class="hljs-operator">&lt;-</span> read.delim<span class="hljs-punctuation">(</span><span class="hljs-string">"timefill.csv"</span><span class="hljs-punctuation">,</span> header<span class="hljs-operator">=</span><span class="hljs-built_in">T</span><span class="hljs-punctuation">,</span> sep<span class="hljs-operator">=</span><span class="hljs-string">","</span><span class="hljs-punctuation">)</span>
+
+<span class="hljs-comment"># Convert the time column to a date column.</span>
+<span class="hljs-comment"># Accessing a column is done by using the '$' sign</span>
+<span class="hljs-comment"># like so: raw.data$time.</span>
+raw.data<span class="hljs-operator">$</span>time <span class="hljs-operator">&lt;-</span> as.Date<span class="hljs-punctuation">(</span>raw.data<span class="hljs-operator">$</span>time<span class="hljs-punctuation">)</span>
+
+<span class="hljs-comment"># sort the data by time. The [*,] selects all rows that</span>
+<span class="hljs-comment"># match the specified condition - in this case an order function</span>
+<span class="hljs-comment"># applied to the time column.</span>
+sorted.data <span class="hljs-operator">&lt;-</span> raw.data<span class="hljs-punctuation">[</span>order<span class="hljs-punctuation">(</span>raw.data<span class="hljs-operator">$</span>time<span class="hljs-punctuation">)</span><span class="hljs-punctuation">,</span><span class="hljs-punctuation">]</span>
+
+<span class="hljs-comment"># Find the length of the dataset</span>
+data.length <span class="hljs-operator">&lt;-</span> <span class="hljs-built_in">length</span><span class="hljs-punctuation">(</span>sorted.data<span class="hljs-operator">$</span>time<span class="hljs-punctuation">)</span>
+
+<span class="hljs-comment"># Find min and max. Because the data is sorted, this will be</span>
+<span class="hljs-comment"># the first and last element.</span>
+time.min <span class="hljs-operator">&lt;-</span> sorted.data<span class="hljs-operator">$</span>time<span class="hljs-punctuation">[</span><span class="hljs-number">1</span><span class="hljs-punctuation">]</span>
+time.max <span class="hljs-operator">&lt;-</span> sorted.data<span class="hljs-operator">$</span>time<span class="hljs-punctuation">[</span>data.length<span class="hljs-punctuation">]</span>
+
+<span class="hljs-comment"># generate a time sequence with 1 month intervals to fill in</span>
+<span class="hljs-comment"># missing dates</span>
+all.dates <span class="hljs-operator">&lt;-</span> seq<span class="hljs-punctuation">(</span>time.min<span class="hljs-punctuation">,</span> time.max<span class="hljs-punctuation">,</span> by<span class="hljs-operator">=</span><span class="hljs-string">"month"</span><span class="hljs-punctuation">)</span>
+
+<span class="hljs-comment"># Convert all dates to a data frame. Note that we're putting</span>
+<span class="hljs-comment"># the new dates into a column called "time" just like the</span>
+<span class="hljs-comment"># original column. This will allow us to merge the data.</span>
+all.dates.frame <span class="hljs-operator">&lt;-</span> data.frame<span class="hljs-punctuation">(</span><span class="hljs-built_in">list</span><span class="hljs-punctuation">(</span>time<span class="hljs-operator">=</span>all.dates<span class="hljs-punctuation">)</span><span class="hljs-punctuation">)</span>
+
+<span class="hljs-comment"># Merge the two datasets: the full dates and original data</span>
+merged.data <span class="hljs-operator">&lt;-</span> merge<span class="hljs-punctuation">(</span>all.dates.frame<span class="hljs-punctuation">,</span> sorted.data<span class="hljs-punctuation">,</span> <span class="hljs-built_in">all</span><span class="hljs-operator">=</span><span class="hljs-built_in">T</span><span class="hljs-punctuation">)</span>
+
+<span class="hljs-comment"># The above merge set the new observations to NA.</span>
+<span class="hljs-comment"># To replace those with a 0, we must first find all the rows</span>
+<span class="hljs-comment"># and then assign 0 to them.</span>
+merged.data<span class="hljs-operator">$</span>observations<span class="hljs-punctuation">[</span>which<span class="hljs-punctuation">(</span><span class="hljs-built_in">is.na</span><span class="hljs-punctuation">(</span>merged.data<span class="hljs-operator">$</span>observations<span class="hljs-punctuation">)</span><span class="hljs-punctuation">)</span><span class="hljs-punctuation">]</span> <span class="hljs-operator">&lt;-</span> <span class="hljs-number">0</span>
+</code></pre>
+<p>This will result in the following dataset:</p>
+<pre><code class="r hljs language-r"><span class="hljs-operator">&gt;</span> merged.data
+        time observations
+<span class="hljs-number">1</span> <span class="hljs-number">2011</span><span class="hljs-operator">-</span><span class="hljs-number">11</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>           <span class="hljs-number">12</span>
+<span class="hljs-number">2</span> <span class="hljs-number">2011</span><span class="hljs-operator">-</span><span class="hljs-number">12</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>          <span class="hljs-number">100</span>
+<span class="hljs-number">3</span> <span class="hljs-number">2012</span><span class="hljs-operator">-</span><span class="hljs-number">01</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>          <span class="hljs-number">320</span>
+<span class="hljs-number">4</span> <span class="hljs-number">2012</span><span class="hljs-operator">-</span><span class="hljs-number">02</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>            <span class="hljs-number">0</span>
+<span class="hljs-number">5</span> <span class="hljs-number">2012</span><span class="hljs-operator">-</span><span class="hljs-number">03</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>            <span class="hljs-number">0</span>
+<span class="hljs-number">6</span> <span class="hljs-number">2012</span><span class="hljs-operator">-</span><span class="hljs-number">04</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>            <span class="hljs-number">0</span>
+<span class="hljs-number">7</span> <span class="hljs-number">2012</span><span class="hljs-operator">-</span><span class="hljs-number">05</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>            <span class="hljs-number">0</span>
+<span class="hljs-number">8</span> <span class="hljs-number">2012</span><span class="hljs-operator">-</span><span class="hljs-number">06</span><span class="hljs-operator">-</span><span class="hljs-number">01</span>            <span class="hljs-number">7</span>
+</code></pre>
+<p>A substantial portion of any data visualization project involves cleaning, transforming and analysing data. Although R can be intimidating at first, it is a powerful open source tool for working with your data.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/communicating-between-views-in-client-side-apps/" rel="prev">Communicating Between Views in Client-Side Apps</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/third-party-javascript-development-future/" rel="next">Third-Party JavaScript Development: The Future!</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/padding-time-series-with-r/ -->
+  
+
+</body></html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Web Workers: From Basics to jQuery.Hive</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Javascript Web Workers: From Basics to jQuery.Hive</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+      <a href="/bocoup_lume/tags/web standards/" class="tag">web standards</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>This is long overdue. Also, it should serve as a context for my <a href="/bocoup_lume/html/jquery-hive-presentation/">slides</a> <a href="http://events.jquery.org/2010/sf-bay-area/"> from jQuery Conference, San Francisco 2010</a> (use the up and down arrow keys to navigate).</p>
+<hr>
+<p>Whether or not you’ve read the <a href="http://www.whatwg.org/specs/web-workers/current-work/">WHATWG Web Worker spec</a> and are looking for more information about <a href="http://stackoverflow.com/questions/39879/why-doesnt-javascript-support-multithreading">Javascript</a> <a href="http://articles.sitepoint.com/article/multi-threading-javascript"> multi</a> <a href="http://ajaxian.com/archives/multi-threaded-javascript">threading</a> OR you already have a rudimentary understanding of Web Workers and simply <a href="http://artaban7.files.wordpress.com/2009/10/robot-johnny5.jpg">need more input</a>, I hope to shed some <a href="/bocoup_lume/html/jquery-hive-presentation/#8">new light</a> on the subject.</p>
+<hr>
+<p>I’ll get started with some basic information about Workers:</p>
+<hr>
+<ul>
+<li>The Workers API is originally based on the now deprecated <a href="http://code.google.com/apis/gears/api_workerpool.html">Gears WorkerPool API</a></li>
+<li>Creates an OS level script execution environment that is capable of scaling across multiple cores when present</li>
+<li>Workers allow web applications to run non-blocking scripts parallel to the main page.
+<ul>
+<li>Allow long-running processes to execute uninterrupted, while keeping the main page responsive.</li>
+<li>Replace the need for breaking up execution with recursive function <a href="http://code.google.com/p/fakeworker-js/">setTimeout hacks</a>.</li>
+</ul>
+</li>
+</ul>
+<p>Myths, misconceptions and clarifications</p>
+<ul>
+<li>Workers are not intended to be used in large numbers.
+<ul>
+<li>Creation of a new script execution environment is not free from performance expense. One worker will be hardly noticeable, whereas a large number will cause a loss of response in the main window.</li>
+</ul>
+</li>
+<li>Workers cannot access non-thread safe content, this means: the `window` and `document` objects or any part of the DOM directly (elements, et al.)</li>
+<li>Workers can only pass data in and out of a thread through the postMessage() API and onMessage Event.</li>
+</ul>
+<p>Why you don’t get it and Why you don’t care</p>
+<ul>
+<li>  Web developers aren’t used to the concept of multi-threading, because until now, the concept hasn’t applied to us</li>
+<li>  Support is limited to: Firefox 3.5+, Safari 4+ and Chrome 4+ </li>
+</ul>
+<hr>
+<p>Got all that? Great! Now let’s look at the API</p>
+<hr>
+<p>The first thing we need to establish is the new <code>WorkerGlobalScope</code> which is your thread’s script execution environment. It’s <em>kind of</em> like the <code>window</code>, but is actually the <strong>“global scope” of the worker</strong>. This <strong>parallel</strong> dimension exists within the file you passed to the new Worker(‘worker-javascript-file.js’) constructor.</p>
+<hr>
+<p>The easiest way to contextualize the worker thread is to think of your main window as the initial worker (as it IS a script execution environment) and the Worker API let’s you make “windows” in terms of script execution, in parallel, but with some limitations.</p>
+<p>Here’s what’s new in the <code>window</code> object (main window execution):</p>
+<p class="snippet caption">workers-1.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">/*
+
+  The constructor
+
+  It takes the worker file name as an argument
+
+*/</span>
+<span class="hljs-keyword">var</span> worker = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Worker</span>(<span class="hljs-string">'worker-javascript-file.js'</span>)
+
+<span class="hljs-comment">/*
+
+  The postMessage() function sends a message to the worker
+
+*/</span>
+worker.<span class="hljs-title function_">postMessage</span>(message)
+
+<span class="hljs-comment">/*
+
+  The onmessage event receives messages from the worker
+
+*/</span>
+worker.<span class="hljs-property">onmessage</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-comment">/*
+
+    The message is packaged in the event object
+
+    The property of interest is:
+    data
+
+  */</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( event.<span class="hljs-property">data</span> )
+}
+<span class="hljs-comment">/*
+
+  In my slides, I lobby against the use of
+  onmessage = function () {} syntax,
+  instead encouraging developers to use
+  the addEventListener() syntax
+
+*/</span>
+worker.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(event.<span class="hljs-property">data</span>);
+
+}, <span class="hljs-literal">false</span>);
+
+
+
+<span class="hljs-comment">/*
+
+  the onerror event is triggered if an error occurred.
+
+*/</span>
+worker.<span class="hljs-property">onerror</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-comment">/*
+
+    The onerror event does not bubble and can be canceled.
+    The default action can be prevented with
+    event.preventDefault()
+
+    The properties on interest are:
+    message, filename, lineno
+
+  */</span>
+}
+
+<span class="hljs-comment">/*
+
+  The terminate() function is supposed
+  to stop a Worker from executing immediately
+
+*/</span>
+worker.<span class="hljs-title function_">terminate</span>()
+
+<span class="hljs-comment">/*
+
+  The Worker object also implements the following:
+
+*/</span>
+
+worker.<span class="hljs-title function_">addEventListener</span>()
+worker.<span class="hljs-title function_">removeEventListener</span>()
+worker.<span class="hljs-title function_">dispatchEvent</span>()
+
+</code></pre>
+<hr>
+<p>The new <code>WorkerGlobalScope</code> has it’s own new API as well:</p>
+<p class="snippet caption">workers-2.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">/*
+
+  The Worker: WorkerGlobalScope
+
+  Inside the worker, the keywords "self" and "this"
+  are the same thing and both are the equivalent
+  to the global WorkerGlobalScope
+
+*/</span>
+self = <span class="hljs-variable language_">this</span> = [<span class="hljs-title class_">WorkerGlobalScope</span>]
+
+<span class="hljs-comment">/*
+
+  The postMessage() function sends a message
+  from the worker to the main execution thread
+
+*/</span>
+self.<span class="hljs-title function_">postMessage</span>(message)
+
+<span class="hljs-comment">/*
+
+  The onmessage event receives messages
+  from the main execution thread
+
+*/</span>
+self.<span class="hljs-property">onmessage</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-comment">/*
+
+    The message is packaged in the event object
+
+    The property of interest is:
+    data
+
+  */</span>
+}
+
+<span class="hljs-comment">/*
+
+  As with the example in the main window,
+  I'd like to encourage developers to use
+  the addEventListener() syntax
+
+*/</span>
+self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+
+  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">postMessage</span>(event.<span class="hljs-property">data</span>);
+
+}, <span class="hljs-literal">false</span>);
+
+<span class="hljs-comment">/*
+
+  The importScripts() function can be used
+  to call in reusable libraries
+
+  But there is a drawback here - all the major
+  libraries that exist will throw exceptions
+  if the developer tries to import them into the
+  WorkerGlobalScope - they all reference either
+  "window" or "document" - both of which are
+  considered "non thread safe".
+
+  Because of this, developers are left to
+  "roll their own" reusable libraries, which
+  is both inefficient and counter productive.
+
+
+*/</span>
+self.<span class="hljs-title function_">importScripts</span>(urls)
+
+<span class="hljs-comment">/*
+
+  WorkerGlobalScope also implements
+  the following interfaces:
+
+*/</span>
+
+self.<span class="hljs-title function_">addEventListener</span>()
+self.<span class="hljs-title function_">removeEventListener</span>()
+self.<span class="hljs-title function_">dispatchEvent</span>()
+self.<span class="hljs-built_in">setTimeout</span>()
+self.<span class="hljs-built_in">clearTimeout</span>()
+self.<span class="hljs-built_in">setInterval</span>()
+self.<span class="hljs-built_in">clearInterval</span>()
+
+<span class="hljs-comment">/*
+
+  As well as:
+
+*/</span>
+
+self.<span class="hljs-property">location</span>
+self.<span class="hljs-property">navigator</span>
+
+<span class="hljs-comment">/*
+
+  And
+
+*/</span>
+
+<span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>
+<span class="hljs-comment">// However, requestXML and channels properties are NULL</span>
+
+</code></pre>
+<p>The <code>window</code> and the <code>workerglobalscope</code> BOTH have a postMessage() function and an onmessage event.This is how they communicate.</p>
+<hr>
+<h2>
+<a href="https://gist.github.com/404377">Get these files from GitHub</a>  </h2>
+<p>…and give it try. (Requires a javascript console to see the results)</p>
+<hr>
+<p>You’ll notice that I’ve used the progressive approach with addEventListener() instead of onmessage = function () {} – I’ve done so because I don’t believe we should be writing attribute event handlers on worker objects as we once did with elements in the DOM. I also take a strong opposition to Web Worker “tutorials” that use this syntactic approach.</p>
+<h3><a href="/bocoup_lume/weblog/javascript-web-workers-from-basics-to-jquery-hive-part-ii-browser-implementations/">Continued in Part II</a></h3>
+<p><em>Edit</em><br>
+In the time since this was originally published, <a href="/bocoup_lume/weblog/javascript-web-workers-chrome-5-now-supports-complex-messages/">Chrome</a>, <a href="/bocoup_lume/weblog/javascript-web-workers-safari-5-now-supports-complex-messages/">Safari</a> &amp; <a href="/bocoup_lume/weblog/javascript-web-workers-opera-10-60-beta-supports-complex-messages/">Opera</a> now support complex JSON messages.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-web-workers-from-basics-to-jquery-hive-part-iii/" rel="prev">Javascript Web Workers: From Basics to jQuery.Hive, Part III</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/web-audio-all-aboard/" rel="next">Web Audio – All Aboard!</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-web-workers-from-basics-to-jquery-hive-part-i/ -->
+  
+
+</body></html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizing Your Backbone.js Application With Modules</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Organizing Your Backbone.js Application With Modules</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>If you have spent any time looking at <a href="http://backbonejs.org" title="Backbone.js">Backbone.js</a>,<br>
+like many others, you are probably amazed by how lightweight, flexible and elegant it is. Backbone.js is incredibly powerful,<br>
+ but not prescriptive in how it should be used. With great power comes great responsibility, and if you’ve tried to use Backbone.js<br>
+for a large project you might be asking yourself: how do I organize my code?</p>
+<p>When thinking about “code organization” the questions you might be asking are:</p>
+<ol>
+<li>How do I declare and invoke Backbone types?</li>
+<li>How do I manage a separation of concerns?</li>
+<li>How do I define a clear entry point to my application?</li>
+<li>How do I pick a clear and consistent pattern to organize the code on the file system?</li>
+<li>How do I actually name my models, collections, views and routers?</li>
+</ol>
+<p>All good questions! Is there an accepted answer? <a href="http://stackoverflow.com/questions/8002828/large-backbone-js-web-app-organization">Nope</a>.</p>
+<p>There’s been a lot of debate about this issue in the Backbone.js community for several reasons. First, JavaScript, unlike Java or C, does not have inherent code organization mechanisms such as modules, namespaces or packages, leaving it up to each developer to sort it out for themselves. Second, it’s a complex problem that does not warrant a universal solution. All applications are not created equal and the reality is that the answer probably consists of a collection of patterns that can be used as necessary given the situation. At the end of the day the goal should be to create a code-base that is easy to understand, implement and maintain.</p>
+<p>Having said all this, let’s dive into some of the details. First, you need to put your files somewhere on your file system. The physical layout is an important question often overlooked, but the days of “all code in a single file” are over, folks.</p>
+<p>Here’s how you might layout your application structure:</p>
+<pre><code>.
+├── assets
+│   ├── css
+│   │   └── main.css
+│   ├── images
+│   │   └── header.gif
+│   └── js
+│       └── libs
+│           ├── backbone.js
+│           ├── jquery.js
+│           └── underscore.js
+├── index.html
+└── src
+   ├── application.js
+   └── modules
+       ├── friend.js
+       └── message.js
+</code></pre>
+<h3>Static Assets</h3>
+<p>Your static assets such as CSS, images and JavaScript libraries required by your code should go under a parent directory,<br>
+ such as the assets directory in our example above. Separating your library code from your actual application code is an<br>
+ important step – it ensures everyone agrees on the baseline and dependencies and it prevents unintentional modifications to library code.</p>
+<h3>Application code</h3>
+<p>Your application code should be under its own directory, such as a <code>src</code> directory. To enable a single point of entry,<br>
+ you should have a single file responsible for initializing the application (perhaps firing on DOM ready?) That file<br>
+ may also contain utility and helper methods, or those may live in their own util.js or helper.js respectively.</p>
+<p>The rest of your application code should be divided into modules that can live under their own <code>modules</code> directory.<br>
+A module is an encapsulated group of structures (for the purposes of our post, Backbone structures) that work cohesively<br>
+to provide a subset of functionality in your application.</p>
+<h3>Index.html</h3>
+<p>Your index file should import libraries in the following order:</p>
+<ol>
+<li>Third party libraries included in their dependency order (e.g., Backbone.js requires Underscore.js to already be loaded)</li>
+<li>Your application.js file which is the entry point for your application.</li>
+<li>Your application supporting files, like your modules.</li>
+</ol>
+<p class="snippet caption">index.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-meta">&lt;!doctype <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"utf-8"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">"X-UA-Compatible"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"IE=edge,chrome=1"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Example<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"/assets/css/main.css"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"content"</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- ALL YOUR CONTENT HERE --&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+  <span class="hljs-comment">&lt;!-- Third-Party Libraries (Order matters) --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/assets/js/libs/jquery.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/assets/js/libs/underscore.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/assets/js/libs/backbone.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+  <span class="hljs-comment">&lt;!-- Application core (Order matters) --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/lib/application.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+  <span class="hljs-comment">&lt;!-- Modules (Order does not matter) --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/lib/modules/friend.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/lib/modules/message.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<h3>Application.js</h3>
+<p>Your Application.js has several important roles. It serves as the entry point for your application by doing the following three things:</p>
+<ol>
+<li>
+<p>It defines the namespace of your application. For example, if your chat client application is called FireTalkChat, your namespace might be <code>chat</code>. All your application source should live under chat to prevent any collisions with other libraries.</p>
+</li>
+<li>
+<p>When referencing a module anywhere in your code, you need to make sure that those references all point to a single shared object. There are several ways to do that:<br>
+<br>First, a namespace object can be created underneath which each property serves as a “module”.</p>
+</li>
+</ol>
+<p class="snippet caption">naive.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> chat = {
+  <span class="hljs-attr">friend</span>: { <span class="hljs-title class_">Views</span>: {} },
+  <span class="hljs-attr">message</span>: { <span class="hljs-title class_">Views</span>: {} }
+};
+</code></pre>
+<p>While this method works (and is the simplest way to start organizing your code,) there are several drawbacks to this approach. Each time a new module is added, the original “namespace” object needs to be updated with a new property. Additionally, the initialization is repetitive in this case, especially if we know each of our modules should have the same base structure. Lastly and most importantly, calling <code>chat.friend = null</code>, will obliterate your friend module. While modules should be in a mutable state, they should not be exposed in a way that will allow for their overwriting.</p>
+<p>To address these issues you can create a reusable function that can retrieve the shared object reference when called. This function will create the shared object and “remember” it internally in connection with a key. This technique is called <a title="Memoizing" href="http://en.wikipedia.org/wiki/Memoization">Memoizing</a>. This way, every subsequent call will return the same object. By creating a closure around the module’s objects, you guarantee that it can’t be tampered with, and create a private scope for your module where you can define module-specific data.</p>
+<p class="snippet caption">application_module.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> chat = {
+ <span class="hljs-comment">// Create this closure to contain the cached modules</span>
+ <span class="hljs-attr">module</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-comment">// Internal module cache.</span>
+    <span class="hljs-keyword">var</span> modules = {};
+
+    <span class="hljs-comment">// Create a new module reference scaffold or load an</span>
+    <span class="hljs-comment">// existing module.</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params">name</span>) {
+      <span class="hljs-comment">// If this module has already been created, return it.</span>
+      <span class="hljs-keyword">if</span> (modules[name]) {
+        <span class="hljs-keyword">return</span> modules[name];
+      }
+
+      <span class="hljs-comment">// Create a module and save it under this name</span>
+      <span class="hljs-keyword">return</span> modules[name] = { <span class="hljs-title class_">Views</span>: {} };
+    };
+  }()
+};
+</code></pre>
+<p>3.&nbsp;Last but not least, this file defines the DOM ready callback. Once all the scripts are loaded, this function will execute and can initialize your application.</p>
+<p class="snippet caption">application_ready.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Using the jQuery ready event is excellent for ensuring all</span>
+<span class="hljs-comment">// code has been downloaded and evaluated and is ready to be</span>
+<span class="hljs-comment">// initialized. Treat this as your single entry point into the</span>
+<span class="hljs-comment">// application.</span>
+<span class="hljs-title function_">jQuery</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">$</span>) {
+
+  <span class="hljs-comment">// Initialize your application here.</span>
+
+});
+</code></pre>
+<h3>Adding Your Modules</h3>
+<p>After having written your application.js, you’re ready to begin writing your modules. The modules should be named in a way that describes their intended purpose, for example:</p>
+<ul>
+<li>A <b>friend</b> module</li>
+<ul>
+<li><b>Model</b> (a single friend object)</li>
+<li><b>Collection</b> (a collection of friends</li>
+<li><b>Views:</b></li>
+<ul>
+<li><b>Quick</b> (a single rendering of the friend)</li>
+<li><b>Detail</b> (perhaps another view for the same model that shows more detail)</li>
+<li><b>List</b> (a buddy list rendering)</li>
+</ul>
+<li><b>Router</b> (a group of routes specific to the friend module)</li>
+</ul>
+<li>a <b>message</b> module may contain:</li>
+<ul>
+<li><b>Model</b> (a single message object)</li>
+<li><b>Collection</b> (of messages)</li>
+<li><b>Views:</b></li>
+<ul>
+<li><b>Message</b> (of a single message)</li>
+<li><b>List</b> (of a collection of messages)</li>
+</ul>
+<li><b>Routes</b> (a group of routes specific to the messages)</li>
+</ul>
+</ul>
+<p>When asking yourself whether to create single or multiple files to contain your modules, keep in mind that for development purposes, having multiple files is cleaner. However, that requires paying special attention to load order and having a build tool that can combine all the files for your production environment as downloading many files can bottleneck a page load.</p>
+<p>Defining your module using the above memoizing technique requires the following steps:</p>
+<ol>
+<li>Create an immediately invoked function expression (<a href="http://benalman.com/news/2010/11/immediately-invoked-function-expression/" title="IIFE">IIFE</a>) to create a module-specific scope:</li>
+</ol>
+<p class="snippet caption">friend_shell.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// src/modules/friend.js</span>
+<span class="hljs-comment">// Module reference argument, assigned at the bottom</span>
+(<span class="hljs-keyword">function</span>(<span class="hljs-params">chat, Friend</span>) {
+
+  <span class="hljs-comment">//...</span>
+
+})(chat, chat.<span class="hljs-title function_">module</span>(<span class="hljs-string">"friend"</span>));
+</code></pre>
+<ol>
+<li>Define your dependencies at the top of the module, so that they are all grouped in a single location. Make sure to include the script tags for any dependencies before the script tag of the module that requires them. This is also a good opportunity to shorthand any application references that would be long otherwise.</li>
+</ol>
+<p class="snippet caption">friend_shell_deps.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// src/modules/friend.js</span>
+<span class="hljs-comment">// Module reference argument, assigned at the bottom</span>
+(<span class="hljs-keyword">function</span>(<span class="hljs-params">chat, Friend</span>) {
+
+ <span class="hljs-comment">// Dependencies</span>
+ <span class="hljs-keyword">var</span> <span class="hljs-title class_">Message</span> = chat.<span class="hljs-title function_">module</span>(<span class="hljs-string">"message"</span>);
+
+ <span class="hljs-comment">// Shorthands</span>
+ <span class="hljs-comment">// The application container</span>
+ <span class="hljs-keyword">var</span> app = chat.<span class="hljs-property">app</span>;
+
+})(chat, chat.<span class="hljs-title function_">module</span>(<span class="hljs-string">"friend"</span>));
+</code></pre>
+<p>3.Define the Backbone structures contained within your module. Note that you shouldn’t use the “new” keyword when referencing other modules as they might not have loaded yet. Save all the code that must run on page load for the jQuery ready function in your application.js.</p>
+<p class="snippet caption">friend.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// src/modules/friend.js</span>
+<span class="hljs-comment">// Module reference argument, assigned at the bottom</span>
+(<span class="hljs-keyword">function</span>(<span class="hljs-params">chat, Friend</span>) {
+
+ <span class="hljs-comment">// Dependencies</span>
+ <span class="hljs-keyword">var</span> <span class="hljs-title class_">Message</span> = chat.<span class="hljs-title function_">module</span>(<span class="hljs-string">"message"</span>);
+
+ <span class="hljs-comment">// Define a friend</span>
+ <span class="hljs-title class_">Friend</span>.<span class="hljs-property">Model</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Model</span>.<span class="hljs-title function_">extend</span>({
+   <span class="hljs-attr">initialize</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+     <span class="hljs-comment">// Add a nested messages collection</span>
+     <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">set</span>({ <span class="hljs-attr">messages</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Message</span>.<span class="hljs-title class_">List</span>() });
+   }
+ });
+
+ <span class="hljs-comment">// Define a friend list</span>
+ <span class="hljs-title class_">Friend</span>.<span class="hljs-property">List</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Collection</span>.<span class="hljs-title function_">extend</span>({
+   <span class="hljs-attr">model</span>: <span class="hljs-title class_">Friend</span>.<span class="hljs-property">Model</span>
+ });
+
+})(chat, chat.<span class="hljs-title function_">module</span>(<span class="hljs-string">"friend"</span>));
+
+</code></pre>
+<p class="snippet caption">message.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// modules/message.js</span>
+<span class="hljs-comment">// Module reference argument, assigned at the bottom</span>
+(<span class="hljs-keyword">function</span>(<span class="hljs-params">chat, Message</span>) {
+
+ <span class="hljs-title class_">Message</span>.<span class="hljs-property">Model</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Model</span>.<span class="hljs-title function_">extend</span>({
+   <span class="hljs-attr">defaults</span>: {
+     <span class="hljs-attr">unread</span>: <span class="hljs-literal">true</span>
+   }
+ });
+
+ <span class="hljs-title class_">Message</span>.<span class="hljs-property">List</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Collection</span>.<span class="hljs-title function_">extend</span>({
+   <span class="hljs-attr">model</span>: <span class="hljs-title class_">Message</span>.<span class="hljs-property">Model</span>
+ });
+
+})(chat, chat.<span class="hljs-title function_">module</span>(<span class="hljs-string">"message"</span>));
+</code></pre>
+<p>While there are many approaches to this, we found this to be a useful set of guidelines to work within. Given that the conversation about organizing your Backbone.js code is flourishing in the community, we’d love to hear your thoughts about this approach.</p>
+<hr>
+<p>This post focused on the foundations of code organization, but given Backbone’s flexible nature, there are many best-practices we could tackle, such as build process, subrouting, stubbing etc. Stay tuned for additional posts and if you are interested in diving deeper, find out more about our “Building Web Applications with Backbone.js” training here: <a href="/bocoup_lume/education/classes/building-web-applications-with-backbone/">https://bocoup.com/education/classes/building-web-applications-with-backbone/</a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/welcome-greg-smith/" rel="prev">Welcome Greg Smith</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/welcome-dan-heberden/" rel="next">Welcome Dan Heberden!</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/organizing-your-backbone-js-application-with-modules/ -->
+  
+
+</body></html>

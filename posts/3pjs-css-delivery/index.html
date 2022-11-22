@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Third-Party JavaScript Development: Optimizing CSS Delivery</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Third-Party JavaScript Development: Optimizing CSS Delivery</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/design/" class="tag">design</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>As a practicing masochist, I have recently developed an interest in third-party JavaScript application development.<br>
+I’m not alone: <a href="http://build.mt.gov/2011/10/26/third%20party%20javascript.aspx">third-party JavaScript</a> (or “3PJS”) applications are becoming more and more common on the web (see <a href="http://disqus.com">Disqus</a>, <a href="https://optimizely.appspot.com/">Optimizely</a>, and <a href="http://www.google.com/analytics/">Google Analytics</a>, for instance).<br>
+Like any developing methodology, best practices are constantly being explored and re-defined.<br>
+In this article, I’d like to suggest an approach to styling content in third-party JavaScript applications.</p>
+<p>Many 3PJS applications insert content into the publisher’s DOM, and developers often wish to control the presentation of this content.<br>
+Like most tasks in web development, this is easier said than done.<br>
+The two immediately obvious approaches (defining styles in external stylesheets and inlining styles on the DOM elements themselves) are sub-optimal–here’s why:</p>
+<h2>External Stylesheets</h2>
+<p>The benefits of external stylesheets should be familiar to most web developers. As a recap:</p>
+<ul>
+<li>Maintainability (clear separation between logic and presentation)</li>
+<li>Recognize designer’s workflow (this is NOT just a talking point–it’s important!)</li>
+<li>Support CSS preprocessors<br>
+<a href="http://sass-lang.com/" title="SASS - Style with attitude">[1]</a><br>
+<a href="http://lesscss.org/" title="LESS - The dynamic stylesheet language">[2]</a><br>
+<a href="http://learnboost.github.com/stylus/" title="Stylus - Expressive, dynamic, robust CSS">[3]</a></li>
+</ul>
+<p>Normally, this would be the end of the discussion.<br>
+Unfortunately for you, you’re writing a Third-Party JavaScript application.<br>
+Here are the bad parts:</p>
+<ul>
+<li>Require an additional HTTP request</li>
+<li>Very difficult to reliably detect when loading is complete*</li>
+</ul>
+<p>*There are a number of methods for dynamic CSS loading<br>
+<a href="http://jaubourg.net/feature-testing-impossible-data-uri-and-defer" title="Feature Testing Impossible: Data URI and Deferreds for Great Justice">[4]</a><br>
+<a href="http://yearofmoo.com/2011/03/cross-browser-stylesheet-preloading/" title="Cross Browser Stylesheet Preloading">[5]</a><br>
+<a href="http://www.backalleycoder.com/2011/03/20/link-tag-css-stylesheet-load-event/" title="Link elements load event support for CSS style sheet includes, finally!">[6]</a><br>
+<a href="http://www.zachleat.com/web/load-css-dynamically/" title="Faking Onload for Link Elements">[7]</a><br>
+<a href="http://www.phpied.com/when-is-a-stylesheet-really-loaded/" title="When is a stylehseet really loaded?">[8]</a><br>
+<a href="http://thudjs.tumblr.com/post/637855087/stylesheet-onload-or-lack-thereof" title="Stylesheet.onload or lack thereof">[9]</a>, but I have yet to find an approach that is: (1) scalable, (2) cross-browser compliant, and (3) error-tolerant.<br>
+<a href="https://plus.google.com/113127438179392830442/posts/Y4EjFFXcEaP">It looks like help is on the way, though.</a></p>
+<h2>Inline Styles</h2>
+<p>Given these drawbacks in third-party scenarios, why not define inline styles (i.e. <code>&lt;p style="margin: 2em;"&gt;&lt;/p&gt;</code>)? Here are the benefits:</p>
+<ul>
+<li>Limit HTTP requests</li>
+<li>Less code required (no need for buggy CSS loading logic)</li>
+</ul>
+<p>The drawbacks are well-known to most developers:</p>
+<ul>
+<li>Terrible to maintain</li>
+<li>Awkward for designers</li>
+<li>Incompatible with CSS preprocessors</li>
+</ul>
+<h2>Building CSS into the JavaScript</h2>
+<p>If you aren’t already building your JavaScript files, you should be.<br>
+It allows you to automate the minification process (see <a href="https://github.com/mishoo/UglifyJS">UglifyJS</a>) and catch bugs with static code analysis (see <a href="https://github.com/jshint/jshint/">JSHint</a>).<br>
+In this article, I’d like to demonstrate how a build process can also give you the ability to automatically package presentation and logic into one valid JavaScript file.<br>
+There are many ways you might accomplish this. I’ve outlined source CSS and JavaScript files below:</p>
+<p><code>src/widget1.css</code></p>
+<pre><code>div.container {
+  font-family: "Century Gothic", sans-serif;
+  /* place below other elements */
+  z-index: -1;
+}
+</code></pre>
+<p><code>src/widget1.js</code></p>
+<pre><code>(function() {
+  var container = $("&lt;div&gt;").attr("style", "!import_rule div.container");
+  // The rest of your application...
+})();
+</code></pre>
+<p>by making your build process aware of the <code>!import_rule [rule name]</code> syntax, you can automatically build a JavaScript file that contains the CSS in-line.<br>
+For example, building “widget1” would generate the following JavaScript file:</p>
+<p><code>dist/widget1.js</code></p>
+<pre><code>(function() {
+  var container = $("&lt;div&gt;").attr("style", "font-family: \"Century Gothic\", sans-serif;z-index: -1;");
+  // The rest of your application...
+})();
+</code></pre>
+<p>Note that the inclusion syntax could really be formatted in any arbitrary (but consistent) manner.<br>
+Also, the examples in this article assume an intermediate step of CSS minification. I strongly recommend this; here are a few tools to consider: <a href="http://developer.yahoo.com/yui/compressor/css.html">YUI CSS Compressor</a>, <a href="http://www.minifycss.com/">Free CSS Compressor</a>, and <a href="http://code.google.com/p/rainpress/">Rainpress</a>.</p>
+<h2>Drawbacks</h2>
+<p>If you don’t currently have a build process for your JavaScript files, utilizing this method is going to introduce a new step to your workflow.<br>
+This is a Bad Thing, but there are many benefits to maintaining a build process besides bundling CSS.<br>
+Among them (as mentioned above) are: static code analysis, CSS preprocessing, and minification.</p>
+<p>Of course, style information cannot be independently cached with this approach.<br>
+If you intend to share styles across multiple JavaScript files, shipping a cache-able stylesheet as a separate file may be preferable.</p>
+<p>Also, while the include statement may <em>look</em> like CSS, it is really an emulation.<br>
+This means that CSS authors must be aware that, while a rule like “div.container” may be built as expected, it does not strictly follow that a rule for “div” is going to apply to all <code>&lt;div&gt;</code> elements in the JavaScript file.<br>
+Even more troublesome is that with this approach, dynamically modifying styles (toggling, combining, etc.) is not a simple matter of adding and removing classes.<br>
+To achieve similar results, you will have to re-set element styling wholesale (in the best case), and perform involved string operations (in the worst).</p>
+<h2>A More Robust Approach</h2>
+<p>That last drawback ought to be a deal-breaker for most developers.<br>
+There is a more conservative solution: building entire CSS files into a single JavaScript string and injecting with a <code>&lt;style&gt;</code> tag.</p>
+<p>To accomplish this task, you could define a new directive: <code>!import_file [file name]</code>. Using this, your build process could use the source files:</p>
+<p><code>src/widget2.css</code></p>
+<pre><code>div.widget2-container {
+  font-family: "Century Gothic", sans-serif;
+  /* place below other elements */
+  z-index: -1;
+}
+div.widget2-container h1 {
+  color: #a00;
+}
+</code></pre>
+<p><code>src/widget2.js</code></p>
+<pre><code>(function() {
+  var styleElem = $("&lt;style&gt;" + "!import_file widget2.css" + "&lt;/style&gt;");
+  // The rest of your application...
+})();
+</code></pre>
+<p>…to build the following JavaScript:</p>
+<p><code>dist/widget2.js</code></p>
+<pre><code>(function() {
+  var styleElem = $("&lt;style&gt;" + "div.widget2-container { font-family: \"Century Gothic\", sans-serif;z-index: -1; } div.widget2-container h1 { color: #a00; }" + "&lt;/style&gt;" );
+  // The rest of your application...
+})();
+</code></pre>
+<p>This method preserves the semantics of the CSS file while also avoiding an additional request for style information (along with associated load event detection difficulties).<br>
+Due to <a href="http://css-tricks.com/specifics-on-css-specificity/">CSS specificity rules</a>, rules declared in a <code>&lt;style&gt;</code> tag are more susceptible to publisher over-riding.<br>
+Fortunately, there are additional steps that mitigate this risk (more on this in an upcoming article).<br>
+And just like inclusion via <code>&lt;link&gt;</code> tag, your styles will be defined over the whole page, so make sure you properly namespace IDs and class names (e.g. <code>.widget2-container</code> in the example above) to avoid collisions.</p>
+<h2>Try It Out!</h2>
+<p>I’ve implemented the described build step in Ruby, Perl, and NodeJS. Each of the command-line scripts take any number of file names as arguments (JavaScript and CSS).<br>
+They output built JavaScript to standard out, so you can <code>&gt;</code> to your heart’s content.</p>
+<p><a href="https://github.com/jugglinmike/DressUp">GitHub repository DressUp</a></p>
+<p>Play around with the scripts, and please give me your feedback.<br>
+I’m particularly interested to hear how this process would enhance/break your workflow, and how it might be extended or otherwise improved.<br>
+If you’re interested in reading more about third-party JavaScript development, check out the upcoming book <a href="http://thirdpartyjs.com/">Third Party JavaScript</a> by Anton Kovalyov and Ben Vinegar.</p>
+<p>Finally, I’ve written more on CSS in 3PJS in <a href="https://bocoup.com/weblog/3pjs-css-defense/">an article on defensive techniques for declaring styles in publisher environments</a>.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/3pjs-css-defense/" rel="prev">Third-Party JavaScript Development: CSS Defensive Techniques</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/ringmark-tests-open-source/" rel="next">Ringmark Tests Open Source</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/3pjs-css-delivery/ -->
+  
+
+</body></html>

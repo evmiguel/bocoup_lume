@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML5 Video: Synchronizing Playback of Two Videos</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">HTML5 Video: Synchronizing Playback of Two Videos</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/design/" class="tag">design</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Upon first thought, you might think that synchronized playback of two video elements would be simple – however – because the <code>timeupdate</code> event of the video element is indeterminate beyond its specification description of “Every 15 to 250ms, or whenever the MediaController’s media controller position changes”, this is actually non-trivial.</p>
+<p>Today, on the <a href="https://groups.google.com/group/web-made-movies-working">Web Made Movies</a> mailing list, a poster asked whether or not <a href="http://popcornjs.org/">Popcorn.js</a> was capable of synchronizing the playback of multiple videos or video and audio elements. While Popcorn.js does not ship with any kind of “sync A to B” functionality, it occurred to me that such a task should not be hard to achieve using Popcorn.js’s event management system.</p>
+<p>With simplicity in mind, the concept goes like this: when Video A does something, trigger the same behaviour on Video B. Behaviours include, but are not limited to events such as play, pause, seeking and timeupdate. Armed with a rough plan, I created following fiddle….</p>
+<p><iframe style="width: 100%; height: 300px" src="https://jsfiddle.net/rwaldron/3hjbb/embedded/result,js/"></iframe></p>
+<p>After posting this back to the mailing list, <a href="http://www.benmoskowitz.com/">Ben Moskowitz</a> upped the ante by pointing out that synchronizing two videos is a much different beast, noting the example given on <a href="http://html5demos.com/two-videos">HTML5Demos.com</a> – which easily falls out of sync (this fact is clearly a known flaw, hence the emphasis on “should” in the description).</p>
+<p>So I returned to the fiddle and began reworking the demo to use two videos instead of an audio and video combo and I realized that what was needed was a simple way to subtly “re-sync” the video’s <code>currentTime</code> value, enter <code>requestAnimationFrame</code>. With <code>requestAnimationFrame</code>, I was able to quietly re-sync the two videos as frequently as the browser would allow:</p>
+<p><iframe style="width: 100%; height: 500px" src="https://jsfiddle.net/rwaldron/AStkg/embedded/js/"></iframe></p>
+<p><iframe style="width: 100%; height: 500px" src="https://jsfiddle.net/rwaldron/AStkg/embedded/result,js/"></iframe></p>
+<p>Thanks to <a href="https://raw.github.com/gist/839879/gistfile1.js">Paul Irish for requestAnimFrame()</a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/welcome-dan-heberden/" rel="prev">Welcome Dan Heberden!</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/problem-with-diginotar-ssl-certificates/" rel="next">Problem with DigiNotar SSL Certificates</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/html5-video-synchronizing-playback-of-two-videos/ -->
+  
+
+</body></html>

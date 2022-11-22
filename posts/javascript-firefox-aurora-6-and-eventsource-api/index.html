@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: Firefox/Aurora 6 and EventSource API</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: Firefox/Aurora 6 and EventSource API</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I originally wrote this as a comment on Mozilla’s <a href="http://hacks.mozilla.org/2011/05/aurora-6-is-here">“Aurora 6 Is Here”</a> article – but I’m impatient and couldn’t wait for the comment to be moderated. Also, I haven’t posted in a while and figured <a href="https://bocoup.com/core/brandguide/logo/bocoup-604.png">Bob the Rooster</a> would appreciate it.</p>
+<blockquote>
+<p>Glad to see support for the EventSource API has made it to Firefox.</p>
+<p>There is a major flaw in all existing implementations in that they do not actually open a “listener” for some sort of event that is generated and sent from the server. What has actually been implemented is the equivalent to a native polling mechanism, which is useful none-the-less.</p>
+<p>Last fall I released a test supported (unit and spec tests) jQuery extension that provides a unified API (using XHR as fallback). <a href="https://github.com/rwldrn/jquery.eventsource">https://github.com/rwldrn/jquery.eventsource</a></p>
+<p>Additionally, I’ve created these useful EventSource API tests, snippets and demos:</p>
+<p>Serializing Array to JSON data:<br>
+  <a href="https://gist.github.com/415294">https://gist.github.com/415294</a></p>
+<p>Echo serialized GET params:<br>
+  <a href="https://gist.github.com/415836">https://gist.github.com/415836</a></p>
+<p>Sending GET params:<br>
+  <a href="https://gist.github.com/415836">https://gist.github.com/415836</a></p>
+<p>I have a number of other gists: <a href="https://gist.github.com/gists/search?q=eventsource&amp;page=1">https://gist.github.com/gists/search?q=eventsource&amp;page=1</a></p>
+<p>A quickstart guide to EventSource:<br>
+  <a href="/bocoup_lume/weblog/chrome-6-server-sent-events-with-new-eventsource/">https://bocoup.com/weblog/chrome-6-server-sent-events-with-new-eventsource</a></p>
+<p>An article I wrote about creating EventSource from WebWorker threads: <a href="/bocoup_lume/weblog/javascript-creating-an-eventsource-within-a-worker/">https://bocoup.com/weblog/javascript-creating-an-eventsource-within-a-worker</a></p>
+<p>A mini-web-chat written with EventSource:<br>
+  <a href="/bocoup_lume/weblog/jquery-eventsource-yakyakface-com/">https://bocoup.com/weblog/jquery-eventsource-yakyakface-com</a> &amp; <a href="http://yakyakface.com">http://yakyakface.com</a></p>
+</blockquote>
+<p>Now that Firefox, Chrome and Opera have implemented the EventSource API, I think it’s a safe and viable addition to our development tool kits.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-eventsource-is-long-polling/" rel="prev">JavaScript: EventSource is Long Polling</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/welcome-mike-pennisi/" rel="next">Welcome Mike Pennisi</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-firefox-aurora-6-and-eventsource-api/ -->
+  
+
+</body></html>

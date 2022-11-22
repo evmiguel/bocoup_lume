@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build your own &amp;#8220;Mini Wayback Machine&amp;#8221;</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Build your own &amp;#8220;Mini Wayback Machine&amp;#8221;</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><iframe loading="lazy" width="420" height="315" src="https://www.youtube.com/embed/iU8TbLza3qY" frameborder="0" allowfullscreen="true"></iframe></p>
+<p>The “<a href="http://web.archive.org" target="_blank" rel="noopener">Wayback Machin</a>e” is one of the more important services in the history of the Internet (and happens to be named after a great gag on the old <a href="http://www.toontracker.com/bullwink/bullwink.htm" target="_blank" rel="noopener">Rocky &amp; Bullwinkle</a> show). From about 2001 through 2005 it could be counted on it to give you a reasonable snapshot of many of the home pages that existed on the Web as were archived by the old Alexa webcrawler going back to as early as 1996. Likely due to <a href="http://en.wikipedia.org/wiki/Internet_Archive#Controversies_and_legal_disputes" target="_blank" rel="noopener">legal complaints</a> or expensive maintenance costs the regular snapshots petered out around 2005.</p>
+<p>I do enjoy going back and revisiting projects I used to work on <i style="color:#666;">(and goofy hacks!)</i> like:</p>
+<ul>
+<li> the first corporate website I built and managed in 1996 for <a href="http://www.flickr.com/photos/figital/5143365238/" target="_blank" rel="noopener">Liberty Check Printers</a> in St. Paul, Minnesota</li>
+<li> when I lived at Sanctuary Arts and managed our website I would automatically insert an <a href="http://www.flickr.com/photos/figital/5143365326/" target="_blank" rel="noopener">animated snowstorm as the background image</a> during a winter weather warning</li>
+<li> circa 2005 I was <a href="http://www.flickr.com/photos/figital/5142680205/" target="_blank" rel="noopener">overly excited</a> that I might soon boot windows directly into Firefox as my window manager and local desktop shell</li>
+</ul>
+<p>Because I wasn’t able to find another service to replicate the functionality of the Wayback Machine I decided to write my own routines to create my own daily snapshots. Here’s a simple shell script that I run nightly by placing it in the /etc/cron.daily directory on my Debian-based Linux distro:</p>
+<p class="snippet caption">wget-figital.sh</p>
+<pre><code class="shell hljs language-shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">!/bin/sh</span>
+wget --directory-prefix=/home/sfitchet/archive/figital.com/$(date +%Y-%m-%d) -E -H -k -K -p -nd http://www.figital.com
+<span class="hljs-meta prompt_">
+# </span><span class="language-bash">don<span class="hljs-string">'t forget to change the --directory-prefix to a location on your</span></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-string">own system and obviously the URL you'</span>d like to archive ;)</span>
+</code></pre>
+<p>Here’s a quick rundown of what’s happening:</p>
+<ul>
+<li> every evening wget retrieves a copy of the HTML page at <a href="http://www.figital.com?wb">http://www.figital.com</a></li>
+<li> inside my home directory a new folder is created based on today’s date for all of the files that will be needed to render my archived page in the future and with the help of the following <a href="http://www.gnu.org/software/wget/manual/wget.txt" target="_blank" rel="noopener">command line flags</a>:</li>
+</ul>
+<table cellpadding="8">
+<tbody>
+<tr style="font-weight:bold;">
+<td><b>Flag</b></td>
+<td style="width: 150px;"><b>Alias</b></td>
+<td><b>Description</b></td>
+</tr>
+<tr>
+<td>-E</td>
+<td>–adjust-extension</td>
+<td>if the requested file appears to be an HTML document but does not end with an HTML extension (for example, “.asp”) then rename the file with using the extension “.html”</td>
+</tr>
+<tr>
+<td>-H</td>
+<td>–span-hosts</td>
+<td>allow downloads from other domains if necessary</td>
+</tr>
+<tr>
+<td>-k</td>
+<td>–convert-links</td>
+<td>convert links to enable local (offline) viewing</td>
+</tr>
+<tr>
+<td>-K</td>
+<td>–backup-converted</td>
+<td>save original copies of any edited files with using a .orig extension</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>–page-requisites</td>
+<td>download any supplemental files needed to render the document</td>
+</tr>
+<tr>
+<td>-nd</td>
+<td>–no-directories</td>
+<td>store all the files in a single directory instead of creating a new directory for each unique hostname</td>
+</tr>
+</tbody>
+</table>
+<p>It’s that easy. Be careful not to over-ping the servers you will be archiving or fill up your hard drive with poorly designed usage of wget’s recursion flags.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/newsweek-raphaeljs-career-tree-visualization-raphaeljs-burst/" rel="prev">Newsweek Career Tree Visualization with RaphaelJS and Burst</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/welcome-adam-j-sontag/" rel="next">Welcome Adam J. Sontag</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/build-your-own-mini-wayback-machine/ -->
+  
+
+</body></html>

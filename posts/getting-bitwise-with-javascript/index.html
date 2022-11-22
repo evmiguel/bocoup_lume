@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Bitwise with JavaScript</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Getting Bitwise with JavaScript</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/javascript robotics/" class="tag">javascript robotics</a>
+    
+      <a href="/bocoup_lume/tags/johnny-five/" class="tag">johnny-five</a>
+    
+      <a href="/bocoup_lume/tags/nodebots/" class="tag">nodebots</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>00000001 // 1    — truthy, so LED 7 is ON</p>
+<p>Throw in the iteration from 0 to 255, a timeout, and some Johnny Five code, and we end up with this:</p>
+<p><iframe loading="lazy" src="https://player.vimeo.com/video/46463390" width="500" height="281" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe></p>
+<h2>Part 2: Learning to Write</h2>
+<p>If all we wanted to do was count from 0 to 255 in blinking lights, then the best we can say about bitwise operators is that they save us a few lines. A few days after I got the LEDs blinking, I saw <a href="https://gist.github.com/3200331">this code</a> for making a two-line liquid crystal display (LCD) work with Johnny Five.</p>
+<p>This code was using an array-based approach for sending bits, but from my experience with the LEDs and the shift register, I thought that a bitwise approach might make more sense. Over the course of a few days of working with <a href="http://www.solitude.dk/">Andreas Haugstrup</a> and Rick to develop a full API for LCDs in Johnny Five, I got to understand bitwise operations a whole lot better.</p>
+<p>As you can imagine, an LCD is a lot more complex than an LED. Instead of simply turning it on or off, you tell it what to do — which character to display next, whether to show the cursor, whether to blink the cursor, where to write the next character — by sending a number between 0 and 255 as eight bits of data. Sound familiar?</p>
+<p>Indeed, we already know from the LED example how to send a number between 0 and 255 as eight bits of data. The standard set of ASCII characters take up the numbers 32-127, but that leaves us the numbers 0-31 and 128-255 for commands.</p>
+<p>Some of the commands we need to send to our LCD are actually combinations of instructions. For example, if we want to position the cursor somewhere on the LCD, we need to send a single command that says both “we want to position the cursor” and “this is where we want to put it.” Unlike in JavaScript, we can only send a single argument: a number between 0 and 255. The bitwise OR operator, <code>|</code>, provides a way to send several pieces of information in that single number.</p>
+<p>Let’s look at the Johnny Five method that sets the cursor position:</p>
+<pre><code>LCD.prototype.setCursor = function( col, row ) {
+  var rowOffsets = [ 0x00, 0x40, 0x14, 0x54 ];
+  this.command( LCD.SETDDRAMADDR | ( rowOffsets[ row ] + col ) );
+
+  return this;
+};
+</code></pre>
+<p>(If you need a refresher on <a href="http://en.wikipedia.org/wiki/Hexadecimal">hexadecimal numbers like 0x00</a>, you’re probably not alone.)</p>
+<p>The bitwise OR operator looks at the binary representation of two numbers and returns a number that represents the bits that are “on” in <em>either</em> of the two numbers.</p>
+<p>For example, consider again the numbers 9 and 128. If you look at the <code>setCursor</code> method above, the value 9 is what we’d end up with for <code>rowOffsets[ row ] + col</code> if we wanted to position the cursor in the first row (0x00) at the 10th column. The value of <code>LCD.SETDDRAMADDR</code> happens to be 0x80, which is 128. In binary, these two numbers look like this:</p>
+<p>When we combine these two values using <code>|</code>, we arrive at a single number that we can send as a command to the LCD to tell it to put the cursor in the tenth column of the first row:</p>
+<pre><code>  10000000  // 128 (LCD.SETDDRAMADDR)
+| 00001001  // 9 (row 0 + col 9, eg. 0x00 + 9)
+__________________
+  10001001  // 137
+</code></pre>
+<p>We can send other numbers to put the cursor elsewhere, to make the cursor blink, to turn the LCD on and off, and, most importantly, to write characters to the screen. Understanding and using bitwise operators makes all of it quite straightforward — much moreso than with an array-based approach — and after a few days of work, Johnny Five now supports <a href="https://github.com/rwldrn/johnny-five/blob/master/lib/lcd.js">the same LCD features</a> as the C-based API.</p>
+<h2>More Bitwise Fun</h2>
+<p>The Mozilla Developer Network has incredible <a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Operators/Bitwise_Operators">documentation</a> about all of the bitwise operators, and more discussion and examples of how they can be used.</p>
+<p>If you’ve ever wondered why you can do <code>~myArray.indexOf(targetVal)</code> and get a useful boolean, pay special attention to the discussion of the bitwise NOT operator <code>~</code>, which flips the bits of the binary representation of a number, and to the discussion of signed 32-bit integers, where you’ll learn that -1 is represented in binary as 32 1’s in a row. Flipping the binary bits of -1 (the value returned by <code>indexOf</code> when an item is not found in an array) returns 0, a falsy value. Flipping the bits of any value that indicates an item was found in an array will return a truthy value.</p>
+<p>Want to learn more about how LCDs work? Read all about <a href="http://web.alfredstate.edu/weimandn/lcd/lcd_addressing/lcd_addressing_index.html">LCD addressing</a> — that is, how the chip that controls an LCD interprets the binary commands it receives.</p>
+<p>Finally, I’ve put together a JSBin that simulates the fun you can have with LEDs and bitwise operators. It’s a fun way to see some of what we’ve covered in this post without having to wire up an Arduino:</p>
+<p><a class="jsbin-embed" href="https://jsbin.com/exudaj/56/embed?live">JS Bin</a><script src="https://static.jsbin.com/js/embed.js"></script></p>
+<p>That said: if you like JavaScript, you should get an Arduino, and you should build things with Johnny Five. Rick said it best with his initial encouragement to me: as people who make things on computer screens all day, it’s incredibly cool the first time you make an LED light up in the real world. I haven’t had this much fun with JavaScript — or poked in so many of its nooks and crannies — in a long time.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/welcome-isaac-durazo/" rel="prev">Welcome Isaac Durazo</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-arduino-bumper-switch-controlling-led-tutorial/" rel="next">JavaScript: Arduino Bumper Switch Controlling a Led Tutorial</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/getting-bitwise-with-javascript/ -->
+  
+
+</body></html>

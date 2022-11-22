@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducing the Miso Project and Dataset Library</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Introducing the Miso Project and Dataset Library</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/data analysis/" class="tag">data analysis</a>
+    
+      <a href="/bocoup_lume/tags/data visualization/" class="tag">data visualization</a>
+    
+      <a href="/bocoup_lume/tags/design/" class="tag">design</a>
+    
+      <a href="/bocoup_lume/tags/miso project/" class="tag">miso project</a>
+    
+      <a href="/bocoup_lume/tags/open source/" class="tag">open source</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Over the past 3 months Bocoup has been working closely with the<br>
+<a href="http://www.guardian.co.uk/profile/guardian-interactive-department">Guardian Interactive team</a><br>
+on <a href="http://misoproject.com/">the Miso Project</a>, a set of open source libraries designed to expedite and<br>
+simplify the creation of data-driven interactive content. We are excited to announce<br>
+the release of the first of these libraries<br>
+called <a href="http://misoproject.com/dataset/">Dataset</a>.<br>
+You can see the code <a href="http://www.github.com/misoproject/dataset">here on github</a>.</p>
+<p><a href="http://misoproject.com/dataset/"><img decoding="async" src="https://static.bocoup.com/blog/dataset.png"></a></p>
+<p>Traditionally, data-driven interactive applications require a series of steps that all follow<br>
+a similar workflow. For example, remote data sources need to be fetched, the data is then<br>
+parsed to match the client-side representation of the model and then perhaps transformed<br>
+and queried to obtain the actual information required by the rendering layer. These steps<br>
+can be individually accomplished through custom code or a collection of existing libraries<br>
+and frameworks. When writing Dataset, we wanted to simplify this part of the workflow by<br>
+creating a single library that managed the entire process.</p>
+<p>Dataset comes with a growing list of <a href="http://misoproject.com/dataset/examples.html">examples</a><br>
+that showcase not only its ease of use, but also how easy it is to integrate it into<br>
+existing libraries. For example, here’s a quick bar chart showcasing Dataset’s own<br>
+github repo commit history using jQuery Sparklines:</p>
+<p><iframe style="width: 100%; height: 300px; border: 1px solid #222;" src="https://jsfiddle.net/iros/59R6V/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe></p>
+<p>Some of Dataset’s facilities echo common patterns that we already see in MVC frameworks:<br>
+easy tie-in to API endpoints and creating common client-side models that then make the data<br>
+accessible. The Dataset structure is itself a similar abstraction to Backbone collections<br>
+or Ember arrays for handling sets of data. While many frameworks provide these facilities<br>
+for handling sets of data, our focus is on providing a more efficient implementation with<br>
+more extensive APIs for manipulating the incoming data. By making data a first-class citizen<br>
+in an MVC application, Dataset functions as a management layer that can be used as a step<br>
+before, during or after an MVC framework like Backbone.js. It is our goal to grow the library<br>
+in a way that facilitates interoperability with those frameworks and so we are looking<br>
+forward to hearing how you might use it in your workflow.</p>
+<h3>Available Features </h3>
+<p>Dataset has a variety of features that try to cover the common set of functionality required by client-side data-driven applications:</p>
+<ul>
+<li>A series of <a href="http://misoproject.com/dataset/api.html#misoimporters">importers</a><br>
+are responsible for fetching data from<br>
+local and remote sources, like <a href="http://misoproject.com/dataset/tutorials/googlespreadsheets">google spreadsheets</a>.</li>
+<li>A variety of <a href="http://misoproject.com/dataset/api.html#misoparsers">parsers</a> are waiting to transform the incoming data<br>
+from formats such as CSV to our standard and fast-to-traverse format.</li>
+<li>A series of <a href="http://misoproject.com/dataset/tutorials/products">computational functions</a> are available<br>
+to easily obtain metrics about one or more columns in the data, such as min/max and groupBy.</li>
+<li>A simple and powerful <a href="http://misoproject.com/dataset/tutorials/accessing_data">filtering API</a> that lets you create sub-selections<br>
+of the data that match a particular set of conditions.</li>
+<li>An <a href="http://misoproject.com/dataset/tutorials/events">event system</a> that allows subscription to specific data changes such as new rows being<br>
+added or existing rows being updated.</li>
+</ul>
+<p>While Dataset was written to facilitate browser-based data management, thanks to <a href="http://twitter.com/tbranyen">Tim Branyen</a>‘s<br>
+efforts it is now also available as a <a href="http://misoproject.com/dataset/tutorials/quickstart">node.js module</a>.</p>
+<h3> Why We Built It</h3>
+<p>At Bocoup, we are committed to moving the Open Web forward through developing new Open Web technologies for<br>
+industries in transition to the web. We want to ensure that as this happens, the best software tools for doing so are open.</p>
+<p>Inspired by the needs of journalism, we set out to work with the Guardian, a leader in Open Journalism,<br>
+to develop Open Web data journalism tools. As we began building Dataset, we realised that its facilities<br>
+are valuable for other software paradigms that we work on at Bocoup, and so we are excited to release<br>
+a tool that that focuses on client-side data management.</p>
+<p>We as web developers have a lot to learn about narrative and storytelling in our data focused web applications.<br>
+In light of this, it is especially compelling for us to be focusing on an initiative<br>
+like <a href="http://misoproject.com">the Miso Project</a> that bridges this gap.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/game-dev-montreal/" rel="prev">Coming to Montreal and Boston: Introduction to HTML5 Game Development</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/3pjs-css-defense/" rel="next">Third-Party JavaScript Development: CSS Defensive Techniques</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/introducing-miso-project-and-dataset-library/ -->
+  
+
+</body></html>

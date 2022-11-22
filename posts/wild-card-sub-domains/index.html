@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wild Card Sub Domains</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Wild Card Sub Domains</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/deployment/" class="tag">deployment</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>After a recent foreign top level&nbsp;<a title="Gully Domain Shortener" href="http://gul.ly">domain</a> <a title="Boaz Sender" href="http://boaz.se/nder">registration</a> <a title="Paragraph" href="http://par.ag/raph">binge</a> aimed at some fun domain hacks, I got sick of spending money on foreign &nbsp;<abbr title="Top Level Domain">TLD</abbr>s, and started getting creative with subdomain hacks.&nbsp;<abbr title="Top Level Domain">TLD</abbr> hacks are fun, but feel a little less natural to me, and certainly don’t tend to read as well; my eyes tend to stop at the&nbsp;<abbr title="Top Level Domain">TLD</abbr>.</p>
+<p><!-- site no longer works: Take a look at <a href="http://wantsforherbirthday.com/">http://wantsforherbirthday.com</a> for an example of a nice single page wild card subdomain application. --></p>
+<p>As it turns out, adding user customized subdomains to your applications is easier than I though. Follow the these three simple steps (you’ll need root access to your server in order to configure apache):</p>
+<p>1) Create a new CNAME record for your domain with your registrar. You can do this by editing your DNS settings. Give your domain a name of “*” (astericks) and a value of your server’s ip address.</p>
+<p>2) Open up your httpd.conf file and add in a virtual host container for your subdomain at the bottom. It should look something like this:</p>
+<pre lang="apache"><virtualhost>
+    DocumentRoot /path/to/your/app
+    # probably something like /var/www/html/myapplication/
+    ServerName  myapplication.com
+    # your domain with no prefix
+    ServerAlias *.sub.domain.tld
+    # eg: *.bocoup.com
+</virtualhost>
+</pre>
+<p>In redhat and centos, your httpd.conf file will be located in: <code>/etc/httpd/conf/httpd.conf</code></p>
+<p>It will usually be somewhere similar to that. Ubuntu and Debian do this in a completely different way, but still use the virtual host container construct.</p>
+<p>Your httpd.conf conf file is similar to an .htaccess file. It is an Apache configuration file. In fact, you can put all of your .htaccess rewrite rules into httpd.conf, and they will work. The major difference is the rules in the httpd.conf file are loaded into memory when Apache starts, whereas rules in .htaccess files are read every time an http request is made to a resource that they affect.</p>
+<p>In step one we set a wildcard CNAME record up at the registrar so that http://*.yourdomain.com (where * = anything) will resolve to the web server.</p>
+<p>In step two, we added a virtual host container to tell apache to route all *.yourdomiain.com traffic to the same place on the server.</p>
+<p>Any subdomain that is hit on your domain will now load the index file in the directory you specified as “myapplication” above.</p>
+<p>3) Now we are set up to start building web applications that respond to wild card sub domains. You can simply parse the url from inside your application on the server or in the client, and respond conditionally based on subdomains, subsubdomains, subsubsubdomains, and so forth. You might consider setting up a routing file as the index to help manage your code, or, you might stick to a single page application.</p>
+<p>This is one way to build wildcard subdomain applications. There are some other methods out there, but I have found this one to be the quickest for small projects.</p>
+<p>Note: You need to have root access to your server to do this. Shared hosting providers often prevent this kind of setup or charge extra for it, since, among other reasons, this setup is ideal for the black hat search engine optimizers out there.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/jquery-docs-keyboard-navigation/" rel="prev">jQuery Docs Keyboard Navigation</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/code-repository-analysis/" rel="next">Code Repository Analysis</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/wild-card-sub-domains/ -->
+  
+
+</body></html>

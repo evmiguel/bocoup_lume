@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Web Workers: Support &amp;#038; Testing The Browser</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript Web Workers: Support &amp;#038; Testing The Browser</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+      <a href="/bocoup_lume/tags/web standards/" class="tag">web standards</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>In case you’re not yet familiar, the JavaScript Web Workers API is a feature that facilitates the execution of scripts in an independent background process, away from any UI related logic. It should be assumed that the Worker’s life-cycle is the same as the application that called it, as it comes with start-up and instance memory performance costs. These costs are actually quite minimal when compared to the power that a single Worker thread provides:</p>
+<ul>
+<li>Independent JavaScript execution environment (also known as “worker process”) running parallel to your the window (also known as the “renderer process”)</li>
+<li>Concurrent, parallel execution</li>
+<li>Non-blocking execution (the worker itself is asynchronous)</li>
+<li>Take full advantage of multi-core machines</li>
+<li>With SharedWorkers, the processing power can be shared across tabs and windows</li>
+</ul>
+<p>Some additional information about security, <a href="https://developer.mozilla.org/En/Using_web_workers" target="_blank" rel="noopener">originally published at the Mozilla Developer Center</a>…</p>
+<blockquote><p>The Worker interface spawns real OS-level threads, and concurrency can cause interesting effects in your code if you aren’t careful. However, in the case of web workers, the carefully controlled communication points with other threads means that it’s actually very hard to cause concurrency problems.  There’s no access to non-thread safe components or the DOM and you have to pass specific data in and out of a thread through serialized objects.  So you have to work really hard to cause problems in your code.</p></blockquote>
+<p>All of that is really meant to serve as a summary or primer for the release of my collection of Web Worker unit tests. These tests are meant to test the browser itself for support of Web Workers:</p>
+<p><a href="https://static.bocoup.com/html/dev.pollenjs.com/web-worker-support/index.html">Web Worker Support</a></p>
+<p><iframe loading="lazy" width="593" height="400" src="https://static.bocoup.com/html/dev.pollenjs.com/web-worker-support/index.html"></iframe></p>
+<p>This is not meant to be a complete and definitive list – I would like to extend the opportunity for contribution to this document to the entire JavaScript community – save your suggested tests to Gists on Github and leave links to your gists in the comments.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-jquery-regex-review/" rel="prev">JavaScript: jQuery RegEx Review</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/apache-could-not-bind-address-to-port-make-sock/" rel="next">Apache: Could not bind address to port (make_sock)</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-web-workers-support-testing-the-browser/ -->
+  
+
+</body></html>

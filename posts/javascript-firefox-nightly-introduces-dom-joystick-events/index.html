@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: Firefox Nightly introduces DOM Joystick Events</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: Firefox Nightly introduces DOM Joystick Events</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Late last week, excitement buzzed here at Bocoup, when <a href="http://twitter.com/humphd">David Humphrey</a> of <a href="http://www.mozilla.org/">Mozilla</a> dropped us a line with links to a Firefox nightly build that had added rudimentary support for a set of DOM Joystick events. Several hours later we, along with <a href="http://twitter.com/#!/jorendorff">Jason Orendorff</a> and <a href="https://twitter.com/#!/TedMielczarek">TedMielczarek</a> of Mozilla, put together a couple of prototype experiments to demonstrate potential use-cases for the new event types. Additionally, we started thinking and planning an approach for authoring a JS library in conjunction with the emerging API.</p>
+<p>Currently, Mozilla wiki page for the <a href="https://wiki.mozilla.org/JoystickAPI">Joystick API</a> specifies three new event types allow you to subscribe to joystick events such as button up/down and joystick move:</p>
+<ul>
+<li>MozJoyButtonDown</li>
+<li>MozJoyButtonUp</li>
+<li>MozJoyAxisMove</li>
+</ul>
+<p>All three events share a <strong>JoystickID</strong> property that is unique per connected device (allowing multiple devices).</p>
+<p>The <strong><code>MozJoyButtonUp</code></strong> and <strong><code>MozJoyButtonDown</code></strong> events also contain a <strong><code>button</code></strong> property corresponding to the button being pressed or released. Each button on the controller will have a unique ID assigned to it.</p>
+<p>The <strong><code>MozJoyAxisMove</code></strong> event is triggered on analog sticks move and has the following unique properties:</p>
+<ul>
+<li><strong><code>axis</code></strong> – an integer indicating which axis the analog stick is being moved on. Note that an axis is not just from the analog stick’s neutral position to an edge but rather from edge to edge. Depending on the manufacturer, the number of axes can vary. For example, the XBox wired controller has 4 axes (top to bottom, left to right, and two diagonals.)</li>
+<li><strong><code>value</code></strong> – The position of the analog stick on the axis it’s on. The value is somewhere between -1.0 and 1.0.</li>
+</ul>
+<p>The following gist can be used to analyze the output of the above three events:</p>
+<p class="snippet caption">joystick.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">/*
+MozJoyAxisMove
+MozJoyButtonUp
+MozJoyButtonDown
+*/</span>
+
+<span class="hljs-keyword">var</span> joyEvents = {
+
+    <span class="hljs-title class_">MozJoyAxisMove</span>: {
+      <span class="hljs-attr">props</span>: [ <span class="hljs-string">"joystickID"</span>, <span class="hljs-string">"axis"</span>, <span class="hljs-string">"value"</span> ],
+      <span class="hljs-attr">listen</span>: <span class="hljs-number">1</span>
+    },
+    <span class="hljs-title class_">MozJoyButtonUp</span>: {
+      <span class="hljs-attr">props</span>: [ <span class="hljs-string">"joystickID"</span>, <span class="hljs-string">"button"</span> ],
+      <span class="hljs-attr">listen</span>: <span class="hljs-number">1</span>
+    },
+    <span class="hljs-title class_">MozJoyButtonDown</span>: {
+      <span class="hljs-attr">props</span>: [ <span class="hljs-string">"joystickID"</span>, <span class="hljs-string">"button"</span> ],
+      <span class="hljs-attr">listen</span>: <span class="hljs-number">1</span>
+    }
+  },
+  joyEventsKeys = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>( joyEvents );
+
+<span class="hljs-comment">// Iterate joystick events, add an event listener to the window to log events</span>
+joyEventsKeys.<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"> type, idx </span>) {
+
+  <span class="hljs-keyword">var</span> joyEvent = joyEvents[ type ];
+
+  <span class="hljs-keyword">if</span> ( joyEvent.<span class="hljs-property">listen</span> ) {
+
+    <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">addEventListener</span>( type, <span class="hljs-keyword">function</span>(<span class="hljs-params"> event </span>) {
+
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(
+        type,
+        joyEvent.<span class="hljs-property">props</span>.<span class="hljs-title function_">map</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"> val </span>) {
+          <span class="hljs-keyword">return</span> val + <span class="hljs-string">": "</span> + event[ val ];
+        }).<span class="hljs-title function_">join</span>(<span class="hljs-string">", "</span>)
+      );
+
+    }, <span class="hljs-literal">false</span>);
+  }
+
+  <span class="hljs-keyword">if</span> ( idx === joyEventsKeys.<span class="hljs-property">length</span> - <span class="hljs-number">1</span> ) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">"MozJoy* Events Ready"</span> );
+  }
+}, joyEvents );
+
+</code></pre>
+<p>Our first prototype can be found here: <a href="https://jsfiddle.net/rwaldron/wPuGB/">http://jsfiddle.net/rwaldron/wPuGB/</a>. It allows you to control video playback with your controller. The second prototype <a href="http://jsfiddle.net/iros/YtpkY/">http://jsfiddle.net/iros/YtpkY/</a> uses <a href="http://paperjs.org">Paper.js</a> and simply allows you to move a dot across the screen using your analog stick. If you have an XBox controller you can grab the FireFox nightly build containing the event support here: <a href="ftp://ftp.mozilla.org/pub/mozilla.org/firefox/try-builds/tmielczarek@mozilla.com-8df56f741a66/">Firefox 8 Nightly (Special builds)</a> and if you are on the Mac you can get XBox controller drivers here: <a href="http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver">XBox 360 OSX Drivers</a>.</p>
+<p>If you don’t want to go through all of the setup, check out the video demo here:</p>
+<p><iframe loading="lazy" width="425" height="349" src="https://www.youtube.com/embed/xy17eyjnxsk" frameborder="0" allowfullscreen="true"></iframe></p>
+<p>During our brief experiments we came across a few initial issues such as the high number of events being fired. At the moment the event buffer can get overloaded pretty quickly especially when the analog stick is maxed out on an axis. Keeping the number of events high is obviously important to achieve the kind of precision we see in console games. Additionally, the diversity of controllers will ensure that single button to action mappings will be challenging to accomplish. These issues and others are ones we hope to address in some future work on <a href="http://github.com/rwldrn/joystick.js">Joystick.js</a>.</p>
+<p>The introduction of joystick events in the browser marks a milestone in the history of the web and specifically the role it plays in our everyday entertainment demands and how we interact with that experience.</p>
+<p>Note: The Firefox 8 build is actually a “Try Server” build – not a “Nightly” as the url and title imply.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/spoofing-user-agent-with-chromes-webrequest-api/" rel="prev">Spoofing User-Agent with Chrome&amp;#8217;s WebRequest API</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/performance-data-from-our-fieldrunners-webgl-demo/" rel="next">Performance Data from our Fieldrunners WebGL Demo</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-firefox-nightly-introduces-dom-joystick-events/ -->
+  
+
+</body></html>

@@ -1,0 +1,83 @@
+{
+  "version": "https://jsonfeed.org/version/1",
+  "title": "Bocoup",
+  "home_page_url": "https://aleenaloves.github.io/bocoup_lume/",
+  "feed_url": "https://aleenaloves.github.io/bocoup_lume/feed.json",
+  "description": "Technical Consulting",
+  "author": {
+    "name": "Bocoup,",
+    "url": "https://bocoup.com/"
+  },
+  "items": [
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/gutenberg/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/gutenberg/",
+      "title": "Gutenberg",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/good-bye-pete/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/good-bye-pete/",
+      "title": "Good Bye Pete",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/miso-storyboard/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/miso-storyboard/",
+      "title": "Building Your Control Flow with Miso.Storyboard",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/miso-dataset-03-release/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/miso-dataset-03-release/",
+      "title": "Miso Dataset 0.3 Release",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/recon2012-launch/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/recon2012-launch/",
+      "title": "ReConstitution 2012 &#8211; Live Debate Deconstruction and Visualization",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/roost/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/roost/",
+      "title": "Roost &#8211; A JavaScript Training Conference from Bocoup",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/hubway-data-viz-hack-day/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/hubway-data-viz-hack-day/",
+      "title": "Hubway Data Visualization Hack Day at Bocoup",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/welcome-cassie-irwin/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/welcome-cassie-irwin/",
+      "title": "Welcome Cassie Irwin",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/au-revoir-tim/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/au-revoir-tim/",
+      "title": "Bye for now, Tim Branyen",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    },
+    {
+      "id": "https://aleenaloves.github.io/bocoup_lume/posts/introducing-gith-github-webhooks-for-node/",
+      "url": "https://aleenaloves.github.io/bocoup_lume/posts/introducing-gith-github-webhooks-for-node/",
+      "title": "Introducing Gith &#8211; GitHub WebHooks For Node",
+      "content_html": "",
+      "date_published": "2022-11-22T19:17:22Z"
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alternate x axis Intervals In g.raphaël.js linechart()</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Alternate x axis Intervals In g.raphaël.js linechart()</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <h3>Use the code below to try out everything that I talk about in this post, and check out the <a href="https://code.bocoup.com/raphael-chart-demo">live demo</a> over on code.bocoup.com.</h3>
+<p class="snippet caption">modified-x-axis-intervals-and-labels.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">//based on the source of http://g.raphaeljs.com/linechart.html</span>
+
+<span class="hljs-keyword">var</span> options = {
+  <span class="hljs-attr">axis</span>: <span class="hljs-string">"0 0 1 1"</span>, <span class="hljs-comment">// Where to put the labels (trbl)</span>
+  <span class="hljs-attr">axisxstep</span>: <span class="hljs-number">16</span> <span class="hljs-comment">// How many x interval labels to render (axisystep does the same for the y axis)</span>
+};
+
+<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'DOMContentLoaded'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+
+  <span class="hljs-comment">// Make the raphael object</span>
+  <span class="hljs-keyword">var</span> r = <span class="hljs-title class_">Raphael</span>(<span class="hljs-string">"myDomElem"</span>); 
+
+  <span class="hljs-keyword">var</span> lines = r.<span class="hljs-property">g</span>.<span class="hljs-title function_">linechart</span>(
+    <span class="hljs-number">20</span>, <span class="hljs-comment">// X start in pixels</span>
+    <span class="hljs-number">10</span>, <span class="hljs-comment">// Y start in pixels</span>
+    <span class="hljs-number">300</span>, <span class="hljs-comment">// Width of chart in pixels</span>
+    <span class="hljs-number">200</span>, <span class="hljs-comment">// Height of chart in pixels</span>
+    [<span class="hljs-number">.5</span>,<span class="hljs-number">1.5</span>,<span class="hljs-number">2</span>,<span class="hljs-number">2.5</span>,<span class="hljs-number">3</span>,<span class="hljs-number">3.5</span>,<span class="hljs-number">4</span>,<span class="hljs-number">4.5</span>,<span class="hljs-number">5</span>], <span class="hljs-comment">// Array of x coordinates equal in length to ycoords</span>
+    [<span class="hljs-number">7</span>,<span class="hljs-number">11</span>,<span class="hljs-number">9</span>,<span class="hljs-number">16</span>,<span class="hljs-number">3</span>,<span class="hljs-number">19</span>,<span class="hljs-number">12</span>,<span class="hljs-number">12</span>,<span class="hljs-number">15</span>], <span class="hljs-comment">// Array of y coordinates equal in length to xcoords</span>
+    options <span class="hljs-comment">// opts object</span>
+  );
+
+  <span class="hljs-comment">// Modify the x axis labels</span>
+  <span class="hljs-keyword">var</span> xText = lines.<span class="hljs-property">axis</span>[<span class="hljs-number">0</span>].<span class="hljs-property">text</span>.<span class="hljs-property">items</span>;      
+  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i <span class="hljs-keyword">in</span> xText){ <span class="hljs-comment">// Iterate through the array of dom elems, the current dom elem will be i</span>
+    <span class="hljs-keyword">var</span> _oldLabel = (xText[i].<span class="hljs-title function_">attr</span>(<span class="hljs-string">'text'</span>) + <span class="hljs-string">""</span>).<span class="hljs-title function_">split</span>(<span class="hljs-string">'.'</span>), <span class="hljs-comment">// Get the current dom elem in the loop, and split it on the decimal</span>
+        _newLabel = _oldLabel[<span class="hljs-number">0</span>] + <span class="hljs-string">":"</span> + (_oldLabel[<span class="hljs-number">1</span>] == <span class="hljs-literal">undefined</span> ? <span class="hljs-string">'00'</span> : <span class="hljs-string">'30'</span>); <span class="hljs-comment">// Format the result into time strings</span>
+    xText[i].<span class="hljs-title function_">attr</span>({<span class="hljs-string">'text'</span>: _newLabel}); <span class="hljs-comment">// Set the text of the current elem with the result</span>
+  };
+
+
+}, <span class="hljs-literal">false</span>); <span class="hljs-comment">// End DOMContentLoaded callback</span>
+</code></pre>
+<p class="snippet caption">raphael-chart-demo.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">"Content-Type"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"text/html; charset=utf-8"</span> /&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://raw.github.com/DmitryBaranovskiy/raphael/03538da207cb41e2ebc303fe8fc247dd0b5e655f/raphael-min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://raw.github.com/DmitryBaranovskiy/g.raphael/177d888cbc8824d2a513c975ed5be8a3291b72ea/g.raphael.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://raw.github.com/DmitryBaranovskiy/g.raphael/177d888cbc8824d2a513c975ed5be8a3291b72ea/g.line.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"modified-x-axis-intervals-and-labels.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+ <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"myDomElem"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<hr>
+<p>Raphaël’s charting tools, gRaphaël, come with great out of the box functionality. The core charting library, and the individual chart scripts allow you to easily pass in arrays of x,y coordinates, and they <strong>just get charted</strong>. Since there are no docs, however, figuring out how to modify the default behavior can be tricky.</p>
+<p>I recently worked on a gRaphaël linchart that required fixed 1/2 hour intervals of time on the x-axis, and various quantities on the y-axis. gRaphaël’s <code>linechart()</code> default behavior presented two problems, which I found solutions for in the <a href="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/g.line.js">g.line.js source</a> and the <a href="http://github.com/DmitryBaranovskiy/g.raphael/issues">gRaphaël issues page on github</a> and will demonstrate bellow:</p>
+<hr>
+<ol>
+<li>The default x-axis label intervals are auto built by `linechart()` based on the number of data points, and the width in pixels of your chart.</li>
+<li>`linechart()` assumes you are charting base 10 numbers and the x axis label text are created implicitly from the data. Therefore, the labels must be real base 10 numbers, and not wacky base 60 time with sexagesimal colons instead of decimal periods.</li>
+</ol>
+<h2>1) Modifying the default x-axis interval</h2>
+<p>The x-axis label interval is set on line 72 of <a href="http://github.com/DmitryBaranovskiy/g.raphael/blob/master/g.line.js">g.raphael.js</a> where <code>width</code> is the width argument passed into <code>linechart()</code>, and gutter is 10 (unless you override it):</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>((width - <span class="hljs-number">2</span> * gutter) / <span class="hljs-number">20</span>), <span class="hljs-number">2</span>)
+</code></pre>
+<p>You’ll notice, if you read earlier in line 72, that this default condition only occurs if <code>opts.axisxstep</code> is not set. <code>opts</code> is an option object that you can pass in to <code>linechart()</code> as an optional last argument, and <code>linechart()</code> will try to use it all over the place.</p>
+<p>All you have to do is pass in a object literal with an axisxstep property set to what ever value you want:</p>
+<h2>2)Modifying the the x-axis labels</h2>
+<p>I needed to represent time in the line chart that I was working on. Instead of modifying gRaphaël to operate on base 60 numbers, my solution was to send base 10 representations of time intervals, and convert the labels into time interval strings.</p>
+<p>When you run linechart() on a raphael object, an object representation of your linechart is stored on the object you created. If your named linechart object lines you could grab a reference to the DOM element of each text node by iterating through this array:</p>
+<pre><code class="js hljs language-javascript">lines.<span class="hljs-property">axis</span>[<span class="hljs-number">0</span>].<span class="hljs-property">text</span>.<span class="hljs-property">items</span>; <span class="hljs-comment">//[array, of, DOM elements]</span>
+</code></pre>
+<p>You can get the text for each text node like this:</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> myTextElem = lines.<span class="hljs-property">axis</span>[<span class="hljs-number">0</span>].<span class="hljs-property">text</span>.<span class="hljs-property">items</span>[<span class="hljs-number">0</span>];
+
+myTextElem.<span class="hljs-title function_">attr</span>(<span class="hljs-string">'text'</span>);
+</code></pre>
+<p>You can set the text for each text node like this:</p>
+<pre><code class="js hljs language-javascript">myTextElem.<span class="hljs-title function_">attr</span>({<span class="hljs-string">'text'</span> : <span class="hljs-string">'new string of text'</span>});
+</code></pre>
+<p><cite>Thanks to <a href="http://holmwood.id.au/~lindsay/">Lindsay Holmwood</a> for <a href="http://github.com/DmitryBaranovskiy/g.raphael/issues#issue/8">pointing this out</a>.</cite></p>
+<hr>
+<p>In this way, you can traverse your instance of the linechart object, get the text nodes for each x axis label, manipulate them and set them again.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/make-your-own-javascript-ninja-with-processing-js/" rel="prev">Make your own JavaScript Ninja with Processing.js</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-web-workers-chrome-5-supports-new-sharedworker/" rel="next">Javascript Web Workers: Chrome 5+ supports new SharedWorker()</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/alternate-x-axis-intervals-in-g-raphael-js-linechart/ -->
+  
+
+</body></html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Web Workers: Chrome 5 Now Supports Complex Messages</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Javascript Web Workers: Chrome 5 Now Supports Complex Messages</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>After updating to Chrome 5 (specifically 5.0.375.55) last night I immediately ran some tests to see if the Web Worker API had been updated to support postMessage() arguments of types other than string.</p>
+<hr>
+<p>Turns out, it had.</p>
+<hr>
+<p>Here’s the test, plus the results:<br>
+<a href="https://gist.github.com/414901">https://gist.github.com/414901</a></p>
+<hr>
+<p class="snippet caption">renderer.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"renderer.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<p class="snippet caption">renderer.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> worker  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Worker</span>(<span class="hljs-string">'worker.js'</span>);
+
+worker.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-keyword">var</span> message = event.<span class="hljs-property">data</span>;
+
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">group</span>(<span class="hljs-string">'Message Received'</span>);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( message );
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">groupEnd</span>();
+
+}, <span class="hljs-literal">false</span>);
+
+<span class="hljs-comment">//  TEST VALID JSON ARG</span>
+worker.<span class="hljs-title function_">postMessage</span>({
+  <span class="hljs-string">'renderer-process'</span>: <span class="hljs-string">'Hello Worker Process'</span>
+});
+
+<span class="hljs-comment">//  TEST OBJECT ARG</span>
+worker.<span class="hljs-title function_">postMessage</span>({
+  <span class="hljs-attr">rendererProcess</span>: <span class="hljs-string">'Hello Worker Process'</span>,
+  <span class="hljs-attr">resultOf</span>: (<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">'the result'</span>;
+  })()
+});
+
+
+<span class="hljs-comment">//  TEST ANOTHER THREAD SAFE OBJECT ARG</span>
+<span class="hljs-keyword">var</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();
+
+obj.<span class="hljs-property">isArray</span>         = [ <span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span> ];
+obj.<span class="hljs-property">isString</span>        = <span class="hljs-string">'Foo bar baz'</span>,
+obj.<span class="hljs-property">resultOf</span>        = (<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+                        <span class="hljs-keyword">return</span> <span class="hljs-string">'returned from self executing function'</span>;
+                      })();
+
+worker.<span class="hljs-title function_">postMessage</span>(obj);
+
+
+
+<span class="hljs-comment">//  TEST STRING ARG</span>
+worker.<span class="hljs-title function_">postMessage</span>(<span class="hljs-string">'Hello Worker Process'</span>);
+
+<span class="hljs-comment">//  TEST ARRAY ARG</span>
+worker.<span class="hljs-title function_">postMessage</span>([ <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span> ]);
+
+<span class="hljs-comment">//  TEST BOOLEAN ARG</span>
+worker.<span class="hljs-title function_">postMessage</span>(<span class="hljs-literal">false</span>);
+
+<span class="hljs-comment">//  TEST BOOLEAN ARG</span>
+worker.<span class="hljs-title function_">postMessage</span>(<span class="hljs-literal">true</span>);
+
+
+
+
+</code></pre>
+<p class="snippet caption">worker.js</p>
+<pre><code class="js hljs language-javascript">self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-keyword">var</span> message = event.<span class="hljs-property">data</span>;
+
+
+  <span class="hljs-comment">//  IF BOOLEAN</span>
+  <span class="hljs-keyword">if</span> ( <span class="hljs-keyword">typeof</span> message === <span class="hljs-string">'boolean'</span> ) {
+    message = <span class="hljs-string">'boolean: '</span> + message.<span class="hljs-title function_">toString</span>();
+  }
+  <span class="hljs-comment">//  ALL OTHER MESSAGE TYPES</span>
+  <span class="hljs-keyword">else</span> {
+
+    <span class="hljs-comment">//  IF STRING OR ARRAY</span>
+    <span class="hljs-keyword">if</span> ( message.<span class="hljs-property">length</span> ) {
+      <span class="hljs-comment">//  IF STRING</span>
+      <span class="hljs-keyword">if</span> ( <span class="hljs-keyword">typeof</span> message == <span class="hljs-string">'string'</span> ) {
+        message += <span class="hljs-string">', Hello Renderer Process'</span>;
+      }
+      <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">var</span> len     = message.<span class="hljs-property">length</span> + <span class="hljs-number">1</span>,
+            floor   = len,
+            ceil    = floor * <span class="hljs-number">2</span>;
+
+
+        <span class="hljs-keyword">for</span> ( ; floor &lt; ceil; floor++ ) {
+          message.<span class="hljs-title function_">push</span>(floor);
+        }
+      }
+    }
+    <span class="hljs-comment">//  IF OBJECT</span>
+    <span class="hljs-keyword">else</span> {
+      message[<span class="hljs-string">'worker-process'</span>] = <span class="hljs-string">'Hello Renderer Process'</span>;
+    }
+  }
+
+  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">postMessage</span>(message);
+
+
+}, <span class="hljs-literal">false</span>);
+</code></pre>
+<p class="snippet caption">results.console.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Results</span>
+
+<span class="hljs-title class_">Message</span> <span class="hljs-title class_">Received</span>
+  <span class="hljs-title class_">Object</span>
+    renderer-<span class="hljs-attr">process</span>: <span class="hljs-string">"Hello Worker Process"</span>
+    worker-<span class="hljs-attr">process</span>: <span class="hljs-string">"Hello Renderer Process"</span>
+    <span class="hljs-attr">__proto__</span>: <span class="hljs-title class_">Object</span>
+
+<span class="hljs-title class_">Message</span> <span class="hljs-title class_">Received</span>
+  <span class="hljs-title class_">Object</span>
+    <span class="hljs-attr">rendererProcess</span>: <span class="hljs-string">"Hello Worker Process"</span>
+    <span class="hljs-attr">resultOf</span>: <span class="hljs-string">"the result"</span>
+    worker-<span class="hljs-attr">process</span>: <span class="hljs-string">"Hello Renderer Process"</span>
+    <span class="hljs-attr">__proto__</span>: <span class="hljs-title class_">Object</span>
+
+
+<span class="hljs-title class_">Message</span> <span class="hljs-title class_">Received</span>
+  <span class="hljs-title class_">Object</span>
+    <span class="hljs-attr">isArray</span>: <span class="hljs-title class_">Array</span> (<span class="hljs-number">5</span>)
+      <span class="hljs-number">0</span>: <span class="hljs-number">1</span>
+      <span class="hljs-number">1</span>: <span class="hljs-number">2</span>
+      <span class="hljs-number">2</span>: <span class="hljs-number">3</span>
+      <span class="hljs-number">3</span>: <span class="hljs-number">4</span>
+      <span class="hljs-number">4</span>: <span class="hljs-number">5</span>
+      <span class="hljs-attr">length</span>: <span class="hljs-number">5</span>
+    <span class="hljs-attr">isString</span>: <span class="hljs-string">"Foo bar baz"</span>
+    <span class="hljs-attr">resultOf</span>: <span class="hljs-string">"returned from self executing function"</span>
+    worker-<span class="hljs-attr">process</span>: <span class="hljs-string">"Hello Renderer Process"</span>
+
+<span class="hljs-title class_">Message</span> <span class="hljs-title class_">Received</span>
+  <span class="hljs-title class_">Hello</span> <span class="hljs-title class_">Worker</span> <span class="hljs-title class_">Process</span>, <span class="hljs-title class_">Hello</span> <span class="hljs-title class_">Renderer</span> <span class="hljs-title class_">Process</span>
+
+<span class="hljs-title class_">Message</span> <span class="hljs-title class_">Received</span>
+  [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>]
+
+<span class="hljs-title class_">Message</span> <span class="hljs-title class_">Received</span>
+  <span class="hljs-attr">boolean</span>: <span class="hljs-literal">false</span>
+
+<span class="hljs-title class_">Message</span> <span class="hljs-title class_">Received</span>
+  <span class="hljs-attr">boolean</span>: <span class="hljs-literal">true</span>
+</code></pre>
+<hr>
+<hr>
+<p>I did small bit of research and could only come up with this ticket:</p>
+<p><a href="http://code.google.com/p/chromium/issues/detail?id=32881">Issues in passing parameters to HTML5 worker threads</a></p>
+<p><em>Edit</em><br>
+In the time since this was originally published, <a href="/bocoup_lume/weblog/javascript-web-workers-chrome-5-now-supports-complex-messages/">Chrome</a>, <a href="/bocoup_lume/weblog/javascript-web-workers-safari-5-now-supports-complex-messages/">Safari</a> &amp; <a href="/bocoup_lume/weblog/javascript-web-workers-opera-10-60-beta-supports-complex-messages/">Opera</a> now support complex JSON messages.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/chrome-6-server-sent-events-with-new-eventsource/" rel="prev">Chrome 6: Server Push Events with new EventSource()</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-web-workers-from-basics-to-jquery-hive-part-iii/" rel="next">Javascript Web Workers: From Basics to jQuery.Hive, Part III</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-web-workers-chrome-5-now-supports-complex-messages/ -->
+  
+
+</body></html>

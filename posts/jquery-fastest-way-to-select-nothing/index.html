@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery: Fastest Way To Select Nothing</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">jQuery: Fastest Way To Select Nothing</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>As I become more and more obsessed with <a href="http://quora.com" target="_blank" rel="noopener">Quora</a>, I’m finding more and more questions that I answer seem to feel right as standalone blog posts. The latest even includes an interesting discovery: <a href="http://www.quora.com/Whats-the-cleanest-way-to-intentionally-and-reliably-return-a-jQuery-object-that-selects-nothing" target="_blank" rel="noopener">What’s the cleanest way to intentionally and reliably return a jQuery object that selects nothing?</a></p>
+<p>There were two answers already posted to the question, suggesting the following methods to achieve an empty jQuery set:</p>
+<ul>
+<li>$([])</li>
+<li>$(“null”) </li>
+</ul>
+<p>While the previous answers will definitely return a jQuery object that selects nothing, neither of them is best choice for performance. The answer is actually on line 79 of the jQuery source, it’s the first condition that jQuery ever evaluates:</p>
+<p class="snippet caption">jquery-condition.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Handle $(""), $(null), or $(undefined)</span>
+<span class="hljs-keyword">if</span> ( !selector ) {
+        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
+}
+</code></pre>
+<p>I thought it might be beneficial to benchmark these against the suggestions posted above; here is the test files and results: <a href="https://gist.github.com/555527" target="_blank" rel="noopener">https://gist.github.com/555527</a></p>
+<p>I added my own $(false) technique to the equation as well; I’m pleased with the results:</p>
+<p class="snippet caption">10m-results.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Results at 10,000,000 iterations</span>
+
+<span class="hljs-comment">// $([]) omitted/not tested - caused chrome to crash</span>
+<span class="hljs-comment">// $('null') omitted/not tested - caused chrome to crash</span>
+
+$(<span class="hljs-string">""</span>):        1274ms
+$(<span class="hljs-string">""</span>):        1270ms
+$(<span class="hljs-string">""</span>):        1278ms
+$(<span class="hljs-string">""</span>):        1265ms
+
+$(<span class="hljs-literal">undefined</span>): 1199ms
+$(<span class="hljs-literal">undefined</span>): 1167ms
+$(<span class="hljs-literal">undefined</span>): 1191ms
+$(<span class="hljs-literal">undefined</span>): 1158ms
+
+$(<span class="hljs-literal">null</span>):      1134ms
+$(<span class="hljs-literal">null</span>):      1221ms
+$(<span class="hljs-literal">null</span>):      1201ms
+$(<span class="hljs-literal">null</span>):      1353ms
+
+$(<span class="hljs-literal">false</span>):     1055ms
+$(<span class="hljs-literal">false</span>):     1140ms
+$(<span class="hljs-literal">false</span>):     1147ms
+$(<span class="hljs-literal">false</span>):     1137ms
+
+$(): 1203ms
+$(): 1309ms
+$(): 1161ms
+$(): 1318ms
+
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 917ms
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 1050ms
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 939ms
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 919ms
+
+
+</code></pre>
+<p class="snippet caption">1m-results.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Results at 1,000,000 iterations</span>
+
+$([]): 1552ms
+$([]): 1163ms
+$([]): 1188ms
+$([]): 1146ms
+
+$(<span class="hljs-string">"null"</span>): 8082ms
+$(<span class="hljs-string">"null"</span>): 4418ms
+$(<span class="hljs-string">"null"</span>): 7643ms
+$(<span class="hljs-string">"null"</span>): 7875ms
+
+$(<span class="hljs-string">""</span>): 132ms
+$(<span class="hljs-string">""</span>): 126ms
+$(<span class="hljs-string">""</span>): 131ms
+$(<span class="hljs-string">""</span>): 116ms
+
+$(<span class="hljs-literal">undefined</span>): 123ms
+$(<span class="hljs-literal">undefined</span>): 118ms
+$(<span class="hljs-literal">undefined</span>): 133ms
+$(<span class="hljs-literal">undefined</span>): 119ms
+
+$(<span class="hljs-literal">null</span>): 161ms
+$(<span class="hljs-literal">null</span>): 154ms
+$(<span class="hljs-literal">null</span>): 148ms
+$(<span class="hljs-literal">null</span>): 173ms
+
+$(<span class="hljs-literal">false</span>): 116ms
+$(<span class="hljs-literal">false</span>): 118ms
+$(<span class="hljs-literal">false</span>): 119ms
+$(<span class="hljs-literal">false</span>): 104ms
+
+$(): 127ms
+$(): 150ms
+$(): 127ms
+$(): 172ms
+
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 87ms
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 94ms
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 98ms
+<span class="hljs-keyword">new</span> jQuery.<span class="hljs-property">fn</span>.<span class="hljs-property">init</span>: 95ms
+
+
+
+</code></pre>
+<p>In conclusion, I can say with complete confidence that $(false) is the fastest and that $(‘null’) is the definitely the worst, as it will attempt to look through entire document, coming up empty handed, but exhausting itself.</p>
+<p><em>UPDATES</em></p>
+<p>Thanks to <a href="http://twitter.com/padolsey" target="_blank" rel="noopener">James Padolsey</a> for mentioning <code>new jQuery.fn.init</code>, which is clearly the winner – I’ve added it’s scores to the test results above.</p>
+<p>Thanks to <a href="http://twitter.com/mahemoff" target="_blank" rel="noopener">Michael Mahemoff</a> for setting up a <a href="http://jsperf.com/empty-jquery-selector" target="_blank" rel="noopener">JS Perf Case</a>.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/social-primatives-for-a-brave-new-web/" rel="prev">Social Primitives  for A Brave New Web</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-is-object-oriented-programming/" rel="next">JavaScript IS Object Oriented Programming</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/jquery-fastest-way-to-select-nothing/ -->
+  
+
+</body></html>

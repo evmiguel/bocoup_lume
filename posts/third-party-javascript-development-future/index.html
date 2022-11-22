@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Third-Party JavaScript Development: The Future!</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Third-Party JavaScript Development: The Future!</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/testing/" class="tag">testing</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I’ve just returned from the future, and I have a lot to share with you. World<br>
+news, sports scores, market changes, all that stuff can wait. First, we need to<br>
+talk about third-party JavaScript.</p>
+<p>There’s a great deal of browser technology on the way that will affect the way<br>
+you write code. Here, I’ll focus specifically on tech that has relevance to<br>
+third-party JavaScript (3PJS) developers. I’ve editorialized a bit, but this is<br>
+based on my understanding of how the technology is currently described. To help<br>
+you out, I’ve tried to keep my own opinion quarantined within sections titled<br>
+“Recommendation”, and I’ve included references to the official W3C<br>
+specifications.</p>
+<p><em>Update August 2012</em> I’ve included a polyfill for the <code>iframe[srcdoc]</code><br>
+attribute. Thanks to commenter <a href="http://coreygoldfeder.com">Corey Goldfeder</a> for<br>
+suggesting the fallback that makes this possible in today’s browsers.</p>
+<p>Contents:</p>
+<ul>
+<li><a href="#style-scoped">Style <code>scoped</code> attribute</a></li>
+<li><a href="#iframe-sandbox">iFrame <code>sandbox</code> attribute</a></li>
+<li><a href="#iframe-srcdoc">iFrame <code>srcdoc</code> attribute</a></li>
+<li><a href="#iframe-seamless">iFrame <code>seamless</code> attribute</a></li>
+<li><a href="#csp">Content Security Policy</a></li>
+</ul>
+<p><a name="style-scoped"></a></p>
+<h2>Style <code>scoped</code> attribute</h2>
+<h3>What is it?</h3>
+<ul>
+<li>The spec: <a href="http://www.w3.org/TR/html5/the-style-element.html#attr-style-scoped">http://www.w3.org/TR/html5/the-style-element.html#attr-style-scoped</a></li>
+<li>Support: Chrome 19, via flag<br>
+(<a href="http://peter.sh/2012/02/scoped-styles-deflated-websockets-and-the-vibration-api/">source</a>,<br>
+see also<br>
+<a href="http://en.wikipedia.org/wiki/Comparison_of_layout_engines_(HTML5)#Attributes">this section in the Wikipedia article comparing layout engines</a>)</li>
+</ul>
+<p>This is a method for limiting the effect of styling to the element it is<br>
+defined within. It is used like so:</p>
+<pre><code>&lt;div class="container"&gt;
+  &lt;style scoped&gt;
+    p { color: red; }
+  &lt;/style&gt;
+  &lt;p&gt;This paragraph has red text.&lt;p&gt;
+&lt;/div&gt;
+&lt;p&gt;This paragraph does not.&lt;/p&gt;
+</code></pre>
+<p>(<a href="https://gist.github.com/2868777">GitHub Gist</a>)</p>
+<p>In today’s (hoverboard-free) world, all the text in the example before would be<br>
+rendered in red. In the future, the “scoped” attribute on the <code>style</code> tag will<br>
+limit the effect of the tag to its siblings.</p>
+<h3>Why is it relevant?</h3>
+<p>Some applications may programmatically append <code>&lt;style&gt;</code> elements to the<br>
+publisher’s page. In these cases, there is a danger that the new rules<br>
+unintentionally affect publisher content. By utilizing the <code>scoped</code> attribute,<br>
+applications can prevent this unfortunate side-effect.</p>
+<h3>Recommendation</h3>
+<p>This functionality isn’t backwards compatible, so you’ll break pages on “old”<br>
+(by tomorrow’s standards) browsers. To use in production, a JavaScript<br>
+polyfill is completely necessary.</p>
+<p>I would normally endorse using the feature anyway (in order to reap the<br>
+benefits in supporting browsers). Unfortunately, in order to properly “opt in”<br>
+to this behavior, your code will need to do more than just declare the <code>scoped</code><br>
+attribute. Similar content in disparate locations will require duplicate style<br>
+elements. It seems somewhat unreasonable to implement such a large change for<br>
+the limited reward (avoiding an unlikely side-effect in some future browsers).</p>
+<p>All in all, I’d say, “Don’t bother.” Stick with namespacing your ID’s and class<br>
+names; for example, use <code>.widgetname-container</code> in place of simply <code>.container</code>.</p>
+<p><a name="iframe-sandbox"></a></p>
+<h2>iFrame <code>sandbox</code> attribute</h2>
+<h3>What is it?</h3>
+<ul>
+<li>The spec: <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#attr-iframe-sandbox">http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#attr-iframe-sandbox</a></li>
+<li>Support: IE10, Chrome 17+, Safari 5+<br>
+(<a href="http://caniuse.com/#feat=iframe-sandbox">source</a>)</li>
+</ul>
+<p>This attribute will enable fine-grained control over the capabilities of a<br>
+document housed within an iFrame. Simply declaring the <code>sandbox</code> property<br>
+(with no value) on an iFrame will prevent:</p>
+<ul>
+<li>the execution of any JavaScript included within</li>
+<li>the submission of any forms</li>
+<li>the creation of new browsing contexts</li>
+<li>the navigation of the top-level document</li>
+<li>access of other content from the same origin (by forcing the content’s origin<br>
+to a unique value)</li>
+</ul>
+<p>You may selectively grant privileges by setting the attribute’s value to one or<br>
+more (space-separated) of the following strings: <code>allow-scripts</code>,<br>
+<code>allow-forms</code>, <code>allow-popups</code>, <code>allow-top-navigation</code>, and <code>allow-same-origin</code>.</p>
+<h3>Why is it relevant?</h3>
+<p>The main benefit of this feature is security. How you understand (and<br>
+advertise) this benefit depends largely on how your application is distributed.</p>
+<p>If publishers include your application via an iFrame, they have control over<br>
+the <code>sandbox</code> attribute. This lets them more easily reason about the security<br>
+risks of including your application. For smaller third-parties (or larger<br>
+publishers) this will make adoption much easier.</p>
+<p>If publishers include your application via a <code>script</code> tag (admittedly far more<br>
+common), the benefit will be less apparent to the publisher. In these cases,<br>
+your script is still capable of doing any number of dumb things. But, as the<br>
+application developer, you can choose to include user-generated content in<br>
+<code>sandbox</code>‘d iFrames. This alleviates many vectors of attack from end users<br>
+(although, again, it says nothing about the security of your application<br>
+itself).</p>
+<h3>Recommendation</h3>
+<p>As of today, there is no substitute for sanitizing user input. Browser support<br>
+is not nearly high enough to consider this measure alone sufficient. That said,<br>
+defense in depth is an important aspect of any security strategy. If you your<br>
+app could benefit from the sandbox attribute, I’d say, “Go for it.” Newer<br>
+browsers will benefit from the feature, and old ones will be no worse off for<br>
+it.</p>
+<p><a name="iframe-srcdoc"></a></p>
+<h2>iFrame <code>srcdoc</code> attribute</h2>
+<h3>What is it?</h3>
+<ul>
+<li>The spec: <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#attr-iframe-srcdoc">http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#attr-iframe-srcdoc</a></li>
+<li>Support: No current browser (IE9, Chrome 18, Safari 5.1, FireFox 12, Opera<br>
+11.6), but<br>
+<a href="http://trac.webkit.org/changeset/113143a">implemented in WebKit</a> and<br>
+available in Chrome 20</li>
+</ul>
+<p>Years from now, we are using this method to declare the HTML content of<br>
+an iFrame. This will be accomplished by specifying the content as an attribute<br>
+of the iFrame itself:</p>
+<pre><code>&lt;iframe srcdoc="&lt;p&gt;Potentially-dangerous user content&lt;script&gt;alert('lol');&lt;/script&gt;&lt;/p&gt;"&gt;&lt;/iframe&gt;
+</code></pre>
+<h3>Why is it relevant?</h3>
+<p>By including HTML inside a “sourceless” iFrame (as opposed to emitting it in<br>
+the publisher’s document directly), you can prevent that content from breaking<br>
+the surrounding structure (imagine what user-generated content like <code>Hello,<br>
+world&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</code> could do to the rest of the page).<br>
+This makes sanitization easier. Instead of escaping HTML, potentially<br>
+white-listing certain tags (i.e. <code>&lt;b&gt;</code> and <code>&lt;i&gt;</code>), and ensuring that all open<br>
+tags are closed, you only have to escape the quotation mark character.</p>
+<p>This functionality in combination with the <code>sandbox</code> attribute will also make<br>
+preventing JavaScript-based shenanigans easier.</p>
+<h3>Recommendation</h3>
+<p>If you’re anything like me, you probably need a minute to recover from a<br>
+deep-seated nausea resulting from seeing markup in an attribute. Stick with me<br>
+for a minute–there’s a valid use case here: you have a string of<br>
+user-generated markup you’d like to display, and you want to associate it with<br>
+a specific iFrame element.</p>
+<p>The practicality of this approach lives and dies on browser support. Most<br>
+current browsers completely ignore this attribute, resulting in an unacceptable<br>
+experience. For this reason, I recommend holding off on using <code>srcdoc</code> for<br>
+now.</p>
+<p>If you want access to this functionality now, check out the following<br>
+polyfill, which leverages script-targeted URLs in unsupporting browsers:</p>
+<p><a href="https://github.com/jugglinmike/srcdoc-polyfill"><code>iFrame[srcdoc]</code> polyfill</a></p>
+<p><a name="iframe-seamless"></a></p>
+<h2>iFrame <code>seamless</code> property</h2>
+<h3>What is it?</h3>
+<ul>
+<li>The spec: <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#attr-iframe-seamless">http://www.whatwg.org/specs/web-apps/current-work/multipage/the-iframe-element.html#attr-iframe-seamless</a></li>
+<li>Support: No current browser (IE9, Chrome 18, Safari 5.1, FireFox 12, Opera<br>
+11.6), but functional in Chrome 21</li>
+</ul>
+<p>The <code>seamless</code> property is declared on an iFrame like so:</p>
+<pre><code>&lt;iframe src="https://bocoup.com" seamless&gt;&lt;/iframe&gt;
+</code></pre>
+<p>It instructs modern browsers to treat the iFrame’s content more like inline<br>
+markup than it would otherwise. Specifically, this means:</p>
+<ul>
+<li>Hyperlinks navigate the parent context</li>
+<li>The parent’s stylesheets cascade in (importantly, the inverse is <em>not</em> true)</li>
+<li>More “neutral” rendering, ie: <code>scrolling="no" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0"</code></li>
+</ul>
+<h3>Why is it relevant?</h3>
+<p>The <code>seamless</code> property will allow you to deliver a more intuitive experience<br>
+to your users because links function as they’d expect. Furthermore, it will<br>
+allow you to inherit the publisher’s styling, making a more natural<br>
+integration possible.</p>
+<h3>Recommendation</h3>
+<p>This feature shares many of the benefits of the proposed <code>scope</code> attribute for<br>
+<code>&lt;style&gt;</code> tags, but won’t break publishers’ pages in older browsers. This is<br>
+not to say it is backwards compatible <em>per se</em>: older browsers will not cascade<br>
+the publisher’s stylesheets into your iFrames. Keep it on the radar, but it may<br>
+be best to wait for the time being.</p>
+<p><a name="csp"></a></p>
+<h2>Content-Security Policy</h2>
+<h3>What is it</h3>
+<ul>
+<li>The spec: <a href="http://dvcs.w3.org/hg/content-security-policy/raw-file/tip/csp-specification.dev.html">http://dvcs.w3.org/hg/content-security-policy/raw-file/tip/csp-specification.dev.html</a></li>
+<li>Support: Chrome 16+, FireFox 11+ (incomplete) (tested with the<br>
+<a href="http://erlend.oftedal.no/blog/csp/readiness/">CSP Readiness suite</a><br>
+by <a href="http://erlend.oftedal.no/blog/">Erlend</a>)</li>
+</ul>
+<p>I saw strange and wonderful things on my trip the future. Jet packs. Astronaut<br>
+food. Dogs and cats living together. Content-Security Policy easily stands out<br>
+as the most important.</p>
+<p>At a high level, Content-Security Policy is a method for specifying from where<br>
+remote content may be included in a document. It is specified before the<br>
+document is first rendered–either by a new HTTP header:</p>
+<pre><code>Header: `Content-Security-Policy`
+</code></pre>
+<p>…or a <code>&lt;meta&gt;</code> tag in the document head:</p>
+<pre><code>&lt;meta http-equiv="content-security-policy"&gt;&lt;/meta&gt;
+</code></pre>
+<p>Upon receiving this information, compliant browsers will ignore all resources<br>
+not explicitly white-listed.</p>
+<p>The white-list is largely specified on a per-domain basis, but CSP supports<br>
+keywords as well: <code>'self'</code> (same origin as website), <code>'none'</code> (disallow all<br>
+sources), <code>'unsafe-inline'</code> (inline script and/or style tags, <code>'unsafe-eval'</code><br>
+(runtime code evaluation via <code>eval</code>, <code>setTimeout</code>, <code>setInterval</code>, and<br>
+<code>Function</code>).</p>
+<p>Back-end devs will definitely want to read up on the spec concerning<br>
+implementation details.</p>
+<h3>Why is it relevant?</h3>
+<p>In general, CSP will give publishers a method to prevent a broad range of<br>
+Cross-Site Scripting (XSS) attacks. (The developers at Twitter have written<br>
+about their early impressions implementing this technology <a href="http://engineering.twitter.com/2011/03/improving-browser-security-with-csp.html" title="Improving Browser Security with CSP">here</a>.)</p>
+<p>This is of particular interest to third-party application developers because<br>
+we largely traffic in cross-site scripting patterns.</p>
+<p>If your application displays user-generated content (a comment system, for<br>
+example), and users may inline images (or any resource for that matter), you<br>
+will need to host the images yourself. This is because publishers may disallow<br>
+resources from arbitrary locations on their pages.</p>
+<p>Bookmarklets will also be affected. The spec is very clear that bookmarklets<br>
+themselves should not be subject to a document’s CSP. This is a good thing,<br>
+because we all love bookmarklets, and constraining them in this way would<br>
+likely kill them. It’s not all fun-and-games, though. Many bookmarklets rely on<br>
+injecting img and script tags into the document. For example,<br>
+<a href="http://www.cornify.com/">the Cornify bookmarklet</a> injects two scripts and an<br>
+image from the <code>cornify.com</code> domain:</p>
+<p><img decoding="async" src="https://static.bocoup.com/blog/3pjs-future-cornify.jpg" alt="bocoup.com, Cornify'd" title="bocoup.com, Cornify'd"></p>
+<p>This behavior will no longer be generally achievable on all websites as more<br>
+and more pages disallow willy-nilly image and script loading.</p>
+<p>Most of these restrictions translate to more work for the 3PJS developer. There<br>
+is one security benefit that we get for free, though: our applications will no<br>
+longer be tools for DDoS attacks.</p>
+<p>Consider the following line of code:</p>
+<pre><code>new Image().src = "http://zombo.com?" + new Date().getTime();
+</code></pre>
+<p>If an attacker managed to sneak this into your app, then every user across all<br>
+publisher sites would make that request with every page load. When more<br>
+publishers enforce a Content-Security policy, most of these requests will not<br>
+be issued in the first place.</p>
+<p>Admittedly, I have yet to hear of this attack actually being carried out. But<br>
+it’s nice to know that 3PJS developers can claim some benefit (however<br>
+inconsequential) from CSP.</p>
+<h3>Recommendation</h3>
+<p>As publishers begin implementing this security feature, they are going to<br>
+expect a rigorous list of domains required by your application. You’ll need to<br>
+inspect your application and note exactly from where it loads resources. There<br>
+are two ways to do this: bottom-up and top-down.</p>
+<p>First off, you’ll want to audit your code base and create a list of the domains<br>
+that external resources are loaded from.</p>
+<p>Next, if you do not already run a “dummy” publisher site for in-house<br>
+development, get to work! (The utility of such a staging environment merits a<br>
+dedicated article, this is just one use.) Activate CSP on that site, and use<br>
+its <a href="http://dvcs.w3.org/hg/content-security-policy/raw-file/tip/csp-specification.dev.html#content-security-policy-report-only-header-field">built-in “reporting” functionality</a><br>
+to help identify possible oversights in your initial investigation.</p>
+<p>During this auditing process, keep an eye out for inline resources (JavaScript,<br>
+CSS, etc.) and “eval-like” patterns (described by the spec<br>
+<a href="http://dvcs.w3.org/hg/content-security-policy/raw-file/tip/csp-specification.dev.html#script-src">in this section</a><br>
+). You will be hard-pressed to convince some publishers to whitelist<br>
+<code>'unsafe-inline'</code> and <code>'unsafe-eval'</code> just to get your application running. In<br>
+this way, you can view following best practices as having direct business<br>
+value. (It’s true that in some cases, inline scripts are the most efficient way<br>
+to get things done. For what it’s worth, I personally believe that tradeoffs<br>
+between speed and security are rarely relevant in front-end development. This<br>
+is a sign that CSP is making the web a stronger platform overall.)</p>
+<p>After your audit is complete, you should update the documentation you<br>
+distribute to publishers. While it’s generally in your interest to write these<br>
+rules as strictly as possible, you can easily paint yourself into a corner. Try<br>
+to recognize the areas you may need to grow (for example, future subdomains),<br>
+as there will always be friction in getting publishers to change their<br>
+policies.</p>
+<h2>The Future is Cool</h2>
+<p>The novelty and promise of Third-Party JavaScript are clearly reflected in<br>
+these far-reaching changes that I witnessed while time travelling. Like with<br>
+any browser tech, there is a bit of a waiting game we have to play while<br>
+support catches up. Nevertheless, I feel that it’s in your best interest to<br>
+have a general idea of the up-and-coming technology.</p>
+<p>This is certainly not to say I’ve addressed it all. I welcome any insight into<br>
+other developing standards that I may have overlooked. If you know of any,<br>
+please share in the comments!</p>
+<p>Hopefully I have not created any temporal paradoxes by telling you all this.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/padding-time-series-with-r/" rel="prev">Padding a Time Series in R</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-arduino-slide-controlling-servo-tutorial/" rel="next">JavaScript: Arduino Slide Controlling a Servo Tutorial</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/third-party-javascript-development-future/ -->
+  
+
+</body></html>

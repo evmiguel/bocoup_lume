@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementing the Google Contacts AuthSub flow with jQuery</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Implementing the Google Contacts AuthSub flow with jQuery</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><a href="http://code.google.com/apis/gdata/docs/auth/authsub.html">Google AuthSub</a> follows a common <a href="http://oauth.net/">oAuth</a> style handshake flow. Unfortunately, it is not immediately clear how to implement this flow with the <a href="http://code.google.com/apis/gdata/docs/js-authsub.html">AuthSub GData JavaScript Library</a> using their documentation examples or the library’s API.</p>
+<p>I recently implemented the flow for a <a href="https://google.com/contacts">Google Contacts</a> viewer that we are working on here at Bocoup, and thought I would share the boilerplate I came up with.</p>
+<p>In the boilerplate below, I am specifically focusing on authenticating users with <a href="http://code.google.com/apis/accounts/docs/AuthSub.html">AuthSub Gdata Library</a> and getting their Google Contacts data using the <a href="http://code.google.com/apis/contacts/docs/1.0/developers_guide_js.html">Google Contacts GData JavaScript API</a>.</p>
+<p>You can <a href="https://gist.github.com/gists/1014926/download">download the full code here</a> to get started. <strong>Note:</strong> this code needs to be served by HTTPS. I’ll work on getting a live demo up.</p>
+<h2>The JavaScript Code:</h2>
+<p>The JavaScript code below creates <code>login</code>, <code>logout</code>, and <code>getContacts</code> buttons which allow the user to AuthSub into Google, grant access to their Google contacts to the current domain, get their contacts, and revoke access to the current domain. Read through the inline comments in the JavaScript code to see how everything works.</p>
+<p class="snippet caption">google-contacts-authsub.js</p>
+<pre><code class="js hljs language-javascript">    <span class="hljs-comment">// Load in the gdata library</span>
+    <span class="hljs-comment">// This page must be served over HTTPS to work</span>
+    google.<span class="hljs-title function_">load</span>( <span class="hljs-string">'gdata'</span>, <span class="hljs-string">'1.x'</span> );
+
+    <span class="hljs-comment">// Wait for the document to be ready</span>
+    $(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+      <span class="hljs-comment">// Define a controls object with</span>
+      <span class="hljs-comment">// properties for each control in the demo: login, logout and getcontacts.</span>
+      <span class="hljs-comment">// Controls will be iterated over, and &lt;buttons&gt; will be added to the</span>
+      <span class="hljs-comment">// DOM for each control</span>
+      <span class="hljs-keyword">var</span> controls = {
+        <span class="hljs-attr">login</span>: {
+          <span class="hljs-attr">label</span>: <span class="hljs-string">'Login to google'</span>,
+          <span class="hljs-attr">action</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+            <span class="hljs-comment">// Google authSub login code scoped to the google gdata contacts feeds api</span>
+            <span class="hljs-comment">// When the user is brought to google to grant grant your app permission</span>
+            <span class="hljs-comment">// it will say you are requesting contacts data based on this scope.</span>
+            <span class="hljs-comment">// If the user grants permission to use their data, a two year cookie</span>
+            <span class="hljs-comment">// will be set on the current domain.</span>
+            google.<span class="hljs-property">accounts</span>.<span class="hljs-property">user</span>.<span class="hljs-title function_">login</span>(<span class="hljs-string">'https://www.google.com/m8/feeds'</span>);
+          }
+        },
+        <span class="hljs-attr">logout</span>: {
+          <span class="hljs-attr">label</span>: <span class="hljs-string">'Logout from google'</span>,
+          <span class="hljs-attr">action</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+            <span class="hljs-comment">// log user out from google authSub to your app by deleting the</span>
+            <span class="hljs-comment">// authSub cookie</span>
+            google.<span class="hljs-property">accounts</span>.<span class="hljs-property">user</span>.<span class="hljs-title function_">logout</span>();
+          }
+        },
+        <span class="hljs-attr">getContacts</span>: {
+          <span class="hljs-attr">label</span>: <span class="hljs-string">'Get contacts'</span>,
+          <span class="hljs-attr">action</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+            <span class="hljs-comment">// instantiate google gdata contacts api,</span>
+            <span class="hljs-comment">// and call the gdata list all contacts code</span>
+            <span class="hljs-comment">// Note: user must be logged in for this to work</span>
+
+            <span class="hljs-comment">// Instantiate a new ContactsService which we will use to</span>
+            <span class="hljs-comment">// request the users contacts</span>
+            <span class="hljs-keyword">var</span> contactsService = <span class="hljs-keyword">new</span> google.<span class="hljs-property">gdata</span>.<span class="hljs-property">contacts</span>.<span class="hljs-title class_">ContactsService</span>( <span class="hljs-string">'Contacts Viewer'</span> ),
+                <span class="hljs-comment">// Create a query for the full contacts list</span>
+                query = <span class="hljs-keyword">new</span> google.<span class="hljs-property">gdata</span>.<span class="hljs-property">contacts</span>.<span class="hljs-title class_">ContactQuery</span>( <span class="hljs-string">'https://www.google.com/m8/feeds/contacts/default/full'</span> );
+
+            <span class="hljs-comment">// Limit the query to the number of results in the numContacts</span>
+            <span class="hljs-comment">// input (25 by default)</span>
+            query.<span class="hljs-title function_">setMaxResults</span>( $(<span class="hljs-string">'#numContacts'</span>).<span class="hljs-title function_">val</span>() );
+
+            <span class="hljs-comment">// Request the contacts feed with</span>
+            <span class="hljs-comment">// getContactFeed( query, successCallback, errorCallback )</span>
+            contactsService.<span class="hljs-title function_">getContactFeed</span>(
+              <span class="hljs-comment">// query</span>
+              query,
+
+              <span class="hljs-comment">// successCallback</span>
+              <span class="hljs-keyword">function</span>(<span class="hljs-params"> result </span>){
+                <span class="hljs-comment">// Destroy existing contactsHolder if it already exists</span>
+                $(<span class="hljs-string">'#contacts'</span>).<span class="hljs-title function_">remove</span>();
+
+                <span class="hljs-comment">// Create &lt;ul&gt; to store our contacts in before we</span>
+                <span class="hljs-comment">// append them to the DOM</span>
+                <span class="hljs-keyword">var</span> $contactsHolder = $(<span class="hljs-string">'&lt;ul&gt;'</span>, {
+                      <span class="hljs-attr">id</span>: <span class="hljs-string">'contacts'</span>
+                    });
+
+                <span class="hljs-comment">// Iterate over the entries that came back</span>
+                $.<span class="hljs-title function_">each</span>( result.<span class="hljs-property">feed</span>.<span class="hljs-property">entry</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> i, entry </span>){
+                  <span class="hljs-comment">// Call getEmailAddresses() on each entry, and iterate</span>
+                  $.<span class="hljs-title function_">each</span>( entry.<span class="hljs-title function_">getEmailAddresses</span>(), <span class="hljs-keyword">function</span>(<span class="hljs-params"> j, address </span>){
+                    <span class="hljs-comment">// Append each address to the off DOM &lt;ul&gt; we made</span>
+                    $contactsHolder.<span class="hljs-title function_">append</span>( <span class="hljs-string">'&lt;li&gt;'</span> + address.<span class="hljs-property">address</span> + <span class="hljs-string">'&lt;/li&gt;'</span> );
+                  });
+                });
+
+                <span class="hljs-comment">// Add the contacts list to the DOM</span>
+                $contactsHolder.<span class="hljs-title function_">appendTo</span>( <span class="hljs-string">'body'</span>);
+              },
+
+              <span class="hljs-comment">// errorCallback</span>
+              <span class="hljs-keyword">function</span>(<span class="hljs-params"> result </span>){
+                <span class="hljs-comment">// Log the error</span>
+                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'error: '</span>, result);
+              }
+            );
+          }
+        }
+      };
+
+      <span class="hljs-comment">// Iterate over the controls and add them to the DOM</span>
+      $.<span class="hljs-title function_">each</span>( controls, <span class="hljs-keyword">function</span>(<span class="hljs-params"> propertyName, control </span>){
+        $( <span class="hljs-string">'&lt;button&gt;'</span>, {
+          <span class="hljs-attr">html</span>: control.<span class="hljs-property">label</span>,
+          <span class="hljs-attr">id</span>: propertyName
+        })
+        .<span class="hljs-title function_">appendTo</span>( <span class="hljs-string">'nav'</span> );
+      });
+
+      <span class="hljs-comment">// Delegate click handlers to all buttons in our &lt;nav&gt; element.</span>
+      $( <span class="hljs-string">'nav'</span> ).<span class="hljs-title function_">delegate</span>(<span class="hljs-string">'button'</span>, <span class="hljs-string">'click'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+        <span class="hljs-comment">// Since we gave an id to each button name based on it's property name</span>
+        <span class="hljs-comment">// in the controls object, we can use that use that id to dereference the</span>
+        <span class="hljs-comment">// correct controls property and call it's action method</span>
+        controls[ <span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span> ].<span class="hljs-title function_">action</span>();
+      })
+    });
+</code></pre>
+<h2>The HTML Document:</h2>
+<p>And here is a look at the HTML document that the above JavaScript initializes on:</p>
+<p class="snippet caption">google-contacts-authsub.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://code.jquery.com/jquery.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://google.com/jsapi"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"google-contacts-authsub.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- Google requires an image to be on the page --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://localhost/img/1px.png"</span>&gt;</span>
+
+  <span class="hljs-comment">&lt;!-- Input to be used for deciding how many contacts to fetch --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"numContacts"</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">"number of contacts"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span>&gt;</span>
+
+  <span class="hljs-comment">&lt;!-- Container to be filled with buttons by our JavaScript Code --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">nav</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">nav</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/welcome-irene-ros/" rel="prev">Welcome Irene Ros</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-eventsource-is-long-polling/" rel="next">JavaScript: EventSource is Long Polling</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/implementing-the-google-contacts-authsub-flow-with-jquery/ -->
+  
+
+</body></html>

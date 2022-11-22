@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ringmark Tests Open Source</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Ringmark Tests Open Source</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/mobile/" class="tag">mobile</a>
+    
+      <a href="/bocoup_lume/tags/testing/" class="tag">testing</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I am really excited that the tests powering <a href="http://rng.io">Ringmark</a> have been pushed up to <a href="https://github.com/facebook/coremob-tests">Facebook’s fork</a> of <a href="https://github.com/coremob/coremob-tests">coremob/coremob-tests</a> repo on GitHub. Read more about it on <a href="https://developers.facebook.com/html5/blog/post/2012/04/03/ringmark-is-now-open-source">Facebook’s dev blog</a>.</p>
+<p>We think that unit test authoring will be a great way for web developers to engage in the standards process, and so we are looking forward to seeing new tests from the community.</p>
+<p>When we <a href="https://bocoup.com/weblog/ringmark-launch/">kicked off this project with Facebook</a>, we were presented with the challenge of authoring modular, well-formed and practical tests against the existing <a href="https://github.com/jgraham/testharness.js">W3C JavaScript Testharness</a>.</p>
+<p>In order to overcome the challenges presented by testharness.js, <a href="http://twitter.com/rwaldron">Rick</a> and <a href="http://twitter.com/ajpiano">Adam</a> wrote a shim that encourages all tests to be written through a single <code>assert()</code> function, which maps to the basic assert function in a given test runner.</p>
+<p>Using a single assertion interface enables us to develop tests using our preferred JavaScript tool chain and best practices; while allowing for the flexibility to build the tests into static files running testharness.js.</p>
+<p>This process exposed us to a number of issues with the W3C testing system, and the way that testing is managed at the W3C. Testharness.js is undocumented, has inconsistent API signatures, inconsistent function naming conventions, and broken implementations of deep equals and async test. What’s more, working groups currently write and approve tests in silos, taking disparate approaches to code style, organization and testing helpers. This makes it so we can’t run cross working group test suites.</p>
+<p>At Bocoup, we strive for a high standard of code quality. At the same time, we realize the importance of working within the testing paradigm that has formed at the W3C to expedite the adoption of our tests. That’s why the tests we pushed up to GitHub run on testharness.js.</p>
+<p>Keep in mind, however, that all the tests are still using a single <code>assert()</code> function, making these tests easily portable to other systems, both now and in the future. So if you write your tests using the <code>assert()</code> shim, your tests will be more portable, and more futureproof.</p>
+<p>We built some great tools that simplified test authoring and iteration. We’ll be working to open source them, and make them part of the standard W3C Open Web platform testing workflow.</p>
+<p>In the meantime, we encourage the community to join us in authoring new tests for the Coremob Community Group, the tests that power <a href="http://rng.io">Ringmark</a>. Go ahead and fork <a href="https://github.com/coremob/coremob-tests">coremob/coremob-tests</a>, write new tests using the <code>assert()</code> API and file pull requests. Take a look at the tests we wrote on <a href="https://github.com/facebook/coremob-tests/tree/master/tests">facebook/coremob-tests</a> for reference.</p>
+<p>We believe that the tools and workflow we’ve developed, and the testing principles that we employed as a part of building <a href="http://rng.io">Ringmark</a> are the way testing should be done at the W3C. We’ll be working closely with Facebook and the W3C over the coming months and years to improve testharness.js, and to ratify new approaches to managing testing at the W3C.</p>
+<p>We are deeply committed to moving the Open Web forward. Here’s to the future of a well-tested Open Web platform!</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/3pjs-css-delivery/" rel="prev">Third-Party JavaScript Development: Optimizing CSS Delivery</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/build-new-games-launch/" rel="next">Build New Games Launch</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/ringmark-tests-open-source/ -->
+  
+
+</body></html>

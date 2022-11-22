@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS SVG-Filters Elem.style &amp;#038; xlink:href=&amp;#8221;url(#id)&amp;#8221; #fail</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">CSS SVG-Filters Elem.style &amp;#038; xlink:href=&amp;#8221;url(#id)&amp;#8221; #fail</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/design/" class="tag">design</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I have been playing around with SVG Filters a lot over the last few weeks and I have to say that the SVG Filters are a) <b>really freekin’ cool</b> and b) <b>powerful in ways yet undiscovered</b>. When these things land cross-browser, it will really polish off the modern web-app paradigm, adding a level of depth to applications that are usually only seen in computer games and higher-end computer applications.</p>
+<p><b>Such as:</b> bloom/glow effects pioneered by RFC movies like Tron<br>
+<img decoding="async" src="https://static.bocoup.com/blog/css-svg-tron1.jpg" alt="Tron is Baddass, obviously."></p>
+<p>Paul Irish and Boaz Sender alerted me to the awesomeness that is SVG Filters after an SVG hack weekend with the W3C at the Microsoft Research Center in Boston. Paul wrote a great demonstration of how CSS can be used to apply SVG Filters to a <code>&lt;video&gt;</code> element. If your browser kicks ass (probably Firefox 3.7+), you should totally check this out: <a href="http://paulirish.com/2010/svg-filters-on-html5-video/">http://paulirish.com/2010/svg-filters-on-html5-video/</a></p>
+<h2>Hackety Hack</h2>
+<p>I hacked together a quick demo to show off some of the 3D Canvas + SVG Filters + Audio at JSConf last week and I came up with a prototype for a Web-Based <a href="http://en.wikipedia.org/wiki/VJ_%28video_performance_artist%29">VJing</a> platform. It’s called VIJAX and uses Processing.js to load visualizations that can be played back and interacted with in real-time and overlaid using Photoshop style filters like: “screen” and “multiply”. You can also apply JavaScript beat-detection to the visualization by hijacking the direct audio stream from an <code>&lt;audio&gt;</code> element.</p>
+<p><img decoding="async" src="https://static.bocoup.com/blog/audio-video-svg-canvas-workshop.png" title="audio-video-svg-canvas-workshop" alt="audio-video-svg-canvas-workshop"></p>
+<p>If you’re down with the <a href="http://ftp.mozilla.org/pub/mozilla.org/firefox/nightly/latest-trunk/">Fox.next</a>, feel free to play-with/steal-and-patent the code: <a href="https://code.bocoup.com/processing-js/vijax/vijax.xhtml">http://code.bocoup.com/processing-js/vijax/vijax.xhtml</a><br <b="">BTW: The <code>&lt;audio&gt;</code> beat detection will not work unless you have the Processing.js Team’s build of Firefox, which you can get at: <a href="https://wiki.mozilla.org/Audio_Data_API">Mozilla’s Audio Data API</a> page. If you have problems with this build, please /join <a href="irc://irc.mozilla.org/processing.js">#processing.js</a> on irc.mozilla.org and ask for Humph, Corban, F1LT3R or NotMasterYet: who can help get you up and running on your OS of choice.</p>
+<h2>Back To The Filters</h2>
+<p>The usual by-product of awesome-source is the discovery of glitches in the matrix. I found a couple of holes in the SVG Filter tapestry, which will hopefully be woven tighter in an not-too-distant iteration of SVG (hopefully before SVG 1.1 has passed us by). The first issue is <b>elem.style</b>. There does not seem to be any correlation between the CSSStyleObject and the DOM element’s style object. EG: To use an SVG Filter with CSS you would do something like this:</p>
+<pre lang="css">#blurMe{filter:url(#blur);}
+</pre>
+<p>You would then expect to be able to switch this behavior off with the following code in JavaScript:</p>
+<pre lang="javascript">document.getElementById('#blurMe').style.filter = null;
+</pre>
+<p>Alas this is not the case. The style object seems completely void of access to CSS3s SVG filter properties. From a JavaScript web-app developer’s perspective, that’s a huge black hole in the document cosmos. Leaving developers forced to use the following method and all the mess it entails:</p>
+<pre lang="javascript">document.getElementById('#blurMe').setAttribute('style', '' );
+</pre>
+<p>Here’s an example page demonstrating the issue: <a href="https://code.bocoup.com/svg/SVG-filters-dont-INIT-from-JS/index.xhtml">SVG Filters In-Accessible from  Elem.style</a></p>
+<h2>Elemental Inflexibility</h2>
+<p>The other <i>gotcha</i> I stumbled across with SVG Filters was the in-ability to use multiple DOM elements as sources in one SVG Filter. For example: if we wanted to rebuild Adobe Photoshop in the browser, or even Flash… we would need to come up with a fast way of applying <a href="http://www.zvon.org/xxl/svgReference/Output/el_feBlend.html">feBlend SVG Filters</a> to layers upon layers of images: or DOM elements.</p>
+<p>Currently: an SVG filter can only use a single DOM element as a “SourceGraphic”. This super-inflexibility is very frustrating and the hack-around I came up with to use <i>multiple-DOM-element-backgrounds, as SourceGraphics in an feBlend-stack</i> (similar to Photoshop’s “Layers Window”) is a) uglier than <a href="http://i55.photobucket.com/albums/g129/hklbryhd/ugly-girl.jpg">this</a> and b) computationally expensive to the nth degree.</p>
+<p>If you want to blend multiple images with SVG filters today, you can do this:</p>
+<pre><code>&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;filter id="srcLoadedOverlay"&gt;
+      &lt;feImage xlink:href="no1.png" result="img1"&gt;
+      &lt;feImage xlink:href="no2.png" result="img2"&gt;
+      &lt;feImage xlink:href="no3.png" result="img3"&gt;
+      &lt;feBlend in="img1" in2="img2" result="blend1" mode="multiply"&gt;
+      &lt;feBlend in="blend1" in2="img3" mode="lighten"&gt;
+    &lt;/filter&gt;
+  &lt;/defs&gt;
+&lt;/svg&gt;
+</code></pre>
+<p>This loads images into the SVG DOM and applies the appropriate blend. All good. Except… what if I want to replace images with dynamic DOM elements like animated Canvases from the good-old-fashioned HTML DOM? One might imagine doing something along these lines:</p>
+<pre><code>&lt;svg version="1.1" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;filter id="srcLoadedOverlay"&gt;
+      &lt;feImage xlink:href="url(#canvas0)" result="img1"&gt;
+      &lt;feImage xlink:href="url(#canvas1)" result="img2"&gt;
+      &lt;feImage xlink:href="url(#canvas2)" result="img3"&gt;
+      &lt;feBlend in="img1" in2="img2" result="blend1" mode="multiply"&gt;
+      &lt;feBlend in="blend1" in2="img3" mode="lighten"&gt;
+    &lt;/filter&gt;
+  &lt;/defs&gt;
+&lt;/svg&gt;
+</code></pre>
+<p>Alas: this is impossible, leading to the inevitably ugly combination of CSS, SVG &amp; XHTML…</p>
+<pre><code>&lt;div style="width:100px;height:100px;overflow:hidden;"&gt;
+  &lt;canvas id="canvas0" style="left:0px;top:0px;position:absolute;"&gt;&lt;/canvas&gt;
+  &lt;div style="left:-200px;top:-200px;  filter:url(#domLoadedOverlay);  width:300px;height:300px;border:1px solid black;position:relative;"&gt;
+    &lt;canvas id="canvas1" style="left:100px;top:100px;position:absolute;"&gt;&lt;/canvas&gt;
+    &lt;canvas id="canvas2" style="left:200px;top:200px;position:absolute;"&gt;&lt;/canvas&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;filter id="domLoadedOverlay"&gt;
+  &lt;feOffset dx="100" dy="100" result="origin1"&gt;
+  &lt;feBlend in="origin1" in2="SourceGraphic" mode="multiply"&gt;
+  &lt;feOffset dx="100" dy="100" result="origin2"&gt;
+  &lt;feBlend in="origin2" in2="SourceGraphic" mode="lighten"&gt;
+&lt;/filter&gt;
+</code></pre>
+<p>This work-around creates a floating div containing the elements to be blended, that is locked into a container with overflow:none. The sources are then laid out diagonally and filtered in succession. Now these elements are technically in the same DOM element, and can be filtered together. However, this uses a HUGE area to calculate the result, which is <i>so</i> just not cloud.</p>
+<p>If you want to blend 2 elements of 100px x 100px, you are effectively squaring the area and then multiplying that size by the number of feBlends. That’s somewhere in the order of 80,000 pixels being processed to provide you with a 10,000 pixel image. <em>NOT GOOD PEOPLE!</em> This should be more in the order of 20,000 pixels. Apply that logic to a 10 layer animation and you are processing 1<sup>Mil.</sup> pixels to get a return of 10,000 pixels, where a 100<sup>Thou.</sup> pixel calculation should suffice.</p>
+<p>I should point out that I have no idea how many operations are actually involved when blending one layer with another, but the fact remains, if you square the size of anything before you process it, you are going to make a big performance payment.</p>
+<p>If you want to see this work-around in action, check out the following source: <a href="https://code.bocoup.com/svg/SVG-DOM-feBlend-issue/index.xhtml">SVG Dynamic DOM Source Issue</a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/web-audio-all-aboard/" rel="prev">Web Audio – All Aboard!</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/publishsubscribe-with-jquery-custom-events/" rel="next">Publish/Subscribe with jQuery Custom Events</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/css-svg-filters-unaccessible-from-elem-style-xlink-href/ -->
+  
+
+</body></html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: jQuery Bug Fixing Guide</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: jQuery Bug Fixing Guide</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/open source/" class="tag">open source</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <blockquote>
+<p>This article describes processes and policies that are no longer in use. It’s preserved in its entirety for historic record only.</p>
+</blockquote>
+<p>If you’ve ever been interested in contributing to jQuery, but simply had no idea how to get started, I’ve created the following jQuery Bug Fixing Guide to walk through the steps of fixing bugs and contributing your fixes to the jQuery core. If bug fixing is not your thing, don’t worry, all of these tips apply to new features and enhancements as well! This guide was originally published on the <a href="http://blog.jquery.com/2010/11/23/team-spotlight-the-jquery-bug-triage-team/">jQuery Blog</a>.</p>
+<p>So what are you waiting for?</p>
+<p class="snippet caption">jquery-patching-tips.sh</p>
+<pre><code class="sh hljs language-bash"><span class="hljs-comment"># Tips for jQuery Bug Patching</span>
+
+<span class="hljs-comment"># There are some assumptions made here, one being that you're</span>
+<span class="hljs-comment"># set up with some form of "localhost" http server and that it's running.</span>
+<span class="hljs-comment">#  - http://www.mamp.info/en/mamp/</span>
+<span class="hljs-comment">#  - sudo apt-get install apache2</span>
+
+<span class="hljs-comment"># Get it running:</span>
+<span class="hljs-comment"># On Mac:</span>
+
+  $ python -m SimpleHTTPServer
+
+<span class="hljs-comment"># On Linux:</span>
+
+  $ sudo /etc/init.d/apache2 start
+
+<span class="hljs-comment"># Remy Sharp has a created a useful node based web server for use wherever node.js is available:</span>
+
+  https://github.com/remy/servedir
+
+
+<span class="hljs-comment"># If you do not have git installed, check these out:</span>
+<span class="hljs-comment">#  - http://help.github.com/mac-git-installation/</span>
+<span class="hljs-comment">#  - http://help.github.com/linux-git-installation/</span>
+
+
+<span class="hljs-comment"># NEW!</span>
+<span class="hljs-comment"># If you do not have NodeJS installed please download the</span>
+<span class="hljs-comment"># code and follow the build instructions on your system:</span>
+
+<span class="hljs-comment">#  - http://nodejs.org/#download</span>
+<span class="hljs-comment">#  - http://nodejs.org/#build</span>
+<span class="hljs-comment">#</span>
+<span class="hljs-comment"># Specifically you'll probably end up doing something like this:</span>
+
+
+  $ git <span class="hljs-built_in">clone</span> https://github.com/joyent/node.git
+
+  $ <span class="hljs-built_in">cd</span> node
+
+  $ ./configure
+
+  $ make
+
+  $ sudo make install
+
+<span class="hljs-comment"># With homebrew on OSX, you can also:</span>
+
+  $ brew install node
+
+<span class="hljs-comment"># Create a fork of the jQuery repo on github at http://github.com/jquery/jquery</span>
+
+
+<span class="hljs-comment"># Change directory to your web root directory, whatever that might be:</span>
+
+  $ <span class="hljs-built_in">cd</span> /path/to/your/www/root/
+
+<span class="hljs-comment"># Clone your jQuery fork to work locally</span>
+
+  $ git <span class="hljs-built_in">clone</span> git@github.com:username/jquery.git
+
+<span class="hljs-comment"># Change directory to the newly created dir jquery/</span>
+
+  $ <span class="hljs-built_in">cd</span> jquery
+
+<span class="hljs-comment"># Add the jQuery master as a remote, I label mine "upstream"</span>
+
+  $ git remote add upstream git://github.com/jquery/jquery.git
+
+<span class="hljs-comment"># Get in the habit of pulling in the "upstream" master to stay</span>
+<span class="hljs-comment"># up to date as jQuery receives new commits</span>
+
+  $ git pull upstream master
+
+<span class="hljs-comment"># Build the jQuery source</span>
+
+  $ make
+
+<span class="hljs-comment"># I like to run "make clean" before any bug fixing sessions</span>
+<span class="hljs-comment"># This ensures that you're running the most recent Sizzle and QUnit</span>
+
+
+<span class="hljs-comment"># Open the jQuery test suite in a browser (I use Google Chrome,</span>
+<span class="hljs-comment"># change this to your preferred browser).</span>
+
+
+  <span class="hljs-comment"># Linux</span>
+  $ google-chrome http://localhost/jquery/test
+
+  <span class="hljs-comment"># Mac</span>
+  $ open http://localhost/jquery/test
+
+
+<span class="hljs-comment"># Success! You just built and tested jQuery!</span>
+
+
+
+
+<span class="hljs-comment"># Fixing a bug from a ticket filed at bugs.jquery.com:</span>
+
+
+<span class="hljs-comment"># NEVER write your patches to the master branch - it gets messy (I say this from experience!)</span>
+<span class="hljs-comment">#</span>
+<span class="hljs-comment"># ALWAYS USE A "TOPIC" BRANCH! Like so...</span>
+<span class="hljs-comment">#</span>
+<span class="hljs-comment"># #### = the ticket #</span>
+
+<span class="hljs-comment"># Make sure you start with your up-to-date master</span>
+
+  $ git checkout master
+
+<span class="hljs-comment"># Create and checkout a new branch that includes the ticket #</span>
+
+  $ git checkout -b bug_<span class="hljs-comment">####</span>
+
+  <span class="hljs-comment"># ( Explanation: this useful command will:</span>
+  <span class="hljs-comment"># "checkout" a "-b" (branch) by the name of "bug_####"</span>
+  <span class="hljs-comment"># or create it if it doesn't exist )</span>
+
+
+<span class="hljs-comment"># Now you're on branch: bug_####</span>
+
+<span class="hljs-comment"># Open up files and make changes</span>
+
+<span class="hljs-comment"># Open up the corresponding /test/unit/?????.js and add unit tests</span>
+
+<span class="hljs-comment"># Run http://localhost/jquery/test --&gt; ALL TESTS MUST PASS **</span>
+
+<span class="hljs-comment"># Once you're satisfied with your patch...</span>
+
+<span class="hljs-comment"># Stage the files to be tracked:</span>
+
+
+  $ git add filename
+
+  <span class="hljs-comment"># (you can use "git status" to list the files you've changed)</span>
+
+
+<span class="hljs-comment"># ( I recommend NEVER, EVER using "git add . " )</span>
+
+<span class="hljs-comment"># Once you've staged all of your changed files, go ahead and commit them</span>
+
+  $ git commit -m <span class="hljs-string">"Brief description of fix, enhancement, whatevs. Fixes #####"</span>
+
+<span class="hljs-comment"># For a multiple line commit message, leave off the `-m "description"`.</span>
+<span class="hljs-comment"># You will then be led into vi to complete your commit message.</span>
+
+<span class="hljs-comment"># Then, push your branch with the bug fix commits to your github fork</span>
+
+  $ git push origin -u bug_<span class="hljs-comment">####</span>
+
+
+<span class="hljs-comment"># Before you tackle your next bug patch, return to the master:</span>
+
+  $ git checkout master
+
+
+
+
+<span class="hljs-comment"># To send a Pull Request for your patch, go to http://github.com/you/jquery</span>
+<span class="hljs-comment"># Click "Switch Branches" and select the branch that has your patch.</span>
+<span class="hljs-comment"># Once the branch is loaded, click on "Pull Request". Be sure to include the</span>
+<span class="hljs-comment"># ticket #### in the subject, along with a brief description.</span>
+
+
+
+
+
+<span class="hljs-comment"># Test Suite Tips...</span>
+
+<span class="hljs-comment"># During the process of writing your patch, you will run the test suite MANY times.</span>
+<span class="hljs-comment"># You can speed up the process by narrowing the running test suite down to the</span>
+<span class="hljs-comment"># module you are testing by either double clicking the title of the test or</span>
+<span class="hljs-comment"># appending it to the url. The follwing examples assume you're working on a</span>
+<span class="hljs-comment"># local repo, hosted on your localhost server.</span>
+
+
+<span class="hljs-comment"># Example:</span>
+
+http://localhost/jquery/test/?filter=css
+
+or default MAMP:
+
+http://localhost:8888/test/?filter=css
+
+<span class="hljs-comment"># this will only run the "css" module tests. This will significantly</span>
+<span class="hljs-comment"># speed up your development and debugging.</span>
+
+
+
+<span class="hljs-comment"># ALWAYS RUN THE FULL SUITE BEFORE COMMITTING AND PUSHING A PATCH!!!</span>
+<span class="hljs-comment"># jQuery supports the following:</span>
+
+
+** Supported Browsers :
+
+Chrome Current - 1
+Firefox 3.6.x, 5.0.x, 6.0.x
+IE 6, 7, 8, 9
+Safari 5.0.x
+Opera Current - 1
+
+
+
+<span class="hljs-comment"># Feel free to add YOUR tips in the comment section below!</span>
+
+</code></pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/popcorn-js-facelift/" rel="prev">Popcorn.js 0.2 Facelift</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/newsweek-raphaeljs-career-tree-visualization-raphaeljs-burst/" rel="next">Newsweek Career Tree Visualization with RaphaelJS and Burst</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-jquery-bug-fixing-guide/ -->
+  
+
+</body></html>

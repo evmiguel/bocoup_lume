@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Credit Card Validation</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript Credit Card Validation</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I was reading 2600 on the bus recently and came across a credit generation algorithms which got me thinking… if you are building a web application that charges credit cards, at which point would card validation make most sense? I came to the conclusion that an efficient system, would check the credit card number was valid on the client side. This way there is little-to-no network traffic containing invalid card numbers.</p>
+<p>Checking credit card numbers is actually pretty simple. Most services will use something called a <a href="http://en.wikipedia.org/wiki/Luhn_algorithm">Luhn Check</a>, which multiplies odd indices by two, sums their digits and then divides the total sum by ten. If the result of the <i>sum % 10 == 0</i> then the card number is ‘likely’ to be valid.</p>
+<p>I came up with a a short function to validate credit card numbers passed as Strings or Floats.</p>
+<pre lang="javascript">  var cardValid = function( cardNo ){    
+    var sum = 0, iNum;
+    for( var i in cardNo+='' ){
+      iNum = parseInt(cardNo[i]);
+      sum += i%2?iNum:iNum&gt;4?iNum*2%10+1:iNum*2;
+    }
+    return !(sum%10);
+  };
+</pre>
+<p>To use this function, just call <b>cardValid( cardNo )</b> which will return either true or false.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/get-triangle-height-in-javascript/" rel="prev">Get Triangle Height in JavaScript</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/pollenjs-contributor-announcement/" rel="next">PollenJS Contributor Announcement</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-credit-card-validation/ -->
+  
+
+</body></html>

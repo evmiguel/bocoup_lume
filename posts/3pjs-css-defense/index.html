@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Third-Party JavaScript Development: CSS Defensive Techniques</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Third-Party JavaScript Development: CSS Defensive Techniques</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/design/" class="tag">design</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>(In <a href="https://bocoup.com/weblog/3pjs-css-delivery/">a previous article</a>, I introduced a convenient method for shipping stylesheets with your third-party JavaScript application.)</p>
+<p>When styling content in your third-party JavaScript application, you have a unique challenge to overcome: <em>interference</em>.<br>
+The publisher may have used any number of techniques to define styles, and many of them threaten to modify the appearance of your content.<br>
+In this article, I will to cover some of the specific threats and methods for defending against them.</p>
+<h2>Style Leak</h2>
+<p>Awareness of third-party web applications is still expanding, so it is prudent to assume publishers’ sites were not built with us in mind.<br>
+This means, among other things, that their styles may “leak” into the nodes inserted by third-party apps.<br>
+In some cases, this may be unintentional; consider the following example of a publisher document after your “CapnCrunch” application has inserted content:</p>
+<pre><code>&lt;div id="content"&gt;
+&lt;h1&gt;Publisher's title&lt;/h1&gt;
+&lt;p&gt;Publisher's paragraph&lt;/p&gt;
+&lt;p&gt;Publisher's paragraph&lt;/p&gt;
+&lt;div id="capncrunch"&gt;
+  &lt;h1&gt;Your widget's title&lt;/h1&gt;
+  &lt;p&gt;Please purchase Captain Crunch&lt;/p&gt;
+  &lt;div id="capncrunch-footer"&gt;
+    &lt;a href="#"&gt;Crunchetize me&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>If the publisher wanted green paragraphs, she may have declared a CSS rule like <code>#content &gt; p { color: #bada55; }</code>.<br>
+This would be really cool for your application, but in reality, the publisher likely declared <code>#content p { color: #bada55; }</code>.<br>
+It acheives the desired affect, except now your widget’s paragraphs will have an ugly (and somewhat intimidating) green hue.</p>
+<p>This is not isolated to environments implementing bad practices.<br>
+Consider <a href="http://meyerweb.com/eric/tools/css/reset/">CSS resets</a>–a publisher may (or may not) declare simple rules like <code>* { margin: 0; }</code>, <code>h1, h2, h3, h4, h5, h6 { font-size: 100% }</code>, or <code>* { box-sizing: border-box; }</code> (<a href="http://paulirish.com/2012/box-sizing-border-box-ftw/">more on that last one here</a>).<br>
+As a third-party JS application developer, you cannot make any assumptions about such rules.</p>
+<p>So just what are we supposed to do about all these rules flying around all over the place?</p>
+<h2>Over-specifying</h2>
+<p>CSS rules are assigned a priority according to how they are specified (more on this <a href="http://coding.smashingmagazine.com/2007/07/27/css-specificity-things-you-should-know/">here</a> and <a href="http://css-tricks.com/specifics-on-css-specificity/">here</a>).<br>
+Depending on your content’s structure, you may be able to boost your rules’ priority by being more specific than strictly necessary.<br>
+Consider the markup from the example widget, reprinted below for your convenience:</p>
+<pre><code>&lt;div id="content"&gt;
+&lt;h1&gt;Publisher's title&lt;/h1&gt;
+&lt;p&gt;Publisher's paragraph&lt;/p&gt;
+&lt;p&gt;Publisher's paragraph&lt;/p&gt;
+&lt;div id="capncrunch"&gt;
+  &lt;h1&gt;Your widget's title&lt;/h1&gt;
+  &lt;p&gt;Please purchase Captain Crunch&lt;/p&gt;
+  &lt;div id="capncrunch-footer"&gt;
+    &lt;a href="#"&gt;Crunchetize me&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>A rule like <code>#capncrunch a { color: #001337; }</code> will not necessarily take precedence over the publisher’s <code>#content div a { color: transparent; }</code>.<br>
+The rule <code>#capncrunch #capncrunch-footer a { color: #001337; }</code> is far less susceptable to such nonsense.<br>
+(The namespaced IDs in this example are intentional.<br>
+This practice mitigates the risk of collisions with publisher styles.)</p>
+<p>Obviously, rules like this are not strictly necessary; indeed, shorter rules are usually more efficient.<br>
+The motivation here is not simply DOM element targeting (or even efficiency) but ensuring precedence.<br>
+This is the method of choice for <a href="http://disqus.com/">Disqus</a>–you can read about it in <a href="http://speakerdeck.com/u/antonkovalyov/p/achieving-harmony-with-third-party-javascript">these slides from Disqus engineer Anton Kovalyov</a>.</p>
+<h2>You’re forgetting something !important</h2>
+<p>At this point, more battle-worn developers may be champing at the bit to point out that even overspecified styles can be overridden via <a href="http://www.w3.org/TR/CSS2/cascade.html#important-rules">the <code>!important</code> declaration</a>.<br>
+This is certainly the case, and it’s a “gotcha” no matter how you intend to style your markup.<br>
+In those situations where a publisher is using <code>!important</code>, one option is to fight fire with fire: declare <code>!important</code> on your own rules.<br>
+Since your styles are likely being defined at document.ready, your <code>!important</code> declarations will override the publisher’s.</p>
+<p>But who wants to maintain stylesheets filled with redundant declarations?<br>
+Not me.<br>
+Luckily, the CSS build process (<a href="https://github.com/jugglinmike/DressUp">and corresponding build tool</a>) which I described in <a href="https://bocoup.com/weblog/3pjs-css-delivery/">an article last week</a> is perfectly-situated to automate this process.<br>
+All that’s required is an extension of the proposed syntax; let’s make it familiar-looking: <code>!import_rule [rule name] !important</code> and <code>!import_fule [file name] !important</code>.<br>
+For example:</p>
+<p><code>src/widget3.css</code></p>
+<pre><code>div.widget3-container {
+  font-family: "Century Gothic", sans-serif;
+  /* place below other elements */
+  z-index: -1;
+}
+div.widget3-container h1 {
+  color: #a00;
+}
+</code></pre>
+<p><code>src/widget3.js</code></p>
+<pre><code>(function() {
+  var styleElem =("&lt;style&gt;" + "!import_file widget3.css !important" + "&lt;/style&gt;");
+  // The rest of your application...
+})();
+</code></pre>
+<p>…could be used to build the following JavaScript:</p>
+<p><code>dist/widget3.js</code></p>
+<pre><code>(function() {
+  var styleElem =("&lt;style&gt;" + "div.widget3-container { font-family: \"Century Gothic\", sans-serif !important;z-index: -1 !important; } div.widget3-container h1 { color: #a00 !important; }" + "&lt;/style&gt;" );
+  // The rest of your application...
+})();
+</code></pre>
+<p>Although this will technically get the job done, I recommend avoiding <code>!important</code> whenever possible.</p>
+<p>This approach doesn’t scale, and it breaks the “cascading” nature of CSS.<br>
+The valid use cases are <a href="http://css-tricks.com/when-using-important-is-the-right-choice/">few</a> and <a href="http://coding.smashingmagazine.com/2010/11/02/the-important-css-declaration-how-and-when-to-use-it/">far between</a>.<br>
+Arguably, 3PJS is a new special case where the use of <code>!important</code> is acceptable, but I think it far better to engage the wayward publisher in a discussion about their structure and offer a more sane solution.<br>
+If yours happens to be the only third-party application on the offending web site, it won’t be for long.<br>
+Your advocacy of best practices may even save other 3PJS devs headaches.<br>
+This is a tough job, so we all gotta stick together!</p>
+<h2>The iFrame Sandbox</h2>
+<p>There is a solution that protects you from the <code>!important</code> directive and does not amount to conflict escalation.<br>
+One caveat: this approach is only useful if you are simply inserting new content (not modifying publisher content).</p>
+<p>The contents of HTML iFrames do not receive the parent document’s styling.<br>
+This means that, by inserting content into an iFrame within the publisher’s DOM, you can effectively “sandbox” your styles.<br>
+Note that the sandbox works both ways–you don’t have to worry about the styles you define affecting the publisher’s page.<br>
+This means you don’t have to namespace IDs and class names as in the previous examples.</p>
+<p>Here’s how it’s done:</p>
+<p><code>widget4.js</code></p>
+<pre><code>(function( window, document, undefined ) {
+  var iframe = document.createElement("iframe"),
+    iWindow,
+    iDoc;
+
+  document.body.appendChild( iframe );
+
+  iWindow = iframe.contentWindow;
+  iDocument = iWindow.document;
+
+  iDocument.open();
+  iDocument.write( /* your DOM content here */ );
+  iDocument.close();
+
+  /* the rest of your app... feel free to modify the iFrame's
+  contents via the iDocument var. If you're using jQuery,
+  remember to use the iFrame document as the second argument
+  to the jQuery function, i.e.
+  $("h1", iDocument).text("Hello World!");
+  (see http://api.jquery.com/jQuery/)
+  */
+ })( this, this.document );
+</code></pre>
+<p>Some may be reading this and wondering, “Why not just define a <code>src</code> attribute on the iFrame?”<br>
+In other words, why go through all the hastle of writing to the iFrame and managing the context when the browser will do it for free?</p>
+<p>If the iFrame does not need to communicate with the parent page, this is certainly a good option.<br>
+In many cases, the iFrame’s contents are at least partially dependent on the context in which they are included.<br>
+By hosting the widget on your own domain, and including it elsewhere via the <code>src</code> attribute, you submit the document to cross-origin restrictions.<br>
+There are solutions (most notable is the <a href="http://easyxdm.net/">EasyXDM library</a>), but at this point, setting the <code>src</code> is no longer saving you extra work.</p>
+<p>In addition, the “sourceful” iFrame approach necessitates a separate web request for each widget.<br>
+If there is more than one widget on the page, the resultant latency may not be acceptable for your application.</p>
+<p>Lastly, even though the browser will likely cache those resources required by each iFrame, the JavaScript execution environments are isolated.<br>
+This means JS libraries like jQuery will need to be evaluated in every iFrame.</p>
+<h2>Protect your Style</h2>
+<p>Hopefully, this has got you thinking defensively.<br>
+3PJS presents unique challenges; CSS is just one.<br>
+If you’ve got your own approach to defensively defining presentation in your application, please share in the comments below!</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/introducing-miso-project-and-dataset-library/" rel="prev">Introducing the Miso Project and Dataset Library</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/3pjs-css-delivery/" rel="next">Third-Party JavaScript Development: Optimizing CSS Delivery</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/3pjs-css-defense/ -->
+  
+
+</body></html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: EventSource is Long Polling</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: EventSource is Long Polling</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><strong>UPDATE</strong>: With some serious modification to the server end point, <a href="http://twitter.com/#!/LukeMorton">Luke Morton</a> was able to achieve a single <code>open</code> event that fires <code>message</code> events as responses are received via a “push” from the server: <a href="https://gist.github.com/1002722#file_event_source.php">https://gist.github.com/1002722</a>. By modifying the original example’s PHP end point, Luke’s approach was to omit the closing PHP tag (ensures that no return code is sent to the client), buffer and flush the output and wrap the whole program in a while loop that sleeps for one second to simulate delays in response activity.</p>
+<p>Now that we’ve cleared that up, here is the original post:</p>
+<p>Since Mozilla’s announcement this past weekend ( <a href="http://hacks.mozilla.org/2011/05/aurora-6-is-here">“Aurora 6 Is Here”</a> ) and my own subsequent recap of previously published materials, there has been a noticeable uptick in attention towards the <a href="http://dev.w3.org/html5/eventsource/">EventSource</a> API, including a <a href="https://github.com/Yaffle/polyfills">new polyfill for the feature</a>.</p>
+<p>As always, positive attention towards new JavaScript APIs is nothing but awesome — however — there seems to be a misunderstanding in the behaviour of an EventSource instance. Specifically, the idea that EventSource (in it’s current implementations) is capable of server-push, is incorrect. To demonstrate this fact, I’ve prepared a set of code examples, which can be <a href="https://gist.github.com/1002351">downloaded here</a>. Follow along with the comments in the code examples, to learn how the current implementations of the EventSource API actually work.</p>
+<p>This is a quick look at a client that creates a single EventSource instance. The comments within are a paraphrasing of the spec production and the observed, testable behaviour.</p>
+<p class="snippet caption">event-source.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">"DOMContentLoaded"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-comment">/*
+
+  EventSource is nothing more then a glorified
+  long polling machine. It will create HTTP requests
+  to a provided url of the same origin
+  (which in turn creates an `open` event ) until
+  it sees a valid "text/event-stream" response body
+  at which point a `message` event will be fired.
+
+  This process will repeat until the EventSource is
+  terminated my calling its close() method.
+
+  no "data: " message from the server should result in long polling
+  `open` events being fired, followed by zero `message` events
+
+  */</span>
+
+  <span class="hljs-keyword">var</span> <span class="hljs-comment">// declare localized references</span>
+  eventSrc  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">EventSource</span>( <span class="hljs-string">"event-source.php"</span> ),
+  handler = <span class="hljs-keyword">function</span>(<span class="hljs-params"> event </span>) {
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( [ event.<span class="hljs-property">type</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(), event, event.<span class="hljs-property">data</span> ] );
+
+  },
+  getReadyState = <span class="hljs-keyword">function</span>(<span class="hljs-params"> src </span>) {
+
+    <span class="hljs-keyword">if</span> ( src.<span class="hljs-property">readyState</span> ) {
+      <span class="hljs-comment">// readyState is almost always 0, we're only interested in</span>
+      <span class="hljs-comment">// seeing readyState OPEN (1) ( or CLOSED (2) )</span>
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( [ src.<span class="hljs-property">readyState</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>() ] );
+    }
+
+    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-title function_">getReadyState</span>( src );
+    }, <span class="hljs-number">1</span>);
+  };
+
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( eventSrc );
+
+  <span class="hljs-comment">// Setup event handlers</span>
+  [ <span class="hljs-string">"open"</span>, <span class="hljs-string">"message"</span> ].<span class="hljs-title function_">forEach</span>( <span class="hljs-keyword">function</span>(<span class="hljs-params"> name </span>) {
+
+    eventSrc.<span class="hljs-title function_">addEventListener</span>( name, handler, <span class="hljs-literal">false</span> );
+
+  });
+
+  <span class="hljs-comment">// Begin sampling the ready state</span>
+  <span class="hljs-title function_">getReadyState</span>( eventSrc );
+
+}, <span class="hljs-literal">false</span>);
+</code></pre>
+<p>Here we have a basic EventSource end point located on the server. The comments within will detail the behaviour that is created when a response body is not provided and when it is.</p>
+<p class="snippet caption">event-source.php</p>
+<pre><code class="php hljs language-php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">"Content-Type: text/event-stream\n\n"</span>);
+
+<span class="hljs-comment">/*
+  To test the long polling thery, this response "stream"
+  has no response body.
+
+  From the client, EventSource will make an HTTP request
+  for the url provided to the requesting instance. If no data body
+  exists in the response, then no `message` event is fired.
+
+  The client will continue to poll by creating new HTTP requests
+  (that create `open` events on the client) until a valid
+  response body ("data: [string]") is present.
+
+  Open event-source.html in your browser, then open your console.
+  you will see logged `open` events. Return to this
+  file and uncomment the following line:
+*/</span>
+
+<span class="hljs-comment">//echo "data: foo" . "\n\n";</span>
+
+<span class="hljs-comment">/*
+  This will result in new `message` events being logged to the console.
+
+  Notice that the `message` event is actually preceded by an `open`
+  event, which (if you look in the network (or similar) tab of your
+  console, you will see) a new HTTP request is created for
+*/</span>
+<span class="hljs-meta">?&gt;</span>
+</code></pre>
+<p>And a simple html file to run the whole thing on your localhost:</p>
+<p class="snippet caption">event-source.html</p>
+<pre><code class="html hljs language-xml">Open your console.
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"event-source.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/implementing-the-google-contacts-authsub-flow-with-jquery/" rel="prev">Implementing the Google Contacts AuthSub flow with jQuery</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-firefox-aurora-6-and-eventsource-api/" rel="next">JavaScript: Firefox/Aurora 6 and EventSource API</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-eventsource-is-long-polling/ -->
+  
+
+</body></html>

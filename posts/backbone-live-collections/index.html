@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backbone Live Collections</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Backbone Live Collections</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><i><br>
+  Updated on August 20th, 2015 – This blog post was originally written to use the Twitter public API. That API has since changed to not allow unauthenticated queries. We’ve updated this post to utilize the GitHub API instead which still allows a minimal amount of unauthenticated queries (60 an hour.) The linked jsFiddles have been updated to reflect this but you may encounter the rate limiting rather fast. Watch your console for errors indicating so.<br>
+</i></p>
+<p>A Backbone collection can be filled in several ways:</p>
+<ol>
+<li>By <i>individually</i> fetching or creating models and then adding them to the collection. In this situation, the collection is not responsible for any interaction with a server.</li>
+<li>By fetching a <i>group</i> of models using a single request made by the collection object itself. In this situation we define a url property on the collection and fetch it when we’re ready for the data.</li>
+</ol>
+<p>When your collection is actually responsible for communicating with an API endpoint to fetch its models, there are several types of data that you might be interested in fetching. For example:</p>
+<ol>
+<li>You might have a finite set of data that you need to fetch once for your application. </li>
+<li>You might have a feed of data that is constantly updating and thus your collection periodically check for updates.</li>
+</ol>
+<p>Dealing with the first scenario is quite simple. It would require defining a Collection constructor that has a url property. Calling fetch on an instance of that collection would then fetch the data and that would be sufficient.</p>
+<p>Dealing with the second scenario is somewhat more complex for several reasons:</p>
+<ol>
+<li>The end point needs to be queried periodically rather than just once.</li>
+<li>The data coming back may already be in your collection (because not enough new data was generated on the server and thus the subset returned is mostly identical.)</li>
+<li>The existing collection may need to be ammended or added to.</li>
+<li>Some UI component may want to update based on new data being retrieved, but only if there is new data.</li>
+</ol>
+<h3 id="how-would-one-go-about-creating-this-system">How would one go about creating this system?</h3>
+<p>Let’s create a system that watches a specific GitHub query and updates a list of repos that match it.</p>
+<p>You can search GitHub for anything using the following end point:</p>
+<p><a href="https://api.github.com/search/repositories?q=language:assembly&amp;sort=stars&amp;order=desc">https://api.github.com/search/repositories?q=language:assembly&amp;sort=stars&amp;order=desc</a></p>
+<p>The results of your query will look as follows:</p>
+<p class="snippet caption">github_response.json</p>
+<pre><code class="js hljs language-javascript">{
+  <span class="hljs-attr">total_count</span>: <span class="hljs-number">261</span>,
+  <span class="hljs-attr">incomplete_results</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">items</span>: [
+    {
+    <span class="hljs-attr">id</span>: <span class="hljs-number">21095601</span>,
+    <span class="hljs-attr">name</span>: <span class="hljs-string">"Tetris-Duel"</span>,
+    <span class="hljs-attr">full_name</span>: <span class="hljs-string">"Tetris-Duel-Team/Tetris-Duel"</span>,
+    <span class="hljs-attr">owner</span>: {
+    <span class="hljs-attr">login</span>: <span class="hljs-string">"Tetris-Duel-Team"</span>,
+    <span class="hljs-attr">id</span>: <span class="hljs-number">7956696</span>,
+    <span class="hljs-attr">avatar_url</span>: <span class="hljs-string">"https://avatars.githubusercontent.com/u/7956696?v=3"</span>,
+    <span class="hljs-attr">gravatar_id</span>: <span class="hljs-string">""</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">"https://api.github.com/users/Tetris-Duel-Team"</span>,
+    ...
+    <span class="hljs-attr">git_url</span>: <span class="hljs-string">"git://github.com/Tetris-Duel-Team/Tetris-Duel.git"</span>,
+    <span class="hljs-attr">ssh_url</span>: <span class="hljs-string">"git@github.com:Tetris-Duel-Team/Tetris-Duel.git"</span>,
+    <span class="hljs-attr">clone_url</span>: <span class="hljs-string">"https://github.com/Tetris-Duel-Team/Tetris-Duel.git"</span>,
+    <span class="hljs-attr">svn_url</span>: <span class="hljs-string">"https://github.com/Tetris-Duel-Team/Tetris-Duel"</span>,
+    <span class="hljs-attr">homepage</span>: <span class="hljs-string">""</span>,
+    <span class="hljs-attr">size</span>: <span class="hljs-number">11373</span>,
+    <span class="hljs-attr">stargazers_count</span>: <span class="hljs-number">46</span>,
+    <span class="hljs-attr">watchers_count</span>: <span class="hljs-number">46</span>,
+    <span class="hljs-attr">language</span>: <span class="hljs-string">"Assembly"</span>,
+    <span class="hljs-attr">has_issues</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">has_downloads</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">has_wiki</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">has_pages</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">forks_count</span>: <span class="hljs-number">6</span>,
+    <span class="hljs-attr">mirror_url</span>: <span class="hljs-literal">null</span>,
+    <span class="hljs-attr">open_issues_count</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">forks</span>: <span class="hljs-number">6</span>,
+    <span class="hljs-attr">open_issues</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">watchers</span>: <span class="hljs-number">46</span>,
+    <span class="hljs-attr">default_branch</span>: <span class="hljs-string">"master"</span>,
+    <span class="hljs-attr">score</span>: <span class="hljs-number">19.616371</span>
+  }, {...}]
+}
+</code></pre>
+<p>First, let’s write a Backbone Model &amp; View that will represent a single repo:</p>
+<p class="snippet caption">base_repo.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// A container for a repo object.</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">Repo</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Model</span>.<span class="hljs-title function_">extend</span>({});
+
+<span class="hljs-comment">// A basic view rendering a single repo</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">RepoView</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">View</span>.<span class="hljs-title function_">extend</span>({
+    <span class="hljs-attr">tagName</span>: <span class="hljs-string">"li"</span>,
+    <span class="hljs-attr">className</span>: <span class="hljs-string">"repo"</span>,
+
+    <span class="hljs-attr">render</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+      <span class="hljs-comment">// just render the repo name and description as the content of this element.</span>
+      $(<span class="hljs-variable language_">this</span>.<span class="hljs-property">el</span>).<span class="hljs-title function_">html</span>(
+          <span class="hljs-string">'&lt;b&gt;'</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">model</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">"name"</span>) + <span class="hljs-string">"&lt;/b&gt; - "</span> +
+          <span class="hljs-variable language_">this</span>.<span class="hljs-property">model</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">"description"</span>)
+      );
+
+      <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
+    }
+});
+</code></pre>
+<p>Now, let’s create our actual collection and a quick view to render it</p>
+<p class="snippet caption">base_collection.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// A collection holding many repo objects.</span>
+<span class="hljs-comment">// also responsible for performing the</span>
+<span class="hljs-comment">// search that fetches them.</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">Repos</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Collection</span>.<span class="hljs-title function_">extend</span>({
+    <span class="hljs-attr">model</span>: <span class="hljs-title class_">Repo</span>,
+    <span class="hljs-attr">initialize</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">models, options</span>) {
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">language</span> = options.<span class="hljs-property">language</span>;
+    },
+    <span class="hljs-attr">url</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"https://api.github.com/search/repositories?q=language:"</span> +
+               <span class="hljs-variable language_">this</span>.<span class="hljs-property">language</span> + <span class="hljs-string">"&amp;sort=stars&amp;order=desc"</span>;
+    },
+    <span class="hljs-attr">parse</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) {
+
+        <span class="hljs-comment">// note that the original result contains repos inside of an items array, not at</span>
+        <span class="hljs-comment">// the root of the response.</span>
+        <span class="hljs-keyword">return</span> data.<span class="hljs-property">items</span>;
+    }
+});
+
+<span class="hljs-comment">// A rendering of a collection of repos.</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">ReposView</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">View</span>.<span class="hljs-title function_">extend</span>({
+    <span class="hljs-attr">tagName</span>: <span class="hljs-string">"ul"</span>,
+    <span class="hljs-attr">className</span>: <span class="hljs-string">"repos"</span>,
+    <span class="hljs-attr">render</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+        <span class="hljs-comment">// for each repo, create a view and prepend it to the list.</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">collection</span>.<span class="hljs-title function_">each</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">repo</span>) {
+            <span class="hljs-keyword">var</span> repoView = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RepoView</span>({
+                <span class="hljs-attr">model</span>: repo
+            });
+            $(<span class="hljs-variable language_">this</span>.<span class="hljs-property">el</span>).<span class="hljs-title function_">prepend</span>(repoView.<span class="hljs-title function_">render</span>().<span class="hljs-property">el</span>);
+        }, <span class="hljs-variable language_">this</span>);
+
+        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
+    }
+});
+</code></pre>
+<p>We can now instantiate a Repos collection for a particular query like so:</p>
+<p class="snippet caption">base_assembly_repos.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Create a new assembly language repo collection</span>
+<span class="hljs-keyword">var</span> assemblyRepos = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Repos</span>([], {
+    <span class="hljs-attr">language</span>: <span class="hljs-string">"assembly"</span>
+});
+
+<span class="hljs-comment">// create a view that will contain our repos</span>
+<span class="hljs-keyword">var</span> assemblyReposView = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReposView</span>({
+    <span class="hljs-attr">collection</span>: assemblyRepos
+});
+
+<span class="hljs-comment">// on a successful fetch, update the collection.</span>
+assemblyRepos.<span class="hljs-title function_">fetch</span>({
+    <span class="hljs-attr">success</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">collection</span>) {
+        $(<span class="hljs-string">'#example_content'</span>).<span class="hljs-title function_">html</span>(assemblyReposView.<span class="hljs-title function_">render</span>().<span class="hljs-property">el</span>);
+    }
+});
+</code></pre>
+<p>You can see it in this fiddle: <a href="https://jsfiddle.net/iros/kfvpcn5x/" target="_blank" rel="noopener"><br>
+  https://jsfiddle.net/iros/kfvpcn5x/<br>
+</a>.</p>
+<h3>Making it live</h3>
+<p>While this works, note that if we want to treat this end point as a live feed, we need to<br>
+call fetch repeatedly. Instead of the above method, we can chose to do this instead:</p>
+<p class="snippet caption">live_repo_feed.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Create a new assembly language repo collection</span>
+<span class="hljs-keyword">var</span> assemblyRepos = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Repos</span>([], {
+    <span class="hljs-attr">language</span>: <span class="hljs-string">"assembly"</span>
+});
+
+<span class="hljs-comment">// create a view that will contain our repos</span>
+<span class="hljs-keyword">var</span> assemblyReposView = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReposView</span>({
+    <span class="hljs-attr">collection</span>: assemblyRepos
+});
+
+<span class="hljs-comment">// We now render this view regardless of the fact it still</span>
+<span class="hljs-comment">// hasn't been fetched. This is because we want to bind to</span>
+<span class="hljs-comment">// the collection and be ready to create the repo views</span>
+<span class="hljs-comment">// as they come in.</span>
+$(<span class="hljs-string">'#example_content'</span>).<span class="hljs-title function_">html</span>(catReposView.<span class="hljs-title function_">render</span>().<span class="hljs-property">el</span>);
+
+<span class="hljs-keyword">var</span> updateRepos = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    assemblyReposView.<span class="hljs-title function_">fetch</span>({
+        <span class="hljs-attr">add</span>: <span class="hljs-literal">true</span>
+    });
+    <span class="hljs-built_in">setTimeout</span>(updateRepos, <span class="hljs-number">1000</span>);
+};
+<span class="hljs-title function_">updateRepos</span>();
+</code></pre>
+<p>Note that we also removed the success callback. How would we actually paint<br>
+new repos then? Well, conveniently every time a model is added to a collection<br>
+an “add” event is fired. This allows us to subscribe to that add event instead<br>
+of rendering an entire collection of models. Let’s rewrite our repos collection<br>
+view accordingly:</p>
+<p class="snippet caption">live_repos_view.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// A rendering of a collection of repos.</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">ReposView</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">View</span>.<span class="hljs-title function_">extend</span>({
+    <span class="hljs-attr">tagName</span>: <span class="hljs-string">"ul"</span>,
+    <span class="hljs-attr">className</span>: <span class="hljs-string">"repos"</span>,
+    <span class="hljs-attr">initialize</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>) {
+        <span class="hljs-comment">// Bind on initialization rather than rendering. This might seem</span>
+        <span class="hljs-comment">// counter-intuitive because we are effectively "rendering" this</span>
+        <span class="hljs-comment">// view by creating other views. The reason we are doing this here</span>
+        <span class="hljs-comment">// is because we only want to bind to "add" once, but effectively we should</span>
+        <span class="hljs-comment">// be able to call render multiple times without subscribing to "add" more</span>
+        <span class="hljs-comment">// than once.</span>
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">collection</span>.<span class="hljs-title function_">bind</span>(<span class="hljs-string">"add"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">model</span>) {
+
+            <span class="hljs-keyword">var</span> repoView = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RepoView</span>({
+                <span class="hljs-attr">model</span>: model
+            });
+
+            $(<span class="hljs-variable language_">this</span>.<span class="hljs-property">el</span>).<span class="hljs-title function_">prepend</span>(repoView.<span class="hljs-title function_">render</span>().<span class="hljs-property">el</span>);
+        }, <span class="hljs-variable language_">this</span>);
+    },
+    <span class="hljs-attr">render</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
+    }
+});
+</code></pre>
+<p>You can see it in this fiddle <a href="https://jsfiddle.net/iros/Pg2aU/" target="_blank" rel="noopener">https://jsfiddle.net/iros/Pg2aU/</a></p>
+<p>Don’t forget that by adding new models to your collection, it will continue to grow in size. You may want to remove items as new ones are added, but that’s outside the scope of this article.</p>
+<h3 id="reusable-streamcollection">Reusable StreamCollection</h3>
+<p>One quick way to use this “streaming” pattern is to extend the default Backbone.Collection to allow for streaming.</p>
+<p class="snippet caption">stream_collection.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Create a StreamCollection</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">StreamCollection</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Collection</span>.<span class="hljs-title function_">extend</span>({
+  <span class="hljs-attr">stream</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">options</span>) {
+
+    <span class="hljs-comment">// Cancel any potential previous stream</span>
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">unstream</span>();
+
+    <span class="hljs-keyword">var</span> _update = _.<span class="hljs-title function_">bind</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">fetch</span>(options);
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">_intervalFetch</span> = <span class="hljs-variable language_">window</span>.<span class="hljs-built_in">setTimeout</span>(_update, options.<span class="hljs-property">interval</span> || <span class="hljs-number">1000</span>);
+    }, <span class="hljs-variable language_">this</span>);
+
+    <span class="hljs-title function_">_update</span>();
+  },
+
+  <span class="hljs-attr">unstream</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">window</span>.<span class="hljs-built_in">clearTimeout</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">_intervalFetch</span>);
+    <span class="hljs-keyword">delete</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">_intervalFetch</span>;
+  },
+
+  isStreaming : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-keyword">return</span> _.<span class="hljs-title function_">isUndefined</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">_intervalFetch</span>);
+  }
+});
+</code></pre>
+<p>This allows us to start the stream by simply calling:</p>
+<pre><code class="js hljs language-javascript">assemblyRepos.<span class="hljs-title function_">stream</span>({
+  <span class="hljs-attr">interval</span>: <span class="hljs-number">2000</span>,
+  <span class="hljs-attr">add</span>: <span class="hljs-literal">true</span>
+});
+</code></pre>
+<p>You can see it in this fiddle <a href="https://jsfiddle.net/iros/VuJVa/" target="_blank" rel="noopener">hhttps://jsfiddle.net/iros/VuJVa/</a></p>
+<h3 id="the-dreaded-duplicates">The Dreaded Duplicates</h3>
+<p>Now if you let the above fiddle run for a few cycles, you might have noticed there’s quite a bit of repo duplication. This is an unfortunate side-effect of the way adding models is implemented in backbone. You would think given the nature of relational databases that a “duplicate model” would be identified by using an id attribute (since most of the time, there’s a uniqueness constraint on your data.) However, the way Backbone checks whether a model already exists in a collection is by using its <code>cid</code> as follows:</p>
+<p class="snippet caption">backbone.collection._add.snippet.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// From Backbone.Collection's definition:</span>
+_add : <span class="hljs-keyword">function</span>(<span class="hljs-params">model, options</span>) {
+  options || (options = {});
+  model = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">_prepareModel</span>(model, options);
+  <span class="hljs-keyword">if</span> (!model) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+  <span class="hljs-keyword">var</span> already = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getByCid</span>(model);
+  <span class="hljs-keyword">if</span> (already) <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>([<span class="hljs-string">"Can't add the same model to a set twice"</span>, already.<span class="hljs-property">id</span>]);
+</code></pre>
+<p>Given that your models come in from the server, there is no reason why they would<br>
+have a duplicate cid (seeing as on creation of a new model a unique cid is assigned to it and it’s never persisted unless you intentionally save it.)</p>
+<p>There are two ways to work around this problem:</p>
+<p><strong>Overwrite the model’s cid to match its id. This will ensure duplicates are detected.</strong></p>
+<p>In our example this would look as follows:</p>
+<p class="snippet caption">cid_overwrite.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// A container for a repo object.</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">Repo</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Model</span>.<span class="hljs-title function_">extend</span>({
+  <span class="hljs-attr">initialize</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">attributes, options</span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">cid</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span>;
+  }
+});
+</code></pre>
+<p>While this solution works, it will still result in an error being thrown every time a duplicate model is encountered. You can always surrounded in a try/catch block where appropriate in your application. You can see that in the following fiddle if you open your console.</p>
+<p>You can see it in this fiddle: <a href="https://jsfiddle.net/iros/4pLUR/" target="_blank" rel="noopener">https://jsfiddle.net/iros/4pLUR/</a></p>
+<p><strong>Alternatively, you could overwrite your collection’s add method to check for a duplicate before actually adding the model in question and only adding it if it doesn’t already exist.</strong></p>
+<p>In our example that would look like so:</p>
+<p class="snippet caption">add_duplication_check.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// A collection holding many repo objects.</span>
+<span class="hljs-comment">// also responsible for performing the</span>
+<span class="hljs-comment">// search that fetches them.</span>
+<span class="hljs-keyword">var</span> <span class="hljs-title class_">Repos</span> = <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Collection</span>.<span class="hljs-title function_">extend</span>({
+    <span class="hljs-attr">model</span>: <span class="hljs-title class_">Repo</span>,
+    <span class="hljs-attr">initialize</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">models, options</span>) {
+        <span class="hljs-variable language_">this</span>.<span class="hljs-property">language</span> = options.<span class="hljs-property">language</span>;
+    },
+    <span class="hljs-attr">url</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"https://api.github.com/search/repositories?q=language:"</span> +
+               <span class="hljs-variable language_">this</span>.<span class="hljs-property">language</span> + <span class="hljs-string">"&amp;sort=stars&amp;order=desc"</span>;
+    },
+    <span class="hljs-attr">parse</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) {
+
+        <span class="hljs-comment">// note that the original result contains repos inside of an items array, not at</span>
+        <span class="hljs-comment">// the root of the response.</span>
+        <span class="hljs-keyword">return</span> data.<span class="hljs-property">items</span>;
+    },
+    <span class="hljs-attr">add</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">models, options</span>) {
+        <span class="hljs-keyword">var</span> newModels = [];
+        _.<span class="hljs-title function_">each</span>(models, <span class="hljs-keyword">function</span>(<span class="hljs-params">model</span>) {
+            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>(model.<span class="hljs-property">id</span>) === <span class="hljs-string">"undefined"</span>) {
+                newModels.<span class="hljs-title function_">push</span>(model);
+            }
+        }, <span class="hljs-variable language_">this</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-title class_">Backbone</span>.<span class="hljs-property">Collection</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">add</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>, newModels, options);
+    }
+});
+</code></pre>
+<p>Again, not the most elegant solution but at least we got rid of the thrown errors.<br>
+You can see it in this fiddle: <a href="https://jsfiddle.net/iros/GVaWe/" target="_blank" rel="noopener">https://jsfiddle.net/iros/GVaWe/</a></p>
+<p>Ideally, this wouldn’t be an issue and duplicates would be detected by id as well as the cid. This was in fact once <a target="_blank" href="https://github.com/documentcloud/backbone/pull/414" rel="noopener">fixed</a> in the Backbone source but then subsequently reverted in this <a target="_blank" href="https://github.com/documentcloud/backbone/commit/6d07d2f0e2a1e93c4c79bf50e0ca5e627f0ffd87" rel="noopener">commit</a>.</p>
+<h3 id="how-do-we-solve-this-then">How do we solve this then??</h3>
+<p>What we’re proposing is adding a new options property to the <code>Collection.prototype.add</code> method:</p>
+<pre><code class="js hljs language-javascript">{ unique : <span class="hljs-literal">true</span> }
+</code></pre>
+<p>This will guarantee that only unique models (by cid and id as a fallback) will be added to the collection if you so desire. There’s a pull request awaiting feedback and your love, if you care to dispense it: <a target="_blank" href="https://github.com/documentcloud/backbone/pull/808" rel="noopener">https://github.com/documentcloud/backbone/pull/808</a></p>
+<p>What do you think?</p>
+<p><i>Much thanks to Tim Branyen and Adam Sontag for their feedback. </i></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/introducing-the-backbone-boilerplate/" rel="prev">Introducing The Backbone Boilerplate</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/bocoup-gamelab/" rel="next">Bocoup Gamelab</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/backbone-live-collections/ -->
+  
+
+</body></html>

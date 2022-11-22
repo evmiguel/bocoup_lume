@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compiling Clarkson&amp;#8217;s Hull in OS X</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Compiling Clarkson&amp;#8217;s Hull in OS X</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>If you’re interested in parametric or generative design (the terminology doesn’t seem to be well standardized) you have probably run into Voronoi diagrams and their cousins, Delaunay triangulations.  The latter can be used to make concave hulls given an input point set, a construction which is called an Alpha Shape.</p>
+<p>Jim Clarkson wrote a great program called <a href="http://www.netlib.org/voronoi/hull.html">hull</a> to compute all these guys in C (let me tell you, doing it in Rhinoscript is not fun, especially if you’re running in a VM).  Unfortunately, if you try to compile his program on OS X (I haven’t tried Linux but I suspect you’d get the same result in any modern GCC), you get errors like:</p>
+<blockquote><p>hull.c:34:1: error: pasting “*” and “simplex” does not give a valid preprocessing token</p></blockquote>
+<p>As a service to all of those architects and designers out there who’d rather not learn C, here’s the fix.  Replace the “stormacs.h” file with this guy: <b><a href="https://static.bocoup.com/assets/2010/03/stormacs.h">stormacs.h</a></b>  and you should be good to go.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/long-division-in-javascript/" rel="prev">Long Division In Javascript</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/get-triangle-height-in-javascript/" rel="next">Get Triangle Height in JavaScript</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/compiling-clarksons-hull-in-os-x/ -->
+  
+
+</body></html>

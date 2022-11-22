@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Rotoscoping Tool</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript Rotoscoping Tool</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I had some free time on the train back up from <a href="http://webmademovies.org/buttercamp/">Buttercamp</a> this weekend, and got to work on a demo for a HTML5 <a href="http://en.wikipedia.org/wiki/Rotoscoping">rotoscoping</a> tool that I’ve been kicking around in my head:</p>
+<h3><a href="https://code.bocoup.com/popcorn.js/Rotoscoper/">View Live Demo </a> <span>(in Chrome) →</span></h3>
+<hr>
+<p>The tool is very basic; it lets the user draw over each frame of the <code>video</code>, stores each frame in localStorage, and uses <a href="http://popcornjs.org">Popcorn.js</a> to play back the frames over the <code>video</code> on the <code>canvas</code>. I used <a href="http://twitter.com/#!/miketaylr">Mike Taylor</a>‘s <a href="http://miketaylr.com">homepage</a> as a starting point for the drawing.</p>
+<p><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/rotoscoping-Screen-shot-2011-03-29-at-2.56.39-PM-300x175.png" alt="" title="Screen shot 2011-03-29 at 2.56.39 PM" width="300" height="175"></p>
+<p>Animators frequently use rotoscoping workflows provided by Flash, After Effects, or another production tools. There is not currently a good workflow for artists to ship HTML5 animations. The move to HTML5 animation for playback will require a new set of authoring tools for artists. I had a chance to test this prototype out with <a href="http://twitter.com/AltF4WillHelp">Mak</a>‘s (one of the Bocoup Coworkers from <a href="http://nyx.gradient-studios.com/">Gradient Games</a>) graphics tablet, and it worked great!</p>
+<hr>
+<h3>What’s Next?</h3>
+<p>The <code>video</code> <code>timeupdate</code> event is very low resolution (roughly (unreliably) 10 FPS ). I am evaluating writing an independent timer, and using the new Frame Rate API which you can turn on in chrome’s about:flags.</p>
+<p>This tool should also be implemented with vector based storage (as opposed to the current raster based storage), a timeline/keyframe UI, layers, and a better drawing tool. I am going to try to continue working on this tool over the next couple of weeks, and begin implementing these features.</p>
+<p>If you are a developer, entrepreneur, or are generally interested in working on tools like this, get in touch with Bocoup to talk about working together. We would love to have an opportunity to pursue this tool as a product.</p>
+<p>Get the source on <a href="https://github.com/boazsender/Rotoscoper">Github</a>.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/no-comply-firefox-4-demo/" rel="prev">No Comply &amp;#8211; Firefox 4 Demo</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/list-conflicted-files-with-git/" rel="next">List Conflicted files with Git</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-rotoscoping-tool/ -->
+  
+
+</body></html>

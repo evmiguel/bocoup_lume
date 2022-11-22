@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API Documentation Best Practices</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">REST API Documentation Best Practices</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/software development process/" class="tag">software development process</a>
+    
+      <a href="/bocoup_lume/tags/training/" class="tag">training</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Building a back-end API layer introduces a whole new layer of coordination between server and client code. While there are many aspects to this delicate dance of communication, one key ingredient to minimizing back-and-forth-confusion-about what-call-does-what, is consistently communicating about your API endpoints.</p>
+<p>This is by no means rocket science, but over time I’ve created a template that I now tend to use and have been asked to share. Conveniently when the time comes to publish an API externally, this serves as an invaluable tool for creating public documentation. You can see the markdown template alongside an example in <a href="https://gist.github.com/3426278">this gist</a>.</p>
+<p><style>
+  .blog-comparison td {
+    padding-bottom: 20px;
+  }
+  .blog-comparison th {
+    padding-right: 10px;
+  }
+</style>
+</p>
+<table class="blog-comparison">
+<tbody><tr>
+<th valign="top">
+      Title
+    </th>
+<td>
+        <span class="caption">The name of your API call</span> <br>
+        <b>Example : Show All Users </b><p></p>
+<p>
+        <i></i></p><i>
+<ul>
+<li> Note: try to use verbs that match both request type<br>
+          (fetching vs modifying) and plurality (one vs multiple.) </li>
+<li>Note: Also add additional info here such as a description,<br>
+        if need be.</li>
+</ul>
+</i><p><i>        </i>
+      </p>
+</td>
+</tr>
+<tr>
+<th valign="top">
+      URL
+    </th>
+<td>
+        <span class="caption">The URL structure (path only, no root url)</span> <br>
+        <b><code>/users</code> or <code>/users/:id</code> or <code>/users?id=:id</code> </b><p></p>
+<p>
+        <i></i></p><i>
+<ol>
+<li>For fixed urls: /users or /photos</li>
+<li>For urls with parameters in them: /users/:id or /photos/:photo_id or /users?id=:id</li>
+</ol>
+</i><p><i>        </i>
+      </p>
+</td>
+</tr>
+<tr>
+<th valign="top">
+      Method
+    </th>
+<td>
+        <span class="caption">The request type</span> <br>
+        <b><code>GET</code> | <code>POST</code> | <code>DELETE</code> | <code>PUT</code> </b>
+    </td>
+</tr>
+<tr>
+<th valign="top">
+      URL Params
+    </th>
+<td>
+        <span class="caption">If URL params exist, specify them in accordance with name mentioned in URL section. Separate into optional and required.</span> <p></p>
+<p>        <b>Required:</b> <br>
+        <code>id=[integer]</code> <br>
+        example: id=12  </p>
+<p>        <b>Optional</b> <br>
+        <code>photo_id=[alphanumeric]</code> <br>
+        example: photo_id=2345kj3
+    </p></td>
+</tr>
+<tr>
+<th valign="top">
+      Data Params
+    </th>
+<td>
+        <span class="caption">If making a post request, what should the body payload look like?<br>
+           This is a good time to document your various data constraints too.</span> <br>
+        <b>Example:</b> <p></p>
+<pre>{
+  u : {
+    email : [string],
+    name : [string],
+    current_password : [alphanumeric]
+    password : [alphanumeric],
+    password_confirmation : [alphanumeric]
+  }
+}
+
+</pre>
+<p><b> Example: </b></p>
+<pre>{
+  u : {
+    email : "john@smith.com",
+    name : "John",
+    current_password : "apassw0rd"
+    password : "anewpassw0rd",
+    password_confirmation : "anewpassw0rd"
+  }
+}
+</pre>
+</td>
+</tr>
+<tr>
+<th valign="top">
+        Success Response
+      </th>
+<td>
+          <span class="caption">What should the status code be on success and is there any returned data? This is useful when people need to to know what their callbacks should expect!</span> <br>
+          <b> Example: </b> <br>
+          <b>Code:</b> 200 <br>
+          <b>Content:</b> <code> { id : 12 }</code>
+      </td>
+</tr>
+<tr>
+<th valign="top">
+        Error Response
+      </th>
+<td>
+          <span class="caption">Most endpoints will have many ways they can fail. From unauthorized access, to wrongful parameters etc. All of those should be listed here. It might seem repetitive, but it helps prevent assumptions from being made where they shouldn’t be.</span> <br>
+          <b> Example: </b> <br>
+          <b>Code:</b> 401 UNAUTHORIZED <br>
+          <b>Content:</b> <code> { error : "Log in" }</code><br>
+          OR<br>
+          <b>Code:</b> 422 Unprocessable Entry <br>
+          <b>Content:</b> <code> { error : "Email invalid" }</code>
+      </td>
+</tr>
+<tr>
+<th valign="top">
+        Sample Call
+      </th>
+<td>
+          <span class="caption">Just a sample call to your endpoint in a runnable format ($.ajax call or a curl request) – this makes life easier and more predictable.</span> <p></p>
+<pre>$.ajax({
+  url: "/users",
+  dataType: "json",
+  data : { 
+    u: { 
+      id : 12,
+      email : "john@smith.com" 
+    }
+  },
+  type : "PUT",
+  success : function(r) {
+    console.log(r);
+  }
+});
+
+</pre>
+</td>
+</tr>
+<tr>
+<th valign="top">
+        Notes
+      </th>
+<td>
+          <span class="caption">This is where all uncertainties, commentary, discussion etc. can go. I recommend timestamping and identifying oneself when leaving comments here.</span> 
+      </td>
+</tr>
+</tbody></table>
+<p>Are there other aspects of your API endpoints that you tend to communicate? What additional information should be shared?</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/welcome-darius-kazemi/" rel="prev">Welcome Darius Kazemi</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/bocoup-training-atlanta/" rel="next">Bocoup Goes on Tour with jQuery Essentials in Atlanta</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/documenting-your-api/ -->
+  
+
+</body></html>

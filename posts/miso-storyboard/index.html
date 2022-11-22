@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building Your Control Flow with Miso.Storyboard</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Building Your Control Flow with Miso.Storyboard</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/data visualization/" class="tag">data visualization</a>
+    
+      <a href="/bocoup_lume/tags/miso project/" class="tag">miso project</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Today we at the <a href="http://misoproject.com">Miso Project</a> are excited to release a new library, called <a href="http://misoproject.com/storyboard/">Storyboard</a>, our state management library for control flow of interactive interfaces.</p>
+<p>As more and more of our code is written in an asynchronous manner, managing the flow of our code becomes more challenging. Event broadcasting and subscriptions is a common pattern for controling the flow of an application. Unfortunetly, that can become unmanageable and difficult to follow or debug when applications grow large.</p>
+<p>Additionally, when thinking about interactive content, we often have multiple controls in a single interface that can be in different ‘states’. Take a common <a href="http://misoproject.com/dataset/examples/cabinet-office.html">treemap</a> control, for instance. It may be animating in or out, or may be showing a detail view rather than the entire treemap. Managing the switching in between these states often requires breaking encapsulation and intertwining controls.</p>
+<p>Miso Storyboard offers a way to combat the aforementioned issues. Storyboard is a small library for a very simple idea: defining your application (or subset of your applications) as a set of ‘scenes’, each of which has <code>enter</code> and <code>exit</code> methods. When transitioning to a specific scene, the previous scene’s <code>exit</code> method is called and the next scene’s <code>enter</code> method gets invoked. These methods can serve as useful tools for organizing and managing your application’s state.</p>
+<p>In practice, this allows you to define the states of your specific application separate from each other. For example, a single component might need to do a few things when it begins (such as rendering some UI and so on,) and when it’s ends (like remove loading messages). That same component can also be ‘updatingData’ or ‘showingDetails’. Either way, the <code>enter</code> method for each one of these scenes can set up the component state and the <code>exit</code> method can tear it down.</p>
+<p>Miso.Storyboard is built on top of <a href="https://github.com/wookiehangover/underscore.deferred"><code>Underscore.Deferred</code></a>, which allows your transitions to be asynchronous.</p>
+<p>Enough talking… here’s what a storyboard might look like. Checkout the code on <a href="http://github.com/misoproject/storyboard">github</a> and the (tiny) API on the <a href="http://misoproject.com/storyboard/api">Miso Project Storyboard site</a>.</p>
+<p class="snippet caption">storyboard.example.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> interactive = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Miso</span>.<span class="hljs-title class_">Storyboard</span>({
+  <span class="hljs-comment">// our initial state will be loading</span>
+  initial : <span class="hljs-string">'loading'</span>,
+
+  scenes : {
+
+    <span class="hljs-attr">loading</span>: {
+      enter : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-comment">// show that we are in a loading state</span>
+        $(<span class="hljs-string">'#loading'</span>).<span class="hljs-title function_">show</span>();
+      },
+      exit : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-comment">// This exit method is going to be asyncronous</span>
+        <span class="hljs-comment">// so we will first declare it as such</span>
+        <span class="hljs-comment">// by making a callback we will then need to call</span>
+        <span class="hljs-comment">// to actually exit this scene.</span>
+        <span class="hljs-keyword">var</span> complete = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">async</span>();
+
+        system.<span class="hljs-title function_">loadData</span>({
+          success : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+            <span class="hljs-comment">// When our data actually loads, we can fade out the</span>
+            <span class="hljs-comment">// loading screen (note also async!) and</span>
+            <span class="hljs-comment">// finally call our complete method.</span>
+            $(<span class="hljs-string">'#loading'</span>).<span class="hljs-title function_">fadeOut</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+              <span class="hljs-title function_">complete</span>();
+            });
+          }
+        })
+      }
+    },
+
+    <span class="hljs-comment">// the mainscreen scene just has our main content</span>
+    mainScreen : {
+      enter : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        $(<span class="hljs-string">'#mainScreen'</span>).<span class="hljs-title function_">show</span>();
+      },
+      exit : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        $(<span class="hljs-string">'#mainScreen'</span>).<span class="hljs-title function_">hide</span>();
+      }
+    },
+
+    <span class="hljs-comment">// our details screen is for a specific element you might</span>
+    <span class="hljs-comment">// select from the main screen</span>
+    detailScreen : {
+      enter : <span class="hljs-keyword">function</span>(<span class="hljs-params">datum</span>) {
+        <span class="hljs-comment">//update the detail chart with the datum reference</span>
+      }
+    }
+  }
+});
+
+<span class="hljs-comment">// Kickoff the storyboard. It will enter the initial</span>
+<span class="hljs-comment">// scene we specified (which is loading.)</span>
+interactive.<span class="hljs-title function_">start</span>()
+  <span class="hljs-comment">// when we're done loading, transition to the main screen</span>
+  .<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    interactive.<span class="hljs-title function_">to</span>(<span class="hljs-string">'mainScreen'</span>);
+  }
+);
+
+<span class="hljs-comment">// At some point, wire up a control to switch to the</span>
+<span class="hljs-comment">// detail screen...</span>
+$(<span class="hljs-string">'#mainScreen a.detail'</span>).<span class="hljs-title function_">click</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  interactive.<span class="hljs-title function_">to</span>(<span class="hljs-string">'detailScreen'</span>);
+});
+</code></pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/good-bye-pete/" rel="prev">Good Bye Pete</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/miso-dataset-03-release/" rel="next">Miso Dataset 0.3 Release</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/miso-storyboard/ -->
+  
+
+</body></html>

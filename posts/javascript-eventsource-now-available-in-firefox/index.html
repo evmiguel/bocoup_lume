@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript EventSource: Now available in Firefox!</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript EventSource: Now available in Firefox!</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>…Not natively… but this will work in the meantime:</p>
+<hr>
+<p><a href="https://gist.github.com/429112">Git it here</a></p>
+<hr>
+<p class="snippet caption">firefox-event-source.js</p>
+<pre><code class="js hljs language-javascript">;(<span class="hljs-keyword">function</span> (<span class="hljs-params">w</span>) {
+  <span class="hljs-keyword">if</span> ( !w[<span class="hljs-string">'EventSource'</span>] ) {
+    <span class="hljs-comment">// parseUri 1.2.2</span>
+    <span class="hljs-comment">// (c) Steven Levithan &lt;stevenlevithan.com&gt;</span>
+    <span class="hljs-comment">// MIT License</span>
+    <span class="hljs-keyword">var</span> parseUri = <span class="hljs-keyword">function</span>(<span class="hljs-params">str</span>) {
+      <span class="hljs-keyword">var</span> o   = {
+          <span class="hljs-attr">key</span>: [<span class="hljs-string">'source'</span>,<span class="hljs-string">'protocol'</span>,<span class="hljs-string">'authority'</span>,<span class="hljs-string">'userInfo'</span>,<span class="hljs-string">'user'</span>,<span class="hljs-string">'password'</span>,<span class="hljs-string">'host'</span>,<span class="hljs-string">'port'</span>,<span class="hljs-string">'relative'</span>,<span class="hljs-string">'path'</span>,<span class="hljs-string">'directory'</span>,<span class="hljs-string">'file'</span>,<span class="hljs-string">'query'</span>,<span class="hljs-string">'anchor'</span>],
+          <span class="hljs-attr">q</span>:   {
+            <span class="hljs-attr">name</span>:   <span class="hljs-string">'queryKey'</span>,
+            <span class="hljs-attr">parser</span>: <span class="hljs-regexp">/(?:^|&amp;amp;)([^&amp;amp;=]*)=?([^&amp;amp;]*)/g</span>
+          },
+          <span class="hljs-attr">parser</span>: {
+            <span class="hljs-attr">strict</span>: <span class="hljs-regexp">/^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/</span>
+          }
+        },
+        m   = o.<span class="hljs-property">parser</span>.<span class="hljs-property">strict</span>.<span class="hljs-title function_">exec</span>(str),
+        uri = {},
+        i   = <span class="hljs-number">14</span>;
+
+      <span class="hljs-keyword">while</span> (i--) uri[o.<span class="hljs-property">key</span>[i]] = m[i] || <span class="hljs-string">''</span>;
+
+      uri[o.<span class="hljs-property">q</span>.<span class="hljs-property">name</span>] = {};
+      uri[o.<span class="hljs-property">key</span>[<span class="hljs-number">12</span>]].<span class="hljs-title function_">replace</span>(o.<span class="hljs-property">q</span>.<span class="hljs-property">parser</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">$<span class="hljs-number">0</span>, $<span class="hljs-number">1</span>, $<span class="hljs-number">2</span></span>) {
+        <span class="hljs-keyword">if</span> ($<span class="hljs-number">1</span>) uri[o.<span class="hljs-property">q</span>.<span class="hljs-property">name</span>][$<span class="hljs-number">1</span>] = $<span class="hljs-number">2</span>;
+      });
+
+      <span class="hljs-keyword">return</span> uri;
+    };
+
+
+    <span class="hljs-comment">//   EventSource implementation</span>
+    <span class="hljs-keyword">function</span> <span class="hljs-title function_">EventSource</span>(<span class="hljs-params"> resource </span>) {
+
+      <span class="hljs-keyword">var</span> that        = (<span class="hljs-variable language_">this</span> === <span class="hljs-variable language_">window</span>) ? {} : <span class="hljs-variable language_">this</span>,
+          retry       = <span class="hljs-number">1000</span>, offset  = <span class="hljs-number">0</span>,
+          boundary    = <span class="hljs-string">"\n"</span>, queue   = [],   origin  = <span class="hljs-string">''</span>,
+          lastEventId = <span class="hljs-literal">null</span>, xhr     = <span class="hljs-literal">null</span>, source  = <span class="hljs-literal">null</span>, matches   = <span class="hljs-literal">null</span>, resourceLocation  = <span class="hljs-literal">null</span>;
+
+      that.<span class="hljs-property">toString</span>           = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) { <span class="hljs-keyword">return</span> <span class="hljs-string">'[object EventSource]'</span> };
+
+      <span class="hljs-comment">//  EventSource listener</span>
+      that.<span class="hljs-property">addEventListener</span>   = <span class="hljs-keyword">function</span> (<span class="hljs-params">type, listener, useCapture</span>) {
+        <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(type, listener, useCapture);
+      };
+      <span class="hljs-comment">//  EventSource dispatcher</span>
+      that.<span class="hljs-property">dispatchEvent</span>      = <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+        <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">dispatchEvent</span>(event);
+      };
+
+      resourceLocation  = <span class="hljs-title function_">parseUri</span>(resource);
+
+      <span class="hljs-comment">//  same origin policy</span>
+      <span class="hljs-keyword">if</span> ( resource.<span class="hljs-title function_">match</span>(<span class="hljs-regexp">/http/</span>) &amp;amp;&amp;amp; resource.<span class="hljs-title function_">match</span>(<span class="hljs-regexp">/http/</span>).<span class="hljs-property">length</span> ) {
+        <span class="hljs-keyword">if</span> ( resourceLocation.<span class="hljs-property">host</span> !== location.<span class="hljs-property">host</span> ) {
+          <span class="hljs-keyword">throw</span> <span class="hljs-title class_">DOMException</span>;<span class="hljs-comment">//"SECURITY_ERR: DOM Exception";</span>
+        }
+      }
+      that.<span class="hljs-property">URL</span>  = resourceLocation.<span class="hljs-property">source</span>;
+
+      <span class="hljs-keyword">var</span> openConnectionXHR     = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+        xhr = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();
+        xhr.<span class="hljs-title function_">open</span>(<span class="hljs-string">'GET'</span>, that.<span class="hljs-property">URL</span>, <span class="hljs-literal">true</span>);
+
+        <span class="hljs-comment">//  FIRE OPEN EVENT</span>
+        <span class="hljs-keyword">var</span> openEvent = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createEvent</span>(<span class="hljs-string">'UIEvents'</span>);
+            openEvent.<span class="hljs-title function_">initEvent</span>(<span class="hljs-string">'open'</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
+            openEvent.<span class="hljs-property">origin</span>      = <span class="hljs-variable language_">document</span>.<span class="hljs-property">domain</span>;
+            openEvent.<span class="hljs-property">source</span>      = <span class="hljs-literal">null</span>;
+            that.<span class="hljs-title function_">dispatchEvent</span>(openEvent);
+
+
+        <span class="hljs-keyword">if</span> ( lastEventId ) {
+          xhr.<span class="hljs-title function_">setRequestHeader</span>(<span class="hljs-string">'Last-Event-ID'</span>, lastEventId);
+        }
+        xhr.<span class="hljs-property">onreadystatechange</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+          <span class="hljs-keyword">switch</span> (xhr.<span class="hljs-property">readyState</span>) {
+            <span class="hljs-keyword">case</span> <span class="hljs-number">4</span>: <span class="hljs-comment">// disconnect case</span>
+              <span class="hljs-title function_">pseudoDispatchEvent</span>();
+              <span class="hljs-title function_">reOpenConnectionXHR</span>();
+              <span class="hljs-keyword">break</span>;
+            <span class="hljs-keyword">case</span> <span class="hljs-number">3</span>: <span class="hljs-comment">// new data</span>
+              <span class="hljs-title function_">processMessageFromXHR</span>();
+              <span class="hljs-keyword">break</span>;
+          }
+        }
+
+        xhr.<span class="hljs-title function_">send</span>(<span class="hljs-literal">null</span>);
+      }
+
+      <span class="hljs-keyword">var</span> reOpenConnectionXHR   = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        xhr       = <span class="hljs-literal">null</span>;
+        offset    = <span class="hljs-number">0</span>;
+        <span class="hljs-built_in">setTimeout</span>(openConnectionXHR, <span class="hljs-number">1000</span>);
+      }
+
+      <span class="hljs-keyword">var</span> processMessageFromXHR = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">var</span> stream = xhr.<span class="hljs-property">responseText</span>.<span class="hljs-title function_">split</span>(boundary);
+
+        <span class="hljs-comment">//  Abandon if empty</span>
+        <span class="hljs-keyword">if</span> ( stream.<span class="hljs-property">length</span> &lt; offset )  {
+          <span class="hljs-keyword">return</span>;
+        }
+
+        <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; stream.<span class="hljs-property">length</span>; i++ ) {
+          queue.<span class="hljs-title function_">push</span>(stream[i]);
+        }
+
+        <span class="hljs-title function_">pseudoDispatchEvent</span>();
+      }
+
+      <span class="hljs-keyword">var</span> pseudoDispatchEvent = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+        <span class="hljs-keyword">var</span> data = <span class="hljs-string">''</span>, name = <span class="hljs-string">'message'</span>;
+
+        queue.<span class="hljs-title function_">reverse</span>();
+
+        <span class="hljs-keyword">while</span> (queue.<span class="hljs-property">length</span> &gt; <span class="hljs-number">0</span>) {
+          line = queue.<span class="hljs-title function_">pop</span>();
+          <span class="hljs-keyword">var</span> dataIndex = line.<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">':'</span>), field = <span class="hljs-literal">null</span>, value = <span class="hljs-string">''</span>;
+
+          <span class="hljs-keyword">if</span> (dataIndex == -<span class="hljs-number">1</span>) {
+            field = line;
+            value = <span class="hljs-string">''</span>;
+          }
+          <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (dataIndex == <span class="hljs-number">0</span>) {
+            <span class="hljs-comment">//  Ignore Comment lines</span>
+            <span class="hljs-keyword">continue</span>;
+          }
+          <span class="hljs-keyword">else</span> {
+            field = line.<span class="hljs-title function_">slice</span>(<span class="hljs-number">0</span>, dataIndex)
+            value = line.<span class="hljs-title function_">slice</span>(dataIndex+<span class="hljs-number">1</span>)
+          }
+
+          <span class="hljs-keyword">if</span> (field == <span class="hljs-string">'event'</span>) {
+            name = value;
+          }
+
+          <span class="hljs-keyword">if</span> (field == <span class="hljs-string">'id'</span>) {
+            lastEventId = value;
+          }
+
+          <span class="hljs-keyword">if</span> (field == <span class="hljs-string">'retry'</span>) {
+            value = <span class="hljs-built_in">parseInt</span>(value);
+
+            <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">isNaN</span>(value)) {
+              retry = value;
+            }
+          }
+
+          <span class="hljs-keyword">if</span> (field == <span class="hljs-string">'data'</span>) {
+            <span class="hljs-keyword">if</span> (data.<span class="hljs-property">length</span> &gt; <span class="hljs-number">0</span>) {
+              data += <span class="hljs-string">"\n"</span>;
+            }
+
+            data += value;
+          }
+        }
+
+        <span class="hljs-keyword">var</span> fireEvent = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createEvent</span>(<span class="hljs-string">'UIEvents'</span>);
+        <span class="hljs-comment">//  MessageEvent causes "setting a property that has only a getter" Errors</span>
+
+
+        <span class="hljs-keyword">if</span> ( data.<span class="hljs-property">length</span> &gt; <span class="hljs-number">0</span> ) {
+
+          fireEvent.<span class="hljs-title function_">initEvent</span>(name, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
+          fireEvent.<span class="hljs-property">lastEventId</span> = lastEventId;
+          fireEvent.<span class="hljs-property">data</span>        = data.<span class="hljs-title function_">replace</span>(<span class="hljs-regexp">/^(\s|\u00A0)+|(\s|\u00A0)+$/g</span>, <span class="hljs-string">''</span>);
+          fireEvent.<span class="hljs-property">origin</span>      = <span class="hljs-variable language_">document</span>.<span class="hljs-property">domain</span>;
+          fireEvent.<span class="hljs-property">source</span>      = <span class="hljs-literal">null</span>;
+          that.<span class="hljs-title function_">dispatchEvent</span>(fireEvent);
+        }
+      }
+
+      <span class="hljs-comment">//  INIT EVENT SOURCE CONNECTION</span>
+      <span class="hljs-title function_">openConnectionXHR</span>();
+    };
+    <span class="hljs-variable language_">window</span>[<span class="hljs-string">'EventSource'</span>]  = <span class="hljs-title class_">EventSource</span>;
+  }
+})(<span class="hljs-variable language_">window</span>);
+</code></pre>
+<p class="snippet caption">firefox-event-source.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"firefox-event-source.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript">
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">EventSource</span>);
+
+
+<span class="hljs-keyword">var</span> eventSource = <span class="hljs-keyword">new</span> <span class="hljs-title class_">EventSource</span>(<span class="hljs-string">'event.php'</span>);
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">group</span>(<span class="hljs-string">'eventSource'</span>)
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(eventSource);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(eventSource.<span class="hljs-property">constructor</span>);
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">groupEnd</span>();
+
+eventSource.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'open'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'OPEN!'</span>);
+}, <span class="hljs-literal">false</span>);
+
+eventSource.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-keyword">var</span> message = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(event.<span class="hljs-property">data</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(message);
+}, <span class="hljs-literal">false</span>);
+
+
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<p class="snippet caption">event.php</p>
+<pre><code class="php hljs language-php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">"Content-Type: text/event-stream\n\n"</span>);
+
+<span class="hljs-keyword">echo</span> <span class="hljs-string">'data: '</span> . <span class="hljs-title function_ invoke__">json_encode</span>(
+                  <span class="hljs-keyword">array</span>(
+                    <span class="hljs-number">0</span> =&gt; <span class="hljs-keyword">array</span>(
+                      <span class="hljs-string">'time'</span> =&gt; <span class="hljs-title function_ invoke__">time</span>(),
+                      <span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'Some kind of foo'</span>
+                    ),
+                    <span class="hljs-number">1</span> =&gt; <span class="hljs-keyword">array</span>(
+                      <span class="hljs-string">'time'</span> =&gt; <span class="hljs-title function_ invoke__">time</span>(),
+                      <span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'Some kind of quux'</span>
+                    )
+                  )
+                ) . <span class="hljs-string">"\n"</span>;
+
+<span class="hljs-meta">?&gt;</span>
+</code></pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-web-workers-safari-5-now-supports-complex-messages/" rel="prev">Javascript Web Workers: Safari 5 Now Supports Complex Messages</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-web-workers-motormouth-is-a-twitter-client/" rel="next">JavaScript Web Workers: Motörmouth is a Twitter Client</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-eventsource-now-available-in-firefox/ -->
+  
+
+</body></html>

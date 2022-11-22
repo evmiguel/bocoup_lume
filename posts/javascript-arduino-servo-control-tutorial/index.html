@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: Arduino Servo Control Tutorial</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: Arduino Servo Control Tutorial</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/javascript robotics/" class="tag">javascript robotics</a>
+    
+      <a href="/bocoup_lume/tags/johnny-five/" class="tag">johnny-five</a>
+    
+      <a href="/bocoup_lume/tags/microprocessor/" class="tag">microprocessor</a>
+    
+      <a href="/bocoup_lume/tags/nodebots/" class="tag">nodebots</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web connected devices/" class="tag">web connected devices</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>This is the first tutorial in a new series geared towards Arduino programming on Node.js, using the <a target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener">Johnny-Five</a> framework.</p>
+<div class="blog-media">
+  <a class="img" target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener"><br>
+    <img decoding="async" src="https://static.bocoup.com/blog/johnny-five.png"><br>
+  </a><p></p>
+<div class="bd">
+    Johnny-Five is a <a target="_blank" href="https://github.com/jgautier/firmata/" rel="noopener">Firmata</a> based  Arduino programming framework. See: <a target="_blank" href="/bocoup_lume/weblog/javascript-arduino-programming-with-nodejs/" rel="noopener">JavaScript: Arduino Programming on Node.js</a>.
+  </div>
+</div>
+<p>At the end of the <a target="_blank" href="/bocoup_lume/weblog/javascript-arduino-programming-with-nodejs/" rel="noopener">first article</a>, I showed a simple program that would strobe an LED at the default rate of 100ms per phase. It’s pretty safe to assume that all starter kits come with LEDs. As the tutorials progress, I will introduce more diverse hardware — so you’ll need a few supplies to keep pace. I recommend investing in either of the following start kits:</p>
+<ul>
+<li><a href="http://www.makershed.com/Ultimate_Microcontroller_Pack_p/msump.htm">MakerShed’s Ultimate Microcontroller Pack</a></li>
+<li><a href="http://www.sparkfun.com/products/11022">SparkFun Inventor’s Kit for Arduino</a></li>
+</ul>
+<p>The Ultimate Microcontroller Pack or the Inventor’s Kit for Arduino both come with everything you’ll need for almost all of the tutorials, however in some cases, they will need to be supplemented with additional parts. For a complete list of the parts I’ve used so far, check out the <a target="_blank" href="https://github.com/rwldrn/johnny-five/blob/master/parts.md" rel="noopener">Johnny-Five Parts List</a>.</p>
+<p>Tutorial Requirements:</p>
+<ul>
+<li>One (1) Arduino Microcontroller Board</li>
+<li>One (1) 9V wall wart adapter plug or 9v battery harness</li>
+<li>Three (3) Jumper cables: red, black, yellow</li>
+<li>One (1) Any size Servo</li>
+</ul>
+<p>First, set up the hardware using this schematic as your guide:</p>
+<p><img decoding="async" src="https://static.bocoup.com/blog/servo-digital.png"></p>
+<p>Connect the following…</p>
+<ol>
+<li>Black &gt; GND</li>
+<li>Red &gt; 5v</li>
+<li>Signal &gt; Digitial PWM Pin 10 (Yellow or White)</li>
+<li>Microcontroller &gt; USB</li>
+<li>9V Power</li>
+</ol>
+<p>Assuming you’re using the actual repo, open up <code>eg/servo.js</code>, or follow along here…</p>
+<p class="snippet caption">setup.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> five = <span class="hljs-built_in">require</span>(<span class="hljs-string">"johnny-five"</span>);
+<span class="hljs-keyword">var</span> board = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Board</span>();
+
+<span class="hljs-comment">// Wait for the board and serial line to</span>
+<span class="hljs-comment">// be connected and ready:</span>
+board.<span class="hljs-title function_">on</span>(<span class="hljs-string">"ready"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+ <span class="hljs-comment">// make robots here!</span>
+
+});
+</code></pre>
+<p>If you run this now, you’ll notice that it creates a REPL session – you can access the <code>board</code> object directly from here.</p>
+<p>Next, let’s add a <code>Servo</code> object and inject into the REPL:</p>
+<p class="snippet caption">add-servo.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> five = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../lib/johnny-five.js"</span>);
+<span class="hljs-keyword">var</span> board = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Board</span>();
+
+board.<span class="hljs-title function_">on</span>(<span class="hljs-string">"ready"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-comment">// The servo signal line is connected to</span>
+  <span class="hljs-comment">// Digital PWM Pin 10</span>
+  <span class="hljs-keyword">var</span> servo = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Servo</span>(<span class="hljs-number">10</span>);
+
+  <span class="hljs-comment">// You can add any objects to the board's REPL,</span>
+  <span class="hljs-comment">// Let's add the servo here, so we can control</span>
+  <span class="hljs-comment">// it directly from the REPL!</span>
+  board.<span class="hljs-property">repl</span>.<span class="hljs-title function_">inject</span>({
+    <span class="hljs-attr">servo</span>: servo
+  });
+});
+</code></pre>
+<p><strong>And that’s it!</strong></p>
+<p>Run <code>node eg/servo.js</code><sup><a href="#1">1</a></sup> and try out some of the following commands from the REPL:</p>
+<p class="snippet caption">commands.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// set the servo to the minimum degrees</span>
+<span class="hljs-comment">// defaults to 0</span>
+
+servo.<span class="hljs-title function_">min</span>();
+
+
+<span class="hljs-comment">// set the servo to the maximum degrees</span>
+<span class="hljs-comment">// defaults to 180</span>
+
+servo.<span class="hljs-title function_">max</span>();
+
+
+
+<span class="hljs-comment">// Centers the servo to 90°</span>
+
+servo.<span class="hljs-title function_">center</span>();
+
+
+
+<span class="hljs-comment">// Moves the servo to position by degrees</span>
+
+servo.<span class="hljs-title function_">move</span>( <span class="hljs-number">90</span> );
+
+
+
+<span class="hljs-comment">// Perform a min-max cycling servo sweep (defaults to 0-180)</span>
+
+servo.<span class="hljs-title function_">sweep</span>();
+</code></pre>
+<p><video controls="" class="blog-full-width-block"><source src="http://dl.dropbox.com/u/3531958/servo-tutorial.mp4"><source src="http://dl.dropbox.com/u/3531958/servo-tutorial.webm"><source src="http://dl.dropbox.com/u/3531958/servo-tutorial.ogv"></video></p>
+<p>Hopefully this has ignited some creative ideas for JavaScript Arduino programming with Johnny-Five! Remember to watch this space for more tutorials!</p>
+<p></p>
+<p><a name="1">Note</a>: There is a known issue in where the Firmata protocol layer has issues freeing itself on the serial line which results in the program hanging in the ready state. For now, <code>^C</code> to kill the hanging program and simply run it again.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/foundations-of-programming-with-javascript/" rel="prev">New Training: Foundations of Programming with JavaScript</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/bocoup-goes-to-the-white-house/" rel="next">Bocoup goes to the White House</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-arduino-servo-control-tutorial/ -->
+  
+
+</body></html>

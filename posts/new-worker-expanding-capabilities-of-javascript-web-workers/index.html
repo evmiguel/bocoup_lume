@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expanding Capabilities of Javascript Web Workers</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Expanding Capabilities of Javascript Web Workers</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+      <a href="/bocoup_lume/tags/web standards/" class="tag">web standards</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Yesterday, I was introduced to <a title="Javascript Web Workers" href="https://developer.mozilla.org/En/Using_DOM_workers" target="_blank" rel="noopener">Javascript Web Workers</a> during a bad-ass FireBug console hack-session with <a href="http://twitter.com/F1LT3R">Al MacDonald</a> (<a href="http://hyper-metrix.com">http://hyper-metrix.com</a>). I have to say… this is the coolest thing I’ve seen in a very long time… Workers are currently available in FireFox 3.5, Safari 4 and (according to <a href="http://ejohn.org">John Resig</a>) the <a href="http://build.chromium.org/buildbot/waterfall/console">Chromium Nightlies</a>.</p>
+<p>I’d like to consider this article more of an “advanced” web workers topic, so I’ll skip the explanation of the basic introduction to web workers and simply give you the files to begin with: <a href="http://genevajs.com/misc/workers/workers-simple.zip">download workers-simple.zip</a></p>
+<p>Unzip this and drop it into your locahost. Open all the files and review them. If you want more information about what you’re looking at, have a gander at <a href="http://ejohn.org/blog/web-workers/">this</a>. If you’re ready to really kick out the jam, then keep reading.</p>
+<p>You might have already been saying to yourself “what the hell can I do with this in the real world?” and the answer is not much – except for reporting the current time over and over again. So let’s turbo-charge this worker.</p>
+<p>First things first… scripts called by the Worker object do have <strong>XMLHttpRequest</strong>, but who wants to copy/paste or rewrite their XHR methods into EVERY worker script? Not me, that’s for sure. But now we’re faced with the challenge of getting external files into our worker script. This part is shockingly simple. Ready? GO!</p>
+<ol>
+<li>Open index.php:
+<ul>
+<li>Line 9, replace:
+<pre lang="javscript" line="1">var worker = new Worker('worker.js');
+</pre>
+<p>…with…</p>
+<pre lang="javscript" line="1">var worker = new Worker('worker.js.php');
+</pre>
+</li>
+<li>Line 14, add:
+<pre lang="javascript" line="1">$(document).ready(function () {
+  $('#post')
+    .click(function () {
+      worker.postMessage('load');
+    });
+});
+</pre>
+</li>
+</ul>
+</li>
+<li>Open worker.js and at the top of the file, add this:
+<pre lang="php" line="1"><!--?php
+header('Content-type: text/javascript');
+?-->
+</pre>
+</li>
+<li>Now, save-as “worker.js.php”.</li>
+</ol>
+<p>Great! Now let’s add a small ajax library… (get that <a href="http://genevajs.com/misc/workers/waycool/ajax.js">here</a>)</p>
+<ol>
+<li>In <strong>worker.js.php</strong>, add an include to <strong>ajax.js</strong> below the header() call, it will look like this:
+<pre lang="php" line="1"><!--?php
+header('Content-type: text/javascript');
+include('ajax.js');
+?-->
+</pre>
+</li>
+<li>At the bottom of the script, add in the following:
+<pre lang="javascript" line="1">//  Recieve data FROM the client with postMessage()
+onmessage = function(event){
+  if ( event.data === 'load' ) {
+    postMessage( '-----BEGIN TRANSMISSION-----');
+    postMessage( {'server_objects': this} );
+
+    $.ajax.get({
+      url: 'xhr_test_content.txt',
+      callback: function(response) {
+        var text = response.text;
+
+        postMessage( 'AJAX GET RETURNED: ' + text );
+      }
+    });
+    postMessage( '-----END TRANSMISSION-------');
+  }
+};
+</pre>
+</li>
+</ol>
+<p>Back to index.php…</p>
+<ol>
+<li>Inside the body, add this:<br>
+&gt;input type=button id=”post” value=”post back to server”&lt;
+        </li>
+</ol>
+<p>Create a new file called “xhr_test_content.txt” And put whatever you want in it (or… challenge yourself and make it a PHP file that gets some kind of data from a db… )</p>
+<p>Lastly… open your new index.php file in FireFox 3.5, fire up the console and let it rip. Click your new button to see what it returns.</p>
+<p>If I missed something in my steps, you can always download the finished the code and run it yourself in its complete form. <a href="http://genevajs.com/misc/workers/workers-waycool.zip">Download Completed Source Here</a></p>
+<p>Check out the demos:<br>
+<a href="http://genevajs.com/misc/workers/simple">Simple</a><br>
+<a href="http://genevajs.com/misc/workers/waycool">Waycool</a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/pollenjs-javascript-web-workers-library/" rel="prev">PollenJS: Javascript Web Workers Library</a>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/new-worker-expanding-capabilities-of-javascript-web-workers/ -->
+  
+
+</body></html>

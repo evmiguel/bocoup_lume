@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easily Test jQuery Pre-Release Versions</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Easily Test jQuery Pre-Release Versions</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/testing/" class="tag">testing</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <hr>
+<p><em>Get the complete code on <a href="https://github.com/danheberden/jquery-include">github</a></em>.</p>
+<p>It’s always exciting when a new major jQuery version (x.x.0) full of bug fixes, new features and performance improvements is released. But that fresh, out of the box excitement can get replaced with anxiety if you find bugs or performance issues with the latest version. This post will cover a way to include jQuery while provide a way to test pre-release versions of jQuery.</p>
+<p>When a major version of jQuery is being developed, far too few developers actually test the beta and release-candidate (RC) versions inside of their applications. This can be challenging for those putting time and effort into a steady beta and RC release schedule, and those expecting a bullet-proof version of jQuery upon release. While there are over 6000 unit-tests for jQuery, as well as manual testing done by the core and bugs team, it’s not always enough to find new bugs or possible performance hits in user-land code. The result is a major release landing, everyone downloading and upgrading in a frenzy, and that needed testing from the community happening on a full-fledged release. Thus, the x.x.1 release is right on the tails of x.x.0. This problem is not as bad on subsequent point-releases, since they are only include bug fixes, but it still happens.</p>
+<p>What’s the solution? Help test the latest versions, of course! This is as simple as replacing the stable version of jQuery in your application with the latest beta or RC, and making sure everything still works right – or if it doesn’t, <a href="http://bugs.jquery.com">letting the jQuery project know what broke and how</a>.</p>
+<p>Unfortunately, manually adding in the latest version of jQuery to your site, even in a staging environment, can be a hassle. We can improve this situation by implementing a switch that lets us use a stable version of jQuery by default, while allowing a different jQuery version to be loaded for testing just by specifying a version number in the URL.</p>
+<p>An easy way to specify a particular version of jQuery on a page would be a <a href="http://en.wikipedia.org/wiki/Query_string" title="Query String on Wikipedia">query string argument</a>, such as <code>jqversion=1.7.0rc1</code>. We can use a simple regular expression to get that out of the search property of the location object (the object that holds all the information about the uri the page is currently on).</p>
+<p class="snippet caption">gistfile1.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> version = verMatch &amp;&amp; verMatch[<span class="hljs-number">1</span>];
+</code></pre>
+<p>This looks for <code>jqversion=</code> followed by any digits, letters, or periods. By limiting the match to only those characters, possible XSS vulnerabilities are avoided, such as someone entering <code>jqversion="&gt;&lt;script src="http://hax.com/someScript.js"&gt;&lt;\/script&gt;</code> in the URL. If the regular expression matches, <code>verMatch</code> will be an array of the original search text and the match, e.g., <code>[ 'jqversion=1.7rc2', '1.7rc2' ]</code>. Let’s put that into a variable:</p>
+<p class="snippet caption">gistfile1.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> version = verMatch &amp;&amp; verMatch[<span class="hljs-number">1</span>];
+</code></pre>
+<p>We’re using <a href="http://en.wikipedia.org/wiki/Short-circuit_evaluation">short-circuit evaluation</a> here. First, <code>verMatch</code> is evaluated. If it’s falsy, it will stop evaluating and assign that falsy value of <code>verMatch</code> to <code>version</code>. If it’s truthy (i.e., if there was a match with the regular expression) the expression will continue on and evaluate <code>verMatch[1]</code>. The resulting <code>version</code> variable is either <code>verMatch</code> being equal to <code>null</code> (a falsy value meaning there was no match) or <code>verMatch[1]</code>, the matched version number from the URL (a truthy value). Checking for <code>verMatch</code> before assuming that <code>verMatch[1]</code> exists is essential. If the regular expression didn’t match, an error would be thrown when attempting to access the 2nd element on a null object.</p>
+<p>If a version was specified in the url, we now have that stored in the <code>version</code> variable. To use that version information to make a script tag pointing to the correct file, we can use <code>document.write</code>:</p>
+<p class="snippet caption">gistfile1.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">write</span>( <span class="hljs-string">'&lt;script src=\"//code.jquery.com/jquery-'</span> + version + <span class="hljs-string">'.js\"&gt;&lt;\\/script&gt;'</span> );
+</code></pre>
+<p>This writes the script tag pointing to the un-minified copy of the jQuery version specified immediately after the script tag this code is currently executing in.</p>
+<p>While having the un-minified copy of jQuery is helpful for debugging, it’s recommended to use a minified copy in production. Also, here at Bocoup, we like to use <a href="http://code.google.com/apis/libraries/">Google’s CDN</a> since they have more servers, higher speeds and more saturation (more possibility of a cached copy). If a version is specified, the <a href="http://code.jquery.com">jQuery CDN</a>  with an un-minified copy should be used. If a version isn’t specified, the <a href="http://code.google.com/apis/libraries/">Google CDN</a> with a minified copy should be used.</p>
+<p class="snippet caption">gistfile1.txt</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> verMatch = <span class="hljs-regexp">/jqversion=([\w\.]+)/</span>.<span class="hljs-title function_">exec</span>( location.<span class="hljs-property">search</span> ),
+    version = verMatch &amp;&amp; verMatch[<span class="hljs-number">1</span>];
+<span class="hljs-keyword">if</span> ( version ) {
+  <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">write</span>( <span class="hljs-string">'&lt;script src="//code.jquery.com/jquery-'</span> + version + <span class="hljs-string">'.js"&gt;&lt;\/script&gt;'</span> );
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">write</span>( <span class="hljs-string">'&lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"&gt;&lt;\/script&gt;'</span> );
+}
+</code></pre>
+<p>Now this is starting to take shape. However, making the <code>verMatch</code> and <code>version</code> variables global is unnecessary. And it would be nice to have some kind of local copy of jQuery if Google’s CDN has any issues serving the file. The multiple document.write calls don’t seem very <a href="http://en.wikipedia.org/wiki/Don%27t_repeat_yourself" title="Don't Repeat Yourself on Wikipedia">DRY</a>, either.</p>
+<p>Here’s the final version that can replace the typical <code>&lt;script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"&gt;&lt;/script&gt;</code> tag used to include jQuery on a webpage.</p>
+<p class="snippet caption">snippet.htm</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript">
+  (<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+    <span class="hljs-comment">// Look for a jqversion query parameter and grab any following version.</span>
+    <span class="hljs-comment">// Limit to digits and letters to prevent any XSS attempts</span>
+    <span class="hljs-keyword">var</span> verMatch = <span class="hljs-regexp">/jqversion=([\w\.]+)/</span>.<span class="hljs-title function_">exec</span>( location.<span class="hljs-property">search</span> ),
+        <span class="hljs-comment">// our matched version, e.g., 1.6.4 or 1.7rc1</span>
+        version = verMatch &amp;amp;&amp;amp; verMatch[<span class="hljs-number">1</span>],
+        src;
+    <span class="hljs-keyword">if</span> ( version ) {
+      <span class="hljs-comment">// version was specified, use jQuery's CDN to acccess non-mininfied betas and RCs</span>
+      src = <span class="hljs-string">'code.jquery.com/jquery-'</span> + version;
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-comment">// nothing was specified, use the Google CDN (or jQuery's or Microsoft's) with a minified copy</span>
+      src = <span class="hljs-string">'ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min'</span>;
+    }
+    <span class="hljs-comment">// create the script tag</span>
+    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">write</span>( <span class="hljs-string">'&lt;script src="//'</span> + src + <span class="hljs-string">'.js"&gt;&lt;\/script&gt;'</span> );
+  })();
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript">
+  <span class="hljs-comment">// Use a local copy, incase the above didn't load</span>
+  <span class="hljs-keyword">if</span> ( !<span class="hljs-variable language_">window</span>.<span class="hljs-property">jQuery</span> ) {
+    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">write</span>( <span class="hljs-string">'&lt;script src="/scripts/jquery-1.7.0.min.js"&gt;&lt;\/script&gt;'</span> );
+  }
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<p>By default, the page will load a minified version of jQuery from the Google CDN. If that doesn’t work, it will load a local copy of jQuery. If <code>jqversion=</code>, followed by the version tag, is in the URL it will attempt to download that from the jQuery CDN. For example, <code>jqversion=1.7</code>, <code>jqversion=1.7rc1</code>, or <code>jqversion=1.4.4</code>. The whole code block is wrapped in an <a href="http://benalman.com/news/2010/11/immediately-invoked-function-expression/" title="Immediately Invoked Function Expressions">IIFE</a> to keep the variable’s scope to just that function. The local jQuery fallback code goes in another script tag. Since we’re injecting a script tag using <code>document.write</code>, it won’t download and load before the check for <code>window.jQuery</code> runs if it’s in the same script tag.</p>
+<p>If the main html of a page isn’t minified, you might prefer to remove the comments to reduce the size of your html file. For minifying javascript, <a href="https://github.com/mishoo/UglifyJS" title="Uglify.js on Github.com">Uglify.js</a> is a great javascript minifier that’s easy to use. Here is what the final code looks like when ran through uglify.js:</p>
+<p class="snippet caption">gistfile1.html</p>
+<pre><code class="js hljs language-javascript">&lt;script&gt;(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){<span class="hljs-keyword">var</span> a=<span class="hljs-regexp">/jqversion=([\d\w\.]+)/</span>.<span class="hljs-title function_">exec</span>(location.<span class="hljs-property">search</span>),b=a&amp;&amp;a[<span class="hljs-number">1</span>],c;<span class="hljs-keyword">if</span>(b){c=<span class="hljs-string">"code.jquery.com/jquery-"</span>+b}<span class="hljs-keyword">else</span>{c=<span class="hljs-string">"ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min"</span>}<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">write</span>(<span class="hljs-string">'&lt;script src="//'</span>+c+<span class="hljs-string">'.js"&gt;&lt;\/script&gt;'</span>)})()&lt;/script&gt;
+<span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"><span class="hljs-variable language_">window</span>.<span class="hljs-property">jQuery</span>||<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">write</span>(<span class="hljs-string">'&lt;script src="/scripts/jquery-1.7.0.min.js"&gt;&lt;\/script&gt;'</span> )</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</span></code></pre>
+<p>In both code snippets, you can replace the <code>1.7.1</code> in the googleapis.com URL to whatever version you want to have on your page, such as, <code>1.6.4</code> or <code>1.5.2</code>. Also, be sure to update the path pointing to your local jQuery copy in the second <code>script</code> tag.</p>
+<p>You can also test the latest development copy by using <code>git</code> as your version, e.g., <code>jqversion=git</code>. If you’d like to see what version of jQuery is currently loaded on a page, that is stored in the jquery property on jQuery’s prototype at <code>$.fn.jquery</code> and thus as the <code>jquery</code> property on any jQuery object, e.g., <code>$( document ).jquery</code>.</p>
+<h3>Keeping Up And Helping Out</h3>
+<p>Follow along with the <a href="http://blog.jquery.com">jQuery Blog</a> to see when betas and release-candidates are released. Testing will be a piece of cake with this new jQuery include process. For example, when the 1.8.0 release-candidate is out, a url like <code>http://yoursite.com/?jqversion=1.8.0rc1</code> will let you load your site with that version of jQuery. Found a bug? Report it on the <a href="http://bugs.jquery.com">jQuery bug tracker</a>. Want to chat with the development team? Head into #jquery-dev on <a href="http://freenode.net">irc.freenode.net</a>. Filed a bug and already fixed it? <a href="https://bocoup.com/weblog/javascript-jquery-bug-fixing-guide">Submit a pull request</a> on github. Spending even a little bit of time testing your sites with the in-development copies of jQuery can help significantly in assisting the project to finding bugs before final releases are made. Happy testing!</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/call-for-writers-microsoft/" rel="prev">Call for Writers: Game Programming &amp;#038; HTML5</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/welcome-jory-burson/" rel="next">Welcome Jory Burson</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/easily-test-jquery-pre-release-versions/ -->
+  
+
+</body></html>

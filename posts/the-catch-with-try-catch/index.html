@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The &amp;#8220;catch&amp;#8221; with try&amp;#8230;catch</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">The &amp;#8220;catch&amp;#8221; with try&amp;#8230;catch</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I’ve recently been working on an update to <a href="http://benalman.com/projects/javascript-debug-console-log/">JavaScript Debug</a>, which has me doing a lot of cross-browser testing, and I noticed a few “interesting quirks” with <a href="https://developer.mozilla.org/en/JavaScript/Reference/Statements/try...catch">try…catch</a> in Internet Explorer 6-8 that I couldn’t find documented anywhere.</p>
+<h2>The Backstory</h2>
+<p>Since the primary goal of <a href="http://benalman.com/projects/javascript-debug-console-log/">JavaScript Debug</a> is to normalize the console cross-browser, I’ve been doing a lot of in-depth logging, passing large quantities of arguments to the <code>console.log</code> method (among others). And because I’m dealing with totally fabricated data, I’m using totally fabricated variable names too, to keep things simple. Well, I thought it would be simple.</p>
+<p>Normally, I try to avoid using <code>try...catch</code> statements, but in this particular instance, I was troubleshooting some issues with <code>console.assert</code> in Opera 11, and the <code>try...catch</code> statement was the only thing keeping me from going insane. Either way, the code inside the <code>try</code> block wasn’t throwing an exception in Internet Explorer.</p>
+<h2>The “Interesting Quirks”</h2>
+<p>Anyways, after I completed my tests in Opera, I came back to Internet Explorer to work on a few other things, and noticed that in all the logs, the <code>e</code> object was undefined instead of the object I expected. Since my code had evolved organically, and was quite a bit more complex than this example, and I couldn’t remember if it had ever fully worked (I thought it had, but I wasn’t sure), I embarked on a 30-minute long debugging excursion where I systematically removed and tweaked code from the project until I had pretty much nothing left, at which I finally decided to take another look at the <em>example</em> code to see if anything was out-of-place there.</p>
+<p>That’s when I finally noticed that the <code>catch</code> block I had just recently added had an argument <code>e</code> that just happened to coincide with the object variable <code>e</code> that was all-of-a-sudden logging as <code>undefined</code>. Lovely.</p>
+<p><iframe style="width: 100%; height: 300px" src="https://jsfiddle.net/cowboy/qJvDk/embedded/js,result/"></iframe></p>
+<h2>The Comedic Interlude</h2>
+<p>So, last night, <a href="http://twitter.com/cowboy/status/19957065715814402">I tweeted a little joke</a>, “I may have just discovered another way to test for IE… <code>var isMSIE = (function(e,x){try{x()}catch(e){}return!!e})();</code> #javascript #leakage”. But this morning, I realized that what I had tweeted, while amusing, doesn’t exactly explain what’s going on here.. So I decided to take another look.</p>
+<h2>The Quirks, Investigated</h2>
+<p>In the interests of being thorough, I tested this quirky behavior in Firefox 2-4, Chrome 8-10, Safari 3-5, Opera 9.6-11 and IE 6-9, and have only seen this behavior in Internet Explorer 6-8. I haven’t tested in any mobile browsers. You can load my <a href="https://jsfiddle.net/cowboy/Qx3e6/show/">simple test page</a> (which is a combination of the two following examples) in any browser, and if you see <code>1,1,2,1,1,2</code>, things are working as-expected. If you see something like <code>1,,1,[object Error],[object Error],[object Error]</code>, you’re probably in Internet Explorer 6-8.</p>
+<p>In the following test, the <code>try...catch</code> statements have simply been defined, and since there’s no code inside of them, no exceptions will be thrown. <em>Notice how, in Internet Explorer 6-8, the mere act of specifying a <code>catch</code> clause ( with a named argument, <code>e</code>) appears to implicitly declare that argument in the current scope, as if <code>var e</code> was specified.</em></p>
+<p><iframe style="width: 100%; height: 300px" src="https://jsfiddle.net/cowboy/jNrVD/embedded/js,result/"></iframe></p>
+<p>In the following test, the <code>try...catch</code> statements contain code that will throw an exception of type <code>ReferenceError</code>, because an attempt is made to access an undeclared variable. <em>Notice that in Internet Explorer 6-8, not only does the <code>catch</code> clause argument get implicitly declared (like in the previous example), but its value is set to the exception object, overriding any previously-set value.</em></p>
+<p><iframe style="width: 100%; height: 300px" src="https://jsfiddle.net/cowboy/wLUQj/embedded/js,result/"></iframe></p>
+<p>It’s like a whole new kind of <a href="http://www.adequatelygood.com/2010/2/JavaScript-Scoping-and-Hoisting">hoisting</a>, made <em>extra-special</em> just for Internet Explorer 6-8. Except that you had no idea it was happening.</p>
+<h2>The Solution</h2>
+<p>So, what’s the solution? Use a unique variable name in your <code>catch</code> blocks. Tell people to “pretty please, use a better browser.” Maybe pay more attention when debugging, or just try to get more sleep, in general. That’s all I’ve got. And I’m not sure what else I can say about this specific “<code>catch</code> argument declaration/leakage” issue, other than that I haven’t yet seen it documented anywhere, so I hope this article helps somebody, somewhere.</p>
+<p>Also, FWIW, if you try to do what I’ve done in my examples, <a href="http://jslint.com/">JSLint</a> will yell at you, saying “Do not assign to the exception parameter.” It won’t explain why, nor will it tell you that the current scope has become tainted with a brand new named variable in Internet Explorer 6-8, or that even if you’re not assigning it, its value may have changed, but at least it gives you some kind of warning, which may be helpful.</p>
+<p>You know, while I may, at one point in my career, have thought coding JavaScript would be fairly simple, straightforward, and possibly mundane, I can tell you that there’s still always room for surprises. And that the next version of <a href="http://benalman.com/projects/javascript-debug-console-log/">JavaScript Debug</a> is going to be awesome.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/popcorn-js-0-2-released/" rel="prev">Popcorn.js 0.2 Released</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/using-datatransfer-with-jquery-events/" rel="next">Using dataTransfer and other HTML5 event properties with jQuery Events</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/the-catch-with-try-catch/ -->
+  
+
+</body></html>

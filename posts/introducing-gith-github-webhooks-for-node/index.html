@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducing Gith &amp;#8211; GitHub WebHooks For Node</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Introducing Gith &amp;#8211; GitHub WebHooks For Node</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/deployment/" class="tag">deployment</a>
+    
+      <a href="/bocoup_lume/tags/git/" class="tag">git</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>GitHub offers a great feature called <a href="https://help.github.com/articles/post-receive-hooks">WebHook URLs</a>.<br>
+You can add a url to take advantage of git’s post-receive hook and get a POST request containing data<br>
+related to a repository push (e.g., commits, tags, and head-resets). While the data is very detailed<br>
+and thorough, its complexity and focus on mimicking the git operations make it harder to use. For<br>
+example, files added are listed per commit instead of a complete array spanning all commits. Also,<br>
+retreiving if a tag was added requires checking three different properties.</p>
+<p>When using GitHub payloads to determine your own server behavior, different payload data from GitHub<br>
+may require different actions to be taken. For example, you wouldn’t need to pull from your master branch<br>
+and update a website’s content if someone pushed a new branch. But you <em>might</em> want to stage that branch<br>
+somewhere, which would be a completely different operation.</p>
+<h2>Deployment With Git Hooks</h2>
+<p>We use the post-receive hooks GitHub provides for many of our websites, including<br>
+<a href="https://bocoup.com">bocoup.com</a>. All of us work on the Bocoup.com website collaboratively, and so when<br>
+any of us commits to <a href="https://bocoup.com/">our website’s</a> repository, GitHub sends that action to our web<br>
+server. We have some scripts in place to pull that repository into a staging area, which allows all of us<br>
+to preview the changes. When it’s time to go live, there is a separate page we can access that lets us<br>
+deploy the current staging commit to the live site. It’s all pretty basic, but it saves us an incredible<br>
+amount of time.</p>
+<p>I wanted to build and share a tool that addresses the problems of complexity and filtering the raw GitHub<br>
+payload, and I was able to go above and beyond my normal open source time here at Bocoup to go ahead and<br>
+do that! Cool, eh?</p>
+<h2>Introducing gith</h2>
+<p>The result of this work is <code>gith</code>, short for “githooks”. It provides an easy-to-use API that simplifies<br>
+the process of utilizing GitHub’s payloads in a number of ways:</p>
+<ul>
+<li>Listen on a specified port for <a href="https://help.github.com/articles/post-receive-hooks">WebHook payloads</a> from github.com using node</li>
+<li>Filter the payloads by payload type: repository, branch, file or tag</li>
+<li>Subscribe to events based on the payload information, such as <code>all</code>, <code>file:add</code>, <code>tag:add</code> or <code>file:delete</code></li>
+<li>Provide a simpler payload object that has things like the branch name and all of the files added, removed, or deleted in an array</li>
+</ul>
+<p><code>gith</code> accomplishes this very well. For example, if I wanted to do something when a file was added<br>
+to a particular repository, I can write a small node script to handle it:</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> gith = <span class="hljs-built_in">require</span>( <span class="hljs-string">'gith'</span> ).<span class="hljs-title function_">create</span>( <span class="hljs-number">9001</span> );
+
+<span class="hljs-title function_">gith</span>({
+  <span class="hljs-attr">repo</span>: <span class="hljs-string">'danheberden/gith'</span>
+}).<span class="hljs-title function_">on</span>( <span class="hljs-string">'file:add'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> payload </span>) {
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">'these files were added'</span>, payload.<span class="hljs-property">files</span>.<span class="hljs-property">added</span> );
+});
+</code></pre>
+<p>or if I wanted to find files added in a particular directory:</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> gith = <span class="hljs-built_in">require</span>( <span class="hljs-string">'gith'</span> ).<span class="hljs-title function_">create</span>( <span class="hljs-number">1337</span> );
+
+<span class="hljs-title function_">gith</span>({
+  <span class="hljs-attr">repo</span>: <span class="hljs-string">'danheberden/gith'</span>,
+  <span class="hljs-attr">file</span>: <span class="hljs-regexp">/^test/</span>payloads/
+}).<span class="hljs-title function_">on</span>( <span class="hljs-string">'file:add'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> payload </span>) {
+  <span class="hljs-comment">/* files were added to /test/payloads in danheberden/gith */</span>
+});
+</code></pre>
+<p>or even more simply, get alerted when <em>anything</em> happens:</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> gith = <span class="hljs-built_in">require</span>( <span class="hljs-string">'gith'</span> ).<span class="hljs-title function_">create</span>( <span class="hljs-number">9001</span> );
+
+<span class="hljs-title function_">gith</span>().<span class="hljs-title function_">on</span>( <span class="hljs-string">'all'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> payload </span>) {
+  <span class="hljs-comment">/* update the website! */</span>
+});
+</code></pre>
+<p>There’s a lot more information at the project’s repository: <a href="https://github.com/danheberden/gith">https://github.com/danheberden/gith</a></p>
+<h2>Moving Forward</h2>
+<p><code>gith</code> is the result of refining the development and deployment workflow for <a href="https://bocoup.com">bocoup.com</a><br>
+and many of our other projects, and it will continue to be an important part of our operations going<br>
+forward.</p>
+<p>There are more features planned and unit tests to write, but we wanted you to see it as soon as<br>
+possible and have an opportunity to get involved and give feedback. This is what I’m planning<br>
+to attack in the immediate future:</p>
+<ul>
+<li>Supporting github API calls with OAuth</li>
+<li>Getting a list of files that were added/removed/modified in a tagging operation or head reset</li>
+<li>Polling an account for new repositories and automatically subscribing them to the WebHook url</li>
+<li>Specifying a secret query-string-argument in the url (e.g., ?secret=password) to prevent the server from receiving false payloads</li>
+</ul>
+<p>As more and more people and projects come to use GitHub in their development process, the web hooks<br>
+provide an extremely useful, but underused, interface for deploying and sharing work with teammates, clients, and<br>
+the public. We hope that <code>gith</code> can help simplify the process of using them for newcomers and old<br>
+hands alike! What else do you want it to do and and how do you plan to use it? Let us know in the<br>
+comments!</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/au-revoir-tim/" rel="prev">Bye for now, Tim Branyen</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/bocoup-on-air-mobile-dev-boaz-rebecca/" rel="next">Bocoup on Air: Developing for the Mobile Web</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/introducing-gith-github-webhooks-for-node/ -->
+  
+
+</body></html>

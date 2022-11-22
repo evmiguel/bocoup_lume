@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Web Workers: Motörmouth is a Twitter Client</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript Web Workers: Motörmouth is a Twitter Client</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>About a month ago, I released jQuery.Hive/Pollen, a plugin + library for developing jQuery applications that use Web Workers. And as per usual, the number one question is “what can I do with workers?”.</p>
+<p>With that in mind, I decided that at least every month (and hopefully even more frequently then that) I would produce and publish a basic application that made use of jQuery.Hive and jQuery.Hive.Pollen.</p>
+<p>Aside from that requisite, I set another rule – each application that I create should be something that traditionally would cripple the browser.</p>
+<h2>Motörmouth</h2>
+<p>Motörmouth is currently an ugly bastard that simply cranks out a live Twitter stream based on a user specified search term. Go ahead, type “http”, or “omg” or “lol” into the form… you’ll see how the app got named. But what just happened?</p>
+<p>To start it off, I obnoxiously listen to keyup events on the input field, each time firing a message to worker thread telling it to start querying Twitter’s search API. Unfortunately, it’s not that straight forward: Workers can’t create anything in the DOM so there is currently no easy way of making JSONP style requests (coming soon!), so another level of latency is added when we have to call proxy.php first. Proxy.php makes a request to Twitter for our term and returns the results to the worker, which then iterates the results, sending one at a time back to the rendering process – we dont want to bog the client down with a huge data set.</p>
+<p>All the client has to do now is add one post at a time, keeping it responsive. Meanwhile in the worker process, it fires one AJAX request after another, checking for new tweets based on your search term.</p>
+<p>Then what? Repeat!</p>
+<p>Unlike the Twitter home timeline that will update you with a little notice that says “5 new tweets…”, Motormouth is capable of just showing them to you. Want to see more in your timeline? Adjust the slider to show up to 100 posts (this could be way more, but 100 seemed to be a good place to cap it)</p>
+<p>The Timeline slider also acts as a cleanup crew – Motörmouth will only maintain the number of elements set with the slider. If you set it to ten, then only ten elements will exist in the timeline, older items are removed.</p>
+<p>So let’s get to it then…</p>
+<h2><a href="http://danheberden.com/share/088f.png">Motörmouth (might exceed twitter whitelist allocation – if so, it will not work properly</a></h2>
+<hr>
+<p>For those interested, here’s what the Worker script file, using jquery.hive.pollen.js looks like:</p>
+<p class="snippet caption">motormouth-worker.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-title function_">importScripts</span>(<span class="hljs-string">'jquery.hive.pollen.js'</span>);
+
+$(<span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) {
+  <span class="hljs-comment">// message received from rendering process</span>
+
+  $.ajax.<span class="hljs-title function_">get</span>({
+    <span class="hljs-attr">url</span>:      <span class="hljs-string">'proxy.php'</span>,
+    <span class="hljs-attr">data</span>:     $.<span class="hljs-title function_">param</span>(data),
+    <span class="hljs-attr">dataType</span>: <span class="hljs-string">'json'</span>,
+    <span class="hljs-attr">success</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">jsonObj</span>) {
+
+      $.<span class="hljs-title function_">each</span>(jsonObj.<span class="hljs-property">results</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">i, result</span>) {
+        <span class="hljs-comment">// send each result alone</span>
+        $.<span class="hljs-title function_">send</span>(result);
+      });
+    }
+  });
+
+});
+</code></pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-eventsource-now-available-in-firefox/" rel="prev">JavaScript EventSource: Now available in Firefox!</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/chrome-6-server-sent-events-with-new-eventsource/" rel="next">Chrome 6: Server Push Events with new EventSource()</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-web-workers-motormouth-is-a-twitter-client/ -->
+  
+
+</body></html>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>Bocoup</title>
+	<subtitle>Technical Consulting</subtitle>
+	<link href="https://aleenaloves.github.io/bocoup_lume/feed.xml" rel="self"/>
+	<link href="https://aleenaloves.github.io/bocoup_lume/"/>
+	
+	<updated>2022-11-22T19:17:22Z</updated>
+	<id>https://aleenaloves.github.io/bocoup_lume/</id>
+	<author>
+		<name>Bocoup,</name>
+		<email>hello@bocoup.com,</email>
+	</author>
+	<entry>
+		<title>Gutenberg</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/gutenberg/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/gutenberg/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Good Bye Pete</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/good-bye-pete/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/good-bye-pete/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Building Your Control Flow with Miso.Storyboard</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/miso-storyboard/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/miso-storyboard/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Miso Dataset 0.3 Release</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/miso-dataset-03-release/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/miso-dataset-03-release/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>ReConstitution 2012 &amp;#8211; Live Debate Deconstruction and Visualization</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/recon2012-launch/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/recon2012-launch/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Roost &amp;#8211; A JavaScript Training Conference from Bocoup</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/roost/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/roost/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Hubway Data Visualization Hack Day at Bocoup</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/hubway-data-viz-hack-day/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/hubway-data-viz-hack-day/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Welcome Cassie Irwin</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/welcome-cassie-irwin/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/welcome-cassie-irwin/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Bye for now, Tim Branyen</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/au-revoir-tim/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/au-revoir-tim/</id>
+		<content type="html"></content>
+	</entry>
+	<entry>
+		<title>Introducing Gith &amp;#8211; GitHub WebHooks For Node</title>
+		<link href="https://aleenaloves.github.io/bocoup_lume/posts/introducing-gith-github-webhooks-for-node/"/>
+		<updated>2022-11-22T19:17:22Z</updated>
+		<id>https://aleenaloves.github.io/bocoup_lume/posts/introducing-gith-github-webhooks-for-node/</id>
+		<content type="html"></content>
+	</entry>
+</feed>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spoofing User-Agent with Chrome&amp;#8217;s WebRequest API</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Spoofing User-Agent with Chrome&amp;#8217;s WebRequest API</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Whenever you ask for a page on the web, your request has <a href="http://en.wikipedia.org/wiki/HTTP_headers">a lot of data</a> attached to it. One part of your request (the “user-agent” string) describes your software environment—usually your operating system and your browser’s name and version number. Like many things on the web, this data is a convention, not a law. You are free to modify it however you want. This practice is known as user-agent spoofing.</p>
+<p>If you’re ready to give it a try yourself (and you have Google Chrome), <a href="http://jugglinmike.github.com/chrome-user-agent/">you can find the extension (and installation instructions) here</a>. If you’re a developer interested in modifying headers from a Chrome extension, read on!</p>
+<h2>Implementation Details</h2>
+<p><em>Update II (1/24/12)</em> It looks like Chrome 17 will ship with support for modifying the User-Agent string.<br>
+(Click <a href="http://code.google.com/p/chromium/issues/detail?id=67063">here for the Chromium issue</a> and <a href="http://techdows.com/2011/12/google-chrome-now-has-built-in-user-agent-switcher.html">here for more info on the feature</a>.)<br>
+This renders the dedicated user-agent switching extension obsolete, but the approach outlined here may still be relevant in the context of a larger extension.<br>
+Also remember the WebRequest API has many applications beyond this simple use-case!</p>
+<p><em>Update I (1/3/12)</em> In Chrome 17, the WebRequest API will lose its “experimental” designation and change slightly. This article, originally published in August 2011, has been updated to reflect these changes. For the more diff-minded developer, I’ve updated the example project with <a href="https://github.com/jugglinmike/chrome-user-agent/commit/1131b9e0505b7ae9b545f964eea88915592dc826">a single commit</a> which documents the specific changes.</p>
+<p>We’ll be using Chrome’s <a href="http://code.google.com/chrome/extensions/trunk/webRequest.html">WebRequest API</a> to accomplish this task. First off, you will have to request permission to use it in your extension’s <a href="http://code.google.com/chrome/extensions/manifest.html">manifest.json file</a>:</p>
+<p><code>”permissions”: [ “webRequest” ]</code></p>
+<p>…although in our specific case, we’ll need some additional permissions: one for “blocking” all requests until we’ve completely processed them, and another for our extension to operate on all URLs. That means our manifest file will actually look more like this:</p>
+<p><code>"permissions": [ "webRequest", “webRequestBlocking”, “&lt;all_urls&gt;” ]</code></p>
+<p>I’ll be focusing on the <a href="http://code.google.com/chrome/extensions/trunk/webRequest.html#event-onBeforeSendHeaders">“onBeforeSendHeaders” event</a> for now. Behaviors like request blocking and redirecting can be achieved with other event handlers, but those will have to wait for another post.</p>
+<p>You can bind your own listener to this event in your extension’s <a href="http://code.google.com/chrome/extensions/background_pages.html">background page</a>. Here is an example binding which outlines the necessary steps:</p>
+<p class="snippet caption">background.js</p>
+<pre><code class="js hljs language-javascript">  <span class="hljs-comment">// The 'reqestFilter' parameter allows you to only listen for</span>
+  <span class="hljs-comment">// certain requests. Chrome 17 requires that, at the very least,</span>
+  <span class="hljs-comment">// it defines the URLs you wish to subscribe to. In the general</span>
+  <span class="hljs-comment">// case, we want to subscribe to all URL's, so we'll explicitly</span>
+  <span class="hljs-comment">// declare this requirement.</span>
+<span class="hljs-keyword">var</span> requestFilter = {
+    <span class="hljs-attr">urls</span>: [ <span class="hljs-string">"&lt;all_urls&gt;"</span> ]
+  },
+  <span class="hljs-comment">// The 'extraInfoSpec' parameter modifies how Chrome calls your</span>
+  <span class="hljs-comment">// listener function. 'requestHeaders' ensures that the 'details'</span>
+  <span class="hljs-comment">// object has a key called 'requestHeaders' containing the headers,</span>
+  <span class="hljs-comment">// and 'blocking' ensures that the object your function returns is</span>
+  <span class="hljs-comment">// used to overwrite the headers</span>
+  extraInfoSpec = [<span class="hljs-string">'requestHeaders'</span>,<span class="hljs-string">'blocking'</span>],
+  <span class="hljs-comment">// Chrome will call your listener function in response to every</span>
+  <span class="hljs-comment">// HTTP request</span>
+  handler = <span class="hljs-keyword">function</span>(<span class="hljs-params"> details </span>) {
+
+    <span class="hljs-keyword">var</span> headers = details.<span class="hljs-property">requestHeaders</span>,
+      blockingResponse = {};
+
+    <span class="hljs-comment">// Each header parameter is stored in an array. Since Chrome</span>
+    <span class="hljs-comment">// makes no guarantee about the contents/order of this array,</span>
+    <span class="hljs-comment">// you'll have to iterate through it to find for the</span>
+    <span class="hljs-comment">// 'User-Agent' element</span>
+    <span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, l = headers.<span class="hljs-property">length</span>; i &lt; l; ++i ) {
+      <span class="hljs-keyword">if</span>( headers[i].<span class="hljs-property">name</span> == <span class="hljs-string">'User-Agent'</span> ) {
+        headers[i].<span class="hljs-property">value</span> = <span class="hljs-string">'&gt;&gt;&gt; Your new user agent string here &lt;&lt;&lt;'</span>;
+        <span class="hljs-keyword">break</span>;
+      }
+      <span class="hljs-comment">// If you want to modify other headers, this is the place to</span>
+      <span class="hljs-comment">// do it. Either remove the 'break;' statement and add in more</span>
+      <span class="hljs-comment">// conditionals or use a 'switch' statement on 'headers[i].name'</span>
+    }
+
+    blockingResponse.<span class="hljs-property">requestHeaders</span> = headers;
+    <span class="hljs-keyword">return</span> blockingResponse;
+  };
+
+chrome.<span class="hljs-property">webRequest</span>.<span class="hljs-property">onBeforeSendHeaders</span>.<span class="hljs-title function_">addListener</span>( handler, requestFilter, extraInfoSpec );
+</code></pre>
+<p>…that should be enough to get you up and running.</p>
+<h2>Still Some Uncertainty</h2>
+<p>If you’re anything like me, after reading the documentation and the above example, you still have some questions. I’ll do my best to answer them:</p>
+<p><em>What are the contents of <code>requestHeaders</code>?</em> <a href="http://code.google.com/chrome/extensions/trunk/webRequest.html#life_cycle_footnote">The API documentation gives hints at what it doesn’t contain</a>, but my experience has been varied. Here’s a printout of what I’ve seen, although I’ve received confirmation from Chrome developers that the contents are variable:</p>
+<p class="snippet caption">requestHeaders.json</p>
+<pre><code class="json hljs language-json"><span class="hljs-punctuation">[</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Pragma"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"no-cache"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"User-Agent"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.15 Safari/535.1"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Accept"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"text/css,*/*;q=0.1"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Cache-Control"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"no-cache"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Referer"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"http://mikepennisi.com/"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Accept-Encoding"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"gzip,deflate,sdch"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Accept-Language"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"en-US,en;q=0.8"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Accept-Charset"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"ISO-8859-1,utf-8;q=0.7,*;q=0.3"</span><span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-punctuation">{</span><span class="hljs-attr">"name"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"Cookie"</span><span class="hljs-punctuation">,</span><span class="hljs-attr">"value"</span><span class="hljs-punctuation">:</span><span class="hljs-string">"__utma=138710319.518446708.1311977381.1311977381.1311977381.1; __utmz=138710319.1311977381.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); ci_session=6YkLJxXZRFbZ5DLlpFCL8KG3cnggPjSvEtP7VCNRTv4JLphOrHGUqPX3pfOuURl0cfbMb9Gu4%2FcNnsxZyiTNxH%2B0hXZ4pElZush0NJNHHD7ReOV2hoHWRaDX1ikw4vWamoyB8WvLftxotbKX4ibITIwqBlQ0mqq%2BcIQRn5uW0ueFgwzt43b5Q6KBGYJ2RMXZrrT%2FgB0ViV8dofvXNmQ8qFueXOlotnnWx1KcTWyyiWDOIia2%2Bm5ZuknlbmvFMk5czOMf5y70S4oaK7iup7gAlaPSVD9%2FZE%2BzslzuCvvyiXM%3D"</span><span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">]</span>
+</code></pre>
+<p><em>How do I detach a listener?</em> Although currently undocumented, <code>chrome.webRequest.onBeforeSendHeaders.removeListener()</code> seems to work. It may be safer (for now) to begin your listener function by checking an externally-scoped <code>listenerIsActive</code> flag which you can set/unset from outside the function.</p>
+<p class="snippet caption">background-toggle.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> listenerIsActive = <span class="hljs-literal">true</span>,
+  requestFilter = {
+    <span class="hljs-attr">urls</span>: [ <span class="hljs-string">"&lt;all_urls&gt;"</span> ]
+  },
+  extraInfoSpec = [<span class="hljs-string">'requestHeaders'</span>,<span class="hljs-string">'blocking'</span>],
+  handler = <span class="hljs-keyword">function</span>(<span class="hljs-params"> details </span>) {
+
+    <span class="hljs-keyword">var</span> headers = details.<span class="hljs-property">requestHeaders</span>,
+      blockingResponse = {};
+
+    <span class="hljs-keyword">if</span>( !listenerIsActive ) {
+      <span class="hljs-comment">// If you take this approach, just make sure you return</span>
+      <span class="hljs-comment">// the headers, or else your "disabled" listener will</span>
+      <span class="hljs-comment">// delete all headers from future requests!</span>
+      <span class="hljs-keyword">return</span> {<span class="hljs-attr">requestHeaders</span>: details.<span class="hljs-property">requestHeaders</span>};
+    }
+
+    <span class="hljs-comment">// Your code here...</span>
+  };
+
+chrome.<span class="hljs-property">webRequest</span>.<span class="hljs-property">onBeforeSendHeaders</span>.<span class="hljs-title function_">addListener</span>( handler, requestFilter, extraInfoSpec );
+</code></pre>
+<p><em>How can I use requestFilter to control which requests the listener responds to?</em> The <a href="http://code.google.com/chrome/extensions/trunk/webRequest.html#type-RequestFilter">requestFilter parameter</a> optionally lets you filter by tab ID and window ID. You can also specify a URL pattern to filter by–the pattern schema is documented <a href="http://code.google.com/chrome/extensions/trunk/match_patterns.html">here</a>.</p>
+<p>Hopefully, this has been a useful introduction to Chrome’s WebRequest API. As you have seen, it is now possible to spoof the user-agent string from an extension. The API seems to be stabilizing in preparation for its coming promotion from the “experimental” namespace. Be sure to reference <a href="http://code.google.com/chrome/extensions/trunk/webRequest.html">the official documentation</a> for the most up-to-date details.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/new-game-tickets-on-sale/" rel="prev">New Game Tickets On Sale</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-firefox-nightly-introduces-dom-joystick-events/" rel="next">JavaScript: Firefox Nightly introduces DOM Joystick Events</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/spoofing-user-agent-with-chromes-webrequest-api/ -->
+  
+
+</body></html>

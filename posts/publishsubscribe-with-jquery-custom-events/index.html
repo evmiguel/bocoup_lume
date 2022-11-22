@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish/Subscribe with jQuery Custom Events</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Publish/Subscribe with jQuery Custom Events</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>The <a href="http://en.wikipedia.org/wiki/Publish/subscribe">Publish Subscribe</a> or pub/sub pattern is used to logically decouple object(s) that generate an event, and object(s) that act on it.  It is a useful pattern for object oriented development in general and especially useful when developing asynchronous Javascript applications.  This post explores its implementation in jQuery.</p>
+<p>The Dojo javascript framework provides an explicit <a href="http://docs.dojocampus.org/quickstart/topics">topic-based mechanism</a> for “publishing” and “subscribing” to events.  Peter Higgins, Dojo’s author, has also written a <a href="http://higginsforpresident.net/js/static/jq.pubsub.js">jQuery plugin</a> that replicates this functionality.  It weighs in at under 30 lines of code…  but why use 30 lines when you can do it in zero?</p>
+<p>jQuery custom events provide a built in means to use the publish subscribe pattern in a way that is functionally equivalent, and syntactically very similar, to Higgin’s pub/sub plugin:   Just bind observers to <code>document</code>.</p>
+<pre><code class="js hljs language-javascript">$(<span class="hljs-variable language_">document</span>).<span class="hljs-title function_">bind</span>(<span class="hljs-string">"eventType"</span>, ...);
+<span class="hljs-comment">// This is equivalent to the plugin's $.subscribe("eventType", ...);</span>
+$(<span class="hljs-variable language_">document</span>).<span class="hljs-title function_">trigger</span>(<span class="hljs-string">"eventType"</span>);
+<span class="hljs-comment">// equivalent to plugin's $.publish("eventType");</span>
+</code></pre>
+<p>In the above code, you could have used any object, not just document.   But by using the document object, you give yourself the ability to leverage the full power of jQuery events.  Triggering events on the objects that actually generate them gives you event bubbling, sets <code>this</code>, etc – and a simple Dojo-style “subscriber” that is bound to the document doesn’t even have to know:</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Better jQuery pub/sub pattern:</span>
+$(<span class="hljs-variable language_">document</span>).<span class="hljs-title function_">bind</span>(<span class="hljs-string">"eventType"</span>, ...);
+$(elem).<span class="hljs-title function_">trigger</span>(<span class="hljs-string">"eventType"</span>);
+</code></pre>
+<p>This works great for DOM elements, but what if the event that you want to publish isn’t associated with one?  It’s not widely used, but the jQuery object can be passed regular javascript objects.  And to bubble events, jQuery relies on two properties: <code>parent</code> and <code>ownerDocument</code>.  So the pattern can be extended to any object:</p>
+<pre><code class="js hljs language-javascript">$(<span class="hljs-variable language_">document</span>).<span class="hljs-title function_">bind</span>(<span class="hljs-string">"eventType"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) { <span class="hljs-title function_">alert</span>(<span class="hljs-string">" I &lt;3 Fanny"</span>});
+<span class="hljs-keyword">var</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyObject</span>();
+$(obj).<span class="hljs-title function_">trigger</span>(<span class="hljs-string">"eventType"</span>); <span class="hljs-comment">// nothing</span>
+obj.<span class="hljs-property">ownerDocument</span> = <span class="hljs-variable language_">document</span>;
+$(obj).<span class="hljs-title function_">trigger</span>(<span class="hljs-string">"eventType"</span>); <span class="hljs-comment">// I &lt;3 Fanny!</span>
+</code></pre>
+<p>So why would you use a separate publish/subscribe system rather than just relying on jQuery events?  One word: performance.  I used my “better jQuery pubsub” pattern with a trivial event handler, and implemented the same thing with Higgins’ plugin.  I then ran 10000 events through each system:</p>
+<table>
+<thead>
+<tr>
+<th>10000 Events</th>
+<th>Firefox</th>
+<th>Chrome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>jQuery Events</em></td>
+<td>753ms</td>
+<td>201ms</td>
+</tr>
+<tr>
+<td><em>Pub/Sub Plugin</em></td>
+<td>89ms</td>
+<td>9ms</td>
+</tr>
+</tbody>
+</table>
+<p>I repeated this a few times with consistent results.  Clearly, jQuery/DOM event performance is an order of magnitude worse than a special-purpose system.  At .08ms of overhead per event, though, I don’t think this will be an issue for most uses.  Still, if you are running over 100 events per second and/or bubbling your events up a long tree, the jQuery/DOM event system overhead could hurt performance and in any case it is always worth testing.  Otherwise the benefits of having a unified event semantics and fewer dependencies, and the power available to you with bubbling etc, make jQuery events the clear choice.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/css-svg-filters-unaccessible-from-elem-style-xlink-href/" rel="prev">CSS SVG-Filters Elem.style &amp;#038; xlink:href=&amp;#8221;url(#id)&amp;#8221; #fail</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-enumerable-map-with-webworkers/" rel="next">JavaScript Enumerable.Map() with WebWorkers</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/publishsubscribe-with-jquery-custom-events/ -->
+  
+
+</body></html>

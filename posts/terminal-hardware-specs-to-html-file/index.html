@@ -1,0 +1,4301 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal: Hardware Specs to .HTML File</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Terminal: Hardware Specs to .HTML File</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Interactive data visualization falls apart pretty quickly if the machine’s specs are not up to par. The last thing you want is your visualization to be slow and clunky.</p>
+<p>So when planning the graceful degradation of a visualization across a variety of systems, it is important to put some careful thought into testing things such as the creation, deletion and user-interaction of the visual elements you will be using.</p>
+<p>This helps to define on which systems to scale back on visual complexity and maintain the user-experience, allowing your users to retain the kind of seamless control over data that will lead to deeper insights into the pattens contained within the data.</p>
+<p>I found this really cool terminal tip online that exports your machine specs to an .html file and thought it was well-worth repeating for all the web-devs out there:</p>
+<p class="snippet caption">machine-specs-to-html.sh</p>
+<p>The output looks something like this:<br>
+(except uglier, I un-styled this a little)</p>
+<table class="blog-comparison" summary="attributes of aqua">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>aqua</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Desktop Computer</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>P5K</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>System manufacturer</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>System Version</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>System Serial Number</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="SMBIOS version 2.4">smbios-2.4</dfn> <dfn title="DMI version 2.4">dmi-2.4</dfn> <dfn title="SMP specification v1.4">smp-1.4</dfn> <dfn title="Symmetric Multi-Processing">smp</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of aqua">
+<tbody><tr>
+<td> boot</td>
+<td>=</td>
+<td>normal</td>
+</tr>
+<tr>
+<td> chassis</td>
+<td>=</td>
+<td>desktop</td>
+</tr>
+<tr>
+<td> cpus</td>
+<td>=</td>
+<td>4</td>
+</tr>
+<tr>
+<td> uuid</td>
+<td>=</td>
+<td>4030D2C7-8DFE-D511-952F-001E8CBE1A42</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of core">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>core</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Motherboard</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>P5K</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>ASUSTeK Computer INC.</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>Rev 1.xx</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>MS6C81B31612608</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>To Be Filled By O.E.M.</td>
+</tr>
+</tbody>
+</table>
+<p>&lt;</p>
+<p>table class=”blog-comparison” summary=”attributes of firmware”&gt; </p>
+
+
+id:
+
+<div>firmware</div>
+
+
+
+
+
+description: 
+BIOS
+
+
+vendor: 
+American Megatrends Inc.
+
+
+physical id: 
+
+<div>0</div>
+
+
+
+version: 
+1006 (03/05/2008)
+
+
+size: 
+64KiB
+
+
+capacity: 
+960KiB
+
+
+capabilities: 
+<dfn title="ISA bus">isa</dfn> <dfn title="PCI bus">pci</dfn> <dfn title="Plug-and-Play">pnp</dfn> <dfn title="Advanced Power Management">apm</dfn> <dfn title="BIOS EEPROM can be upgraded">upgrade</dfn> <dfn title="BIOS shadowing">shadowing</dfn> <dfn title="ESCD">escd</dfn> <dfn title="Booting from CD-ROM/DVD">cdboot</dfn> <dfn title="Selectable boot path">bootselect</dfn> <dfn title="BIOS ROM is socketed">socketedrom</dfn> <dfn title="Enhanced Disk Drive extensions">edd</dfn> <dfn title="5.25" 1.2mb="" floppy"="">int13floppy1200</dfn> <dfn title="3.5" 720kb="" floppy"="">int13floppy720</dfn> &lt;dfn title=”3.5″ 2.88MB floppy”&gt;int13floppy2880 <dfn title="Print Screen key">int5printscreen</dfn> <dfn title="i8042 keyboard controller">int9keyboard</dfn> <dfn title="INT14 serial line control">int14serial</dfn> <dfn title="INT17 printer control">int17printer</dfn> <dfn title="INT10 CGA/Mono video">int10video</dfn> <dfn title="ACPI">acpi</dfn> <dfn title="USB legacy emulation">usb</dfn> <dfn title="Booting from LS-120">ls120boot</dfn> <dfn title="Booting from ATAPI ZIP">zipboot</dfn> <dfn title="BIOS boot specification">biosbootspecification</dfn> 
+
+
+
+<table class="blog-comparison" summary="attributes of cpu:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>cpu:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>CPU</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>Intel(R) Core(TM)2 Quad  CPU   Q9300  @ 2.50GHz</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corp.</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>4</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>cpu@0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>6.7.7</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>0001-0677-0000-0000-0000-0000</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>LGA775</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>1998MHz</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>3800MHz</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>333MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="boot processor">boot</dfn> <dfn title="mathematical co-processor">fpu</dfn> <dfn title="FPU exceptions reporting">fpu_exception</dfn> <dfn title="">wp</dfn> <dfn title="virtual mode extensions">vme</dfn> <dfn title="debugging extensions">de</dfn> <dfn title="page size extensions">pse</dfn> <dfn title="time stamp counter">tsc</dfn> <dfn title="model-specific registers">msr</dfn> <dfn title="4GB+ memory addressing (Physical Address Extension)">pae</dfn> <dfn title="machine check exceptions">mce</dfn> <dfn title="compare and exchange 8-byte">cx8</dfn> <dfn title="on-chip advanced programmable interrupt controller (APIC)">apic</dfn> <dfn title="memory type range registers">mtrr</dfn> <dfn title="page global enable">pge</dfn> <dfn title="machine check architecture">mca</dfn> <dfn title="conditional move instruction">cmov</dfn> <dfn title="page attribute table">pat</dfn> <dfn title="36-bit page size extensions">pse36</dfn> <dfn title="">clflush</dfn> <dfn title="debug trace and EMON store MSRs">dts</dfn> <dfn title="thermal control (ACPI)">acpi</dfn> <dfn title="multimedia extensions (MMX)">mmx</dfn> <dfn title="fast floating point save/restore">fxsr</dfn> <dfn title="streaming SIMD extensions (SSE)">sse</dfn> <dfn title="streaming SIMD extensions (SSE2)">sse2</dfn> <dfn title="self-snoop">ss</dfn> <dfn title="HyperThreading">ht</dfn> <dfn title="thermal interrupt and status">tm</dfn> <dfn title="pending break event">pbe</dfn> <dfn title="no-execute bit (NX)">nx</dfn> <dfn title="64bits extensions (x86-64)">x86-64</dfn> <dfn title="">constant_tsc</dfn> <dfn title="">arch_perfmon</dfn> <dfn title="">pebs</dfn> <dfn title="">bts</dfn> <dfn title="">aperfmperf</dfn> <dfn title="">pni</dfn> <dfn title="">dtes64</dfn> <dfn title="">monitor</dfn> <dfn title="">ds_cpl</dfn> <dfn title="CPU virtualization (Vanderpool)">vmx</dfn> <dfn title="">smx</dfn> <dfn title="">est</dfn> <dfn title="">tm2</dfn> <dfn title="">ssse3</dfn> <dfn title="">cx16</dfn> <dfn title="">xtpr</dfn> <dfn title="">pdcm</dfn> <dfn title="">sse4_1</dfn> <dfn title="">lahf_lm</dfn> <dfn title="">tpr_shadow</dfn> <dfn title="">vnmi</dfn> <dfn title="">flexpriority</dfn> <dfn title="CPU Frequency scaling">cpufreq</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of cpu:0">
+<tbody><tr>
+<td> id</td>
+<td>=</td>
+<td>1</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of cache:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>cache:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>L1 cache</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>5</div>
+</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>L1-Cache</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>128KiB</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>128KiB</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Internal">internal</dfn> <dfn title="Write-back">write-back</dfn> <dfn title="Data cache">data</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of cache:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>cache:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>L2 cache</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>6</div>
+</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>L2-Cache</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>6MiB</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>6MiB</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Internal">internal</dfn> <dfn title="Write-back">write-back</dfn> <dfn title="Instruction cache">instruction</dfn> </td>
+</tr>
+</tbody>
+</table>
+</div>
+<table class="blog-comparison" summary="attributes of logicalcpu:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.1</div>
+</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+
+<table class="blog-comparison" summary="attributes of logicalcpu:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.2</div>
+</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.3</div>
+</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.4</div>
+</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of memory">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>memory</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>System Memory</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>3a</div>
+</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>System board or motherboard</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>2GiB</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>2GiB</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of bank:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>bank:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>DIMM DDR2 Synchronous 800 MHz (1.2 ns)</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>PartNum0</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Manufacturer0</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0</div>
+</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>SerNum0</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>DIMM0</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>1GiB</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>800MHz (1.2ns)</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of bank:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>bank:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>DIMM [empty]</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>PartNum1</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Manufacturer1</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1</div>
+</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>SerNum1</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>DIMM1</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of bank:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>bank:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>DIMM DDR2 Synchronous 800 MHz (1.2 ns)</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>PartNum2</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Manufacturer2</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>2</div>
+</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>SerNum2</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>DIMM2</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>1GiB</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>800MHz (1.2ns)</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of bank:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>bank:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>DIMM [empty]</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>PartNum3</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Manufacturer3</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>3</div>
+</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>SerNum3</td>
+</tr>
+<tr>
+<td>slot: </td>
+<td>DIMM3</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of cpu:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>cpu:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>cpu@1</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>6.7.7</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>0001-0677-0000-0000-0000-0000</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>1998MHz</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>1998MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="CPU virtualization (Vanderpool)">vmx</dfn> <dfn title="HyperThreading">ht</dfn> <dfn title="CPU Frequency scaling">cpufreq</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of cpu:1">
+<tbody><tr>
+<td> id</td>
+<td>=</td>
+<td>1</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.1</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.2</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.3</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.4</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of cpu:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>cpu:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>physical id: </td>
+<td>
+<div>2</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>cpu@2</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>6.7.7</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>0001-0677-0000-0000-0000-0000</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>1998MHz</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>1998MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="CPU virtualization (Vanderpool)">vmx</dfn> <dfn title="HyperThreading">ht</dfn> <dfn title="CPU Frequency scaling">cpufreq</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of cpu:2">
+<tbody><tr>
+<td> id</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.1</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.2</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.3</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.4</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of cpu:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>cpu:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>physical id: </td>
+<td>
+<div>3</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>cpu@3</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>6.7.7</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>0001-0677-0000-0000-0000-0000</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>1998MHz</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>1998MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="CPU virtualization (Vanderpool)">vmx</dfn> <dfn title="HyperThreading">ht</dfn> <dfn title="CPU Frequency scaling">cpufreq</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of cpu:3">
+<tbody><tr>
+<td> id</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.1</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.2</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.3</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalcpu:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalcpu:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Logical CPU</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.4</div>
+</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Logical CPU">logical</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of pci">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>pci</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Host bridge</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82G33/G31/P35/P31 Express DRAM Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>100</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:00.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of pci:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>pci:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>PCI bridge</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82G33/G31/P35/P31 Express PCI Express Root Port</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:01.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">pci</dfn> <dfn title="Power Management">pm</dfn> <dfn title="Message Signalled Interrupts">msi</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of pci:0">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>pcieport</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of pci:0">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>24</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>c000(size=4096)</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fa000000-fe8fffff</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>d0000000(size=268435456)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of display">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>display</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>VGA compatible controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>G92 [GeForce 8800 GT]</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>nVidia Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:01:00.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>a2</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="Message Signalled Interrupts">msi</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> <dfn title="extension ROM">rom</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of display">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>nvidia</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of display">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>16</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fd000000-fdffffff</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>d0000000-dfffffff(prefetchable)</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fa000000-fbffffff</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>cc00(size=128)</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fe8e0000-fe8fffff(prefetchable)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB UHCI Controller #4</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1a</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1a.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:0">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>uhci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:0">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>16</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>b800(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB UHCI Controller #5</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1a.1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1a.1</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:1">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>uhci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:1">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>21</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>b880(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB UHCI Controller #6</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1a.2</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1a.2</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:2">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>uhci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:2">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>18</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>bc00(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB2 EHCI Controller #2</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1a.7</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1a.7</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="Debug port">debug</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:3">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>ehci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:3">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>18</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>f9fffc00-f9ffffff</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of multimedia">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>multimedia</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Audio device</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) HD Audio Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1b</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1b.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="Message Signalled Interrupts">msi</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of multimedia">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>HDA Intel</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of multimedia">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>22</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>f9ff8000-f9ffbfff</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of pci:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>pci:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>PCI bridge</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) PCI Express Port 1</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1c</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1c.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">pci</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="Message Signalled Interrupts">msi</dfn> <dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of pci:1">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>pcieport</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of pci:1">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>25</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>1000(size=4096)</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>80000000-803fffff</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>f8f00000(size=1048576)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of pci:2">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>pci:2</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>PCI bridge</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) PCI Express Port 5</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1c.4</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1c.4</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">pci</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="Message Signalled Interrupts">msi</dfn> <dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of pci:2">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>pcieport</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of pci:2">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>26</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>d000(size=4096)</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fea00000-feafffff</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>80400000-805fffff(prefetchable)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of storage">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>storage</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>SATA controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>JMB362/JMB363 Serial ATA Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>JMicron Technology Corp.</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:03:00.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>03</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">storage</dfn> <dfn title="Power Management">pm</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> <dfn title="extension ROM">rom</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of storage">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>ahci</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of storage">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>16</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>feafe000-feafffff</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>feae0000-feaeffff(prefetchable)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of ide">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>ide</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>IDE interface</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>JMB362/JMB363 Serial ATA Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>JMicron Technology Corp.</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:03:00.1</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>scsi6</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>03</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">ide</dfn> <dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> <dfn title="Emulated device">emulated</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of ide">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>pata_jmicron</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of ide">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>17</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>dc00(size=8)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>d880(size=4)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>d800(size=8)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>d480(size=4)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>d400(size=16)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of cdrom">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>cdrom</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>DVD-RAM writer</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>DVR-113NP</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>PIONEER</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.0.0</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>scsi@6:0.0.0</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/cdrom</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/cdrw</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/dvd</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/dvdrw</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/scd0</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sr0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="support is removable">removable</dfn> <dfn title="Audio CD playback">audio</dfn> <dfn title="CD-R burning">cd-r</dfn> <dfn title="CD-RW burning">cd-rw</dfn> <dfn title="DVD playback">dvd</dfn> <dfn title="DVD-R burning">dvd-r</dfn> <dfn title="DVD-RAM burning">dvd-ram</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of cdrom">
+<tbody><tr>
+<td> ansiversion</td>
+<td>=</td>
+<td>5</td>
+</tr>
+<tr>
+<td> status</td>
+<td>=</td>
+<td>nodisc</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of pci:3">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>pci:3</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>PCI bridge</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) PCI Express Port 6</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1c.5</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1c.5</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">pci</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="Message Signalled Interrupts">msi</dfn> <dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of pci:3">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>pcieport</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of pci:3">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>27</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>2000(size=4096)</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fe900000-fe9fffff</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>80600000-807fffff(prefetchable)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of network">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>network</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Ethernet interface</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>L1 Gigabit Ethernet Adapter</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Atheros Communications</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:02:00.0</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>eth0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>b0</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>00:1e:8c:be:1a:42</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>100MB/s</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>1GB/s</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="Message Signalled Interrupts">msi</dfn> <dfn title="PCI Express">pciexpress</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> <dfn title="extension ROM">rom</dfn> <dfn title="">ethernet</dfn> <dfn title="Physical interface">physical</dfn> <dfn title="twisted pair">tp</dfn> <dfn title="10MB/s">10bt</dfn> <dfn title="10MB/s (full duplex)">10bt-fd</dfn> <dfn title="100MB/s">100bt</dfn> <dfn title="100MB/s (full duplex)">100bt-fd</dfn> <dfn title="1GB/s (full duplex)">1000bt-fd</dfn> <dfn title="Auto-negotiation">autonegotiation</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of network">
+<tbody><tr>
+<td> autonegotiation</td>
+<td>=</td>
+<td>on</td>
+</tr>
+<tr>
+<td> broadcast</td>
+<td>=</td>
+<td>yes</td>
+</tr>
+<tr>
+<td> driver</td>
+<td>=</td>
+<td>atl1</td>
+</tr>
+<tr>
+<td> driverversion</td>
+<td>=</td>
+<td>2.1.3</td>
+</tr>
+<tr>
+<td> duplex</td>
+<td>=</td>
+<td>full</td>
+</tr>
+<tr>
+<td> firmware</td>
+<td>=</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td> ip</td>
+<td>=</td>
+<td>192.168.1.122</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+<tr>
+<td> link</td>
+<td>=</td>
+<td>yes</td>
+</tr>
+<tr>
+<td> multicast</td>
+<td>=</td>
+<td>yes</td>
+</tr>
+<tr>
+<td> port</td>
+<td>=</td>
+<td>twisted pair</td>
+</tr>
+<tr>
+<td> speed</td>
+<td>=</td>
+<td>100MB/s</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of network">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>28</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fe9c0000-fe9fffff</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>fe9a0000-fe9bffff(prefetchable)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:4">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:4</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB UHCI Controller #1</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1d</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1d.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:4">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>uhci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:4">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>23</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>b080(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:5">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:5</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB UHCI Controller #2</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1d.1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1d.1</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:5">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>uhci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:5">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>19</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>b400(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:6">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:6</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB UHCI Controller #3</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1d.2</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1d.2</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:6">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>uhci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:6">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>18</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>b480(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of usb:7">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>usb:7</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>USB Controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) USB2 EHCI Controller #1</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1d.7</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1d.7</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="Debug port">debug</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of usb:7">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>ehci_hcd</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of usb:7">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>23</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>f9fff800-f9fffbff</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of pci:4">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>pci:4</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>PCI bridge</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801 PCI Bridge</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1e</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1e.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>92</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">pci</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of pci:4">
+<tbody><tr>
+<td> ioport</td>
+<td>:</td>
+<td>e000(size=4096)</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>feb00000-febfffff</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of multimedia">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>multimedia</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Multimedia audio controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>SB Live! EMU10k1</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Creative Labs</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:05:01.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>07</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of multimedia">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>EMU10K1_Audigy</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>64</td>
+</tr>
+<tr>
+<td> maxlatency</td>
+<td>=</td>
+<td>20</td>
+</tr>
+<tr>
+<td> mingnt</td>
+<td>=</td>
+<td>2</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of multimedia">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>17</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>e880(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of input">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>input</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Input device controller</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>SB Live! Game Port</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Creative Labs</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1.1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:05:01.1</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>07</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of input">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>Emu10k1_gameport</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>64</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of input">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>0</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>ec00(size=8)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of firewire:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>firewire:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>FireWire (IEEE 1394)</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>VT6306/7/8 [Fire II(M)] IEEE 1394 OHCI Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>VIA Technologies, Inc.</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>2</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:05:02.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>46</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of firewire:0">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>ohci1394</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>64</td>
+</tr>
+<tr>
+<td> maxlatency</td>
+<td>=</td>
+<td>61</td>
+</tr>
+<tr>
+<td> mingnt</td>
+<td>=</td>
+<td>5</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of firewire:0">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>18</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>febff800-febfffff</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>e800(size=128)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of firewire:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>firewire:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>FireWire (IEEE 1394)</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>VT6306/7/8 [Fire II(M)] IEEE 1394 OHCI Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>VIA Technologies, Inc.</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>3</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:05:03.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>c0</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of firewire:1">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>ohci1394</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>64</td>
+</tr>
+<tr>
+<td> maxlatency</td>
+<td>=</td>
+<td>32</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of firewire:1">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>16</td>
+</tr>
+<tr>
+<td> memory</td>
+<td>:</td>
+<td>febff000-febff7ff</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>e480(size=128)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of isa">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>isa</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>ISA bridge</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801IB (ICH9) LPC Interface Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1f</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1f.0</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">isa</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of isa">
+<tbody><tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of ide:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>ide:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>IDE interface</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801IB (ICH9) 2 port SATA IDE Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1f.2</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1f.2</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>66MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">ide</dfn> <dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of ide:0">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>ata_piix</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of ide:0">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>22</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>a000(size=8)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>9c00(size=4)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>9880(size=8)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>9800(size=4)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>9480(size=16)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>9400(size=16)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of serial">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>serial</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>SMBus</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) SMBus Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1f.3</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1f.3</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>64 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>33MHz</td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of serial">
+<tbody><tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of serial">
+<tbody><tr>
+<td> memory</td>
+<td>:</td>
+<td>f9fff400-f9fff4ff</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>400(size=32)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of ide:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>ide:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>IDE interface</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>82801I (ICH9 Family) 2 port SATA IDE Controller</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Intel Corporation</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1f.5</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>pci@0000:00:1f.5</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>scsi2</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>02</td>
+</tr>
+<tr>
+<td>width: </td>
+<td>32 bits</td>
+</tr>
+<tr>
+<td>clock: </td>
+<td>66MHz</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">ide</dfn> <dfn title="Power Management">pm</dfn> <dfn title="bus mastering">bus_master</dfn> <dfn title="PCI capabilities listing">cap_list</dfn> <dfn title="Emulated device">emulated</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of ide:1">
+<tbody><tr>
+<td> driver</td>
+<td>=</td>
+<td>ata_piix</td>
+</tr>
+<tr>
+<td> latency</td>
+<td>=</td>
+<td>0</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+<tr>
+<td>resources:</td>
+<td>
+<table summary="resources of ide:1">
+<tbody><tr>
+<td> irq</td>
+<td>:</td>
+<td>22</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>b000(size=8)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>ac00(size=4)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>a880(size=8)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>a800(size=4)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>a480(size=16)</td>
+</tr>
+<tr>
+<td> ioport</td>
+<td>:</td>
+<td>a400(size=16)</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of disk">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>disk</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>ATA Disk</td>
+</tr>
+<tr>
+<td>product: </td>
+<td>Hitachi HDP72504</td>
+</tr>
+<tr>
+<td>vendor: </td>
+<td>Hitachi</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.0.0</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>scsi@2:0.0.0</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sda</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>GMDO</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>GEB430RE0KD13B</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>372GiB (400GB)</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Partitioned disk">partitioned</dfn> <dfn title="MS-DOS partition table">partitioned:dos</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of disk">
+<tbody><tr>
+<td> ansiversion</td>
+<td>=</td>
+<td>5</td>
+</tr>
+<tr>
+<td> signature</td>
+<td>=</td>
+<td>0ed25b93</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of volume:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>volume:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Windows NTFS volume</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>scsi@2:0.0.0,1</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sda1</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>3.1</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>2203bc0c-a2d5-4048-b8e7-a895d885fba8</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>204GiB</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>204GiB</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Primary partition">primary</dfn> <dfn title="Bootable partition (active)">bootable</dfn> <dfn title="Windows NTFS">ntfs</dfn> <dfn title="initialized volume">initialized</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of volume:0">
+<tbody><tr>
+<td> clustersize</td>
+<td>=</td>
+<td>4096</td>
+</tr>
+<tr>
+<td> created</td>
+<td>=</td>
+<td>2002-01-01 03:24:18</td>
+</tr>
+<tr>
+<td> filesystem</td>
+<td>=</td>
+<td>ntfs</td>
+</tr>
+<tr>
+<td> state</td>
+<td>=</td>
+<td>clean</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of volume:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>volume:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Extended partition</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>2</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>scsi@2:0.0.0,2</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sda2</div>
+</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>168GiB</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>168GiB</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Primary partition">primary</dfn> <dfn title="Extended partition">extended</dfn> <dfn title="Partitioned disk">partitioned</dfn> <dfn title="Extended partition">partitioned:extended</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalvolume:0">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalvolume:0</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Linux filesystem partition</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>5</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sda5</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/</div>
+</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>162GiB</td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of logicalvolume:0">
+<tbody><tr>
+<td> mount.fstype</td>
+<td>=</td>
+<td>ext4</td>
+</tr>
+<tr>
+<td> mount.options</td>
+<td>=</td>
+<td>rw,relatime,errors=remount-ro,barrier=1,data=ordered</td>
+</tr>
+<tr>
+<td> state</td>
+<td>=</td>
+<td>mounted</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of logicalvolume:1">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>logicalvolume:1</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Linux swap / Solaris partition</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>6</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sda6</div>
+</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>5898MiB</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="No filesystem">nofs</dfn> </td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of scsi">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>scsi</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>physical id: </td>
+<td>
+<div>5</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>firewire@0010b92100a5152c</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>scsi8</div>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of disk">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>disk</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>SCSI Disk</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>0.1.0</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>scsi@8:0.1.0</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sdb</div>
+</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>931GiB (1TB)</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Partitioned disk">partitioned</dfn> <dfn title="MS-DOS partition table">partitioned:dos</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of disk">
+<tbody><tr>
+<td> signature</td>
+<td>=</td>
+<td>48fe2c00</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of volume">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>volume</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Windows NTFS volume</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1</div>
+</td>
+</tr>
+<tr>
+<td>bus info: </td>
+<td>
+<div>scsi@8:0.1.0,1</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/dev/sdb1</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>/media/HyperDrive_</div>
+</td>
+</tr>
+<tr>
+<td>version: </td>
+<td>3.1</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>a8c243a6-5f32-7248-8543-419c25f0fba0</td>
+</tr>
+<tr>
+<td>size: </td>
+<td>931GiB</td>
+</tr>
+<tr>
+<td>capacity: </td>
+<td>931GiB</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="Primary partition">primary</dfn> <dfn title="Windows NTFS">ntfs</dfn> <dfn title="initialized volume">initialized</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of volume">
+<tbody><tr>
+<td> clustersize</td>
+<td>=</td>
+<td>4096</td>
+</tr>
+<tr>
+<td> created</td>
+<td>=</td>
+<td>2008-02-09 16:32:36</td>
+</tr>
+<tr>
+<td> filesystem</td>
+<td>=</td>
+<td>ntfs</td>
+</tr>
+<tr>
+<td> label</td>
+<td>=</td>
+<td>HyperDrive</td>
+</tr>
+<tr>
+<td> mount.fstype</td>
+<td>=</td>
+<td>fuseblk</td>
+</tr>
+<tr>
+<td> mount.options</td>
+<td>=</td>
+<td>rw,nosuid,nodev,relatime,user_id=0,group_id=0,default_permissions,allow_other,blksize=4096</td>
+</tr>
+<tr>
+<td> state</td>
+<td>=</td>
+<td>mounted</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="blog-comparison" summary="attributes of network">
+<thead>
+<tr>
+<td>id:</td>
+<td>
+<div>network</div>
+</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>description: </td>
+<td>Ethernet interface</td>
+</tr>
+<tr>
+<td>physical id: </td>
+<td>
+<div>1</div>
+</td>
+</tr>
+<tr>
+<td>logical name: </td>
+<td>
+<div>vboxnet0</div>
+</td>
+</tr>
+<tr>
+<td>serial: </td>
+<td>0a:00:27:00:00:00</td>
+</tr>
+<tr>
+<td>capabilities: </td>
+<td><dfn title="">ethernet</dfn> <dfn title="Physical interface">physical</dfn> </td>
+</tr>
+<tr>
+<td>configuration:</td>
+<td>
+<table summary="configuration of network">
+<tbody><tr>
+<td> broadcast</td>
+<td>=</td>
+<td>yes</td>
+</tr>
+<tr>
+<td> multicast</td>
+<td>=</td>
+<td>yes</td>
+</tr>
+</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Big thanks to Carthik for <a href="http://embraceubuntu.com/2007/02/18/find-hardware-specs-details-on-your-computer/">the original post</a>!</p>
+
+  
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/dont-deploy-html5-w3c/" rel="prev">&amp;#8220;Don’t deploy HTML5&amp;#8221; &amp;#8211; W3C?</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-promote-js/" rel="next">JavaScript: Promote JS</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/terminal-hardware-specs-to-html-file/ -->
+  
+
+</body></html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popcorn.js 0.2 Released</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Popcorn.js 0.2 Released</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/open source/" class="tag">open source</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I am very proud to announce that <a href="http://popcornjs.org">Popcorn.js</a> hit 0.2 today. The Popcorn.js team has been working hard to deliver a stable, <a href="http://popcornjs.org/#api-reference">documented</a> and <a href="http://popcornjs.org/test/">unit tested</a> JavaScript toolbelt for working with HTML5 <code>&lt;video&gt;</code>.</p>
+<p>Popcorn.js 0.2 rethinks Popcorn.js 0.1 as an event system for HTML5 <code>&lt;video&gt;</code> with an API, a plugin system, and strong adherence to the native HTML5 <code>&lt;video&gt;</code> API.</p>
+<p>Popcorn.js’ API follows the standard HTML5 method names by using a passthrough system to the native <code>HTMLVideoElement</code>. Popcorn builds on these native method names like <code>.mute()</code>, <code>.load()</code> and <code>.play()</code>, and adds new method names like <code>.exec()</code>, <code>.listen()</code>, <code>.trigger()</code>, <code>.getTrackEvents()</code>, and so on.</p>
+<p>Popcorn methods also make a point of returning a reference to the current Popcorn instance where possible, so you can write nice method chains.</p>
+<p class="snippet caption">popcorn-api-examples-natives.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-title class_">Popcorn</span>(<span class="hljs-string">'#video'</span>)
+  .<span class="hljs-title function_">play</span>()
+  .<span class="hljs-title function_">currentTime</span>(<span class="hljs-number">30</span>)
+  .<span class="hljs-title function_">pause</span>()
+  .<span class="hljs-title function_">listen</span>(<span class="hljs-string">'timeupdate'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>){
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-variable language_">this</span> ) <span class="hljs-comment">// the current popcorn object</span>
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">currentTime</span>() <span class="hljs-comment">// the currentTime</span>
+  })
+  .<span class="hljs-title function_">play</span>()
+  .<span class="hljs-title function_">currentTime</span>(<span class="hljs-number">20</span>)
+</code></pre>
+<p>Popcorn also offers a plugin system that makes it easy for developers to add methods to Popcorn that package functionality for responding to events in a video.</p>
+<h3>Roadmap</h3>
+<p>The Popcorn team is actively working on a 0.3 – 1.0 roadmap. Come join the conversation and get involved on IRC at <a href="irc://irc.mozilla.org/popcorn">irc.mozilla.org/popcorn</a>.</p>
+<h3>Butter</h3>
+<p>Today also marks the soft release of <a href="http://popcornjs.org/butter">Butter</a> 0.1, an authoring tool for Popcorn that Bocoup is developing for <a href="http://webmademovies.org/">Webmade Movies</a>, the <a href="http://drumbeat.org">Mozilla Drumbeat</a> project. I urge you to take it for a spin.</p>
+<p>We will continue work on Butter in the coming months as we prepare Butter to be the open source JavaScript video editing software. Butter is dual licensed MIT/GPL, and the source code will be opened on Github with the forth coming release of Butter 0.2.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/bocoup-recommits-to-boston-innovation-district/" rel="prev">Bocoup recommits to Boston Innovation District</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/the-catch-with-try-catch/" rel="next">The &amp;#8220;catch&amp;#8221; with try&amp;#8230;catch</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/popcorn-js-0-2-released/ -->
+  
+
+</body></html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Web Workers: From Basics to jQuery.Hive, Part III</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Javascript Web Workers: From Basics to jQuery.Hive, Part III</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+      <a href="/bocoup_lume/tags/web standards/" class="tag">web standards</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <hr>
+<p>I’m a jQuery enthusiast. Maybe even an evangelist. So I decided to make workers easy for my fellow jQuery developers – and thus was born the jQuery.Hive. Inititally it began it’s life as PollenJS a jQuery-looking library of functions that were light, useful and thread-safe. This was before the WebKit implementation existed so everything was written with the notion that it would only exist in the Worker. The MOST IMPORTANT goals were and still are:</p>
+<ul>
+<li>Concise syntax</li>
+<li>Shallow learning curve for jQuery developers</li>
+</ul>
+<p>Not long after I began developing PollenJS, Safari WebKit added Worker support and shortly thereafter Chrome WebKit caught up. Of course then PollenJS was officially broken – it normalized messages into objects to add support for identity from one worker to the other… WebKit sent errant empty messages.</p>
+<hr>
+<p>This is when the Hive was born.</p>
+<hr>
+<p>… Which was awesome, because it gave me the opportunity to make the main window as easy to manage development with workers as PollenJS had become <em>within</em> the worker. The basic goals were:</p>
+<ul>
+<li>Simplify the client/main page worker setup API</li>
+<li>Wrap the Worker constructor and functions in syntax that jQuery developers are familiar with</li>
+<li>Normalize cross-implementation inconsistencies</li>
+</ul>
+<h2>jQuery.Hive/PollenJS turbocharge your workers.</h2>
+<p>Let’s look at the data filter example from above, but in jQuery.Hive/Pollen JS syntax…</p>
+<p class="snippet caption">workers-5.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">//  The main window</span>
+$(<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">var</span> message = {
+        <span class="hljs-attr">data</span>: { <span class="hljs-comment">/* huge data object */</span> },
+        <span class="hljs-attr">filter</span>: <span class="hljs-string">'foo'</span>
+      };
+
+  $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">create</span>({
+    <span class="hljs-comment">//  optional. if no 'count' property is set, Hive creates only 1 worker</span>
+    <span class="hljs-attr">count</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-comment">//  the worker file</span>
+    <span class="hljs-attr">worker</span>: <span class="hljs-string">'hive-worker-file-1.js'</span>,
+    <span class="hljs-comment">//  the receive ( convenience to writing out the addEventListener)</span>
+    <span class="hljs-attr">receive</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">filtered</span>) {
+      <span class="hljs-comment">/*
+
+        jQuery.Hive manages serialization/deserialization
+
+      */</span>
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(filtered.<span class="hljs-property">data</span>);
+
+    },
+    <span class="hljs-attr">created</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"> $hive </span>) {
+      <span class="hljs-comment">/*
+
+        the `created` callback fires after the worker is created,
+        the first argument is an array of the workers
+
+        $().send() is the wrapper for postMessage() with complete
+        serialization/deserialization
+
+      */</span>
+      $( $hive ).<span class="hljs-title function_">send</span>(message);
+
+    }
+  });
+
+  <span class="hljs-comment">/*
+    without comments:
+
+    $.Hive.create({
+      worker: 'hive-worker-file-1.js',
+      receive: function (filtered) {
+        console.log(filtered.data);
+      },
+      created: function ( $hive ) {
+        $( $hive ).send(message);
+      }
+    });
+
+  */</span>
+});
+
+</code></pre>
+<p>It’s important to remember that including ‘jquery.hive.pollen.js’ is REQUIRED, or else you will not get compatibility across implementations. And plus, it’s got rad stuff in it.</p>
+<p class="snippet caption">workers-6.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">//  Inside the worker</span>
+
+<span class="hljs-title function_">importScripts</span>(<span class="hljs-string">'jquery.hive.pollen.js'</span>);
+
+<span class="hljs-comment">//  Alias to addEventListener() syntax</span>
+$(<span class="hljs-keyword">function</span> (<span class="hljs-params">message</span>) {
+
+  <span class="hljs-comment">//  $.send() is the wrapper for postMessage() with complete</span>
+  <span class="hljs-comment">//  serialization/deserialization</span>
+
+  $.<span class="hljs-title function_">send</span>(
+    <span class="hljs-comment">//  $.query() is part of the PollenJS API</span>
+    $.<span class="hljs-title function_">query</span>(
+      <span class="hljs-comment">//  Filter data with a JSONPath query</span>
+      <span class="hljs-string">"[="</span>+message.<span class="hljs-property">filter</span>+<span class="hljs-string">"]"</span>,
+      message.<span class="hljs-property">data</span>
+    )
+  );
+});
+
+
+<span class="hljs-comment">/*
+  without comments:
+
+
+  importScripts('jquery.hive.pollen.js');
+
+  $(function (message) {
+    $.send(
+      $.query(
+        "[="+message.filter+"]",
+        message.data
+      )
+    );
+  });
+*/</span>
+
+
+
+</code></pre>
+<h1>
+<a href="http://github.com/rwldrn/jquery-hive">Get jQuery.Hive/PollenJS from GitHub – Starter Kit included!</a></h1>
+<h1>The [In]Complete jQuery.Hive API</h1>
+<p class="snippet caption">workers-7.js</p>
+<pre><code class="js hljs language-javascript">jQuery.<span class="hljs-property">Hive</span> -&gt; <span class="hljs-title class_">The</span> <span class="hljs-title class_">Hive</span> is a property <span class="hljs-keyword">of</span> jQuery
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-property">options</span> -&gt; <span class="hljs-title class_">Setup</span> properties <span class="hljs-keyword">for</span> jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">create</span>( [options] )
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-property">options</span>.<span class="hljs-property">count</span> -&gt; <span class="hljs-title class_">Set</span> property <span class="hljs-keyword">from</span> jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">create</span>( { <span class="hljs-attr">count</span>: [int] } ), number <span class="hljs-keyword">of</span> threads to create
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-property">options</span>.<span class="hljs-property">worker</span> -&gt; <span class="hljs-title class_">Set</span> string property <span class="hljs-keyword">from</span> jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">create</span>( { <span class="hljs-attr">worker</span>: [file-name] } ), name <span class="hljs-keyword">of</span> worker file
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-property">options</span>.<span class="hljs-property">receive</span> -&gt; <span class="hljs-title class_">Set</span> callback <span class="hljs-keyword">from</span> jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">create</span>( { <span class="hljs-attr">receive</span>: [callback] } ), callback to execute when worker receives message (can be <span class="hljs-variable language_">global</span> or worker specific)
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-property">options</span>.<span class="hljs-property">created</span> -&gt; <span class="hljs-title class_">Set</span> callback <span class="hljs-keyword">from</span> jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">create</span>( { <span class="hljs-attr">created</span>: [callback] } ), callback to execute when workers have been created
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-property">options</span>.<span class="hljs-property">special</span> -&gt; <span class="hljs-variable constant_">NOT</span> <span class="hljs-variable constant_">IMPLEMENTED</span>/<span class="hljs-variable constant_">INCOMPLETE</span> - <span class="hljs-title class_">Set</span> callback <span class="hljs-keyword">as</span> a second argument to $().<span class="hljs-title function_">send</span>()
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-property">options</span>.<span class="hljs-title function_">error</span>() -&gt; <span class="hljs-variable constant_">NOT</span> <span class="hljs-variable constant_">IMPLEMENTED</span>/<span class="hljs-variable constant_">INCOMPLETE</span> - <span class="hljs-title class_">Error</span> handler
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">create</span>( options ) -&gt; <span class="hljs-title class_">Array</span>, create workers, returns array <span class="hljs-keyword">of</span> all workers
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">destroy</span>( [id] ) -&gt; destroy all or specified worker by id
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">get</span>( [id] ) -&gt; <span class="hljs-title class_">Return</span> all or specified worker by [id], [id] argument is optional
+--&gt; $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>() returns all worker objects <span class="hljs-keyword">in</span> the $.<span class="hljs-title class_">Hive</span>
+--&gt; $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>(<span class="hljs-number">1</span>) returns the worker object whose <span class="hljs-variable constant_">ID</span> is <span class="hljs-number">1</span>
+
+jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">get</span>( id ).<span class="hljs-title function_">send</span>( message, callback ) -&gt; <span class="hljs-title class_">Send</span> [message] to worker thread, set optional receive callback
+--&gt; <span class="hljs-variable constant_">SIMPLER</span> <span class="hljs-attr">ALTERNATIVE</span>: $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>(id).<span class="hljs-title function_">send</span>( [message], <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {} )
+--&gt; <span class="hljs-title class_">Allows</span> <span class="hljs-keyword">for</span> passing a jQuery.<span class="hljs-property">Hive</span>.<span class="hljs-title function_">get</span>(id) object to $() ie. $( $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>(id) ).<span class="hljs-title function_">send</span>( [message] )
+
+jQuery.( $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>() ).<span class="hljs-title function_">send</span>( message ) -&gt; <span class="hljs-title class_">Send</span> [message] to worker thread
+--&gt; <span class="hljs-variable constant_">SIMPLER</span> <span class="hljs-attr">ALTERNATIVE</span>: $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>(id).<span class="hljs-title function_">send</span>( [message] )
+--&gt; <span class="hljs-title class_">Allows</span> <span class="hljs-keyword">for</span> passing a $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>(id) object to $() ie. $( $.<span class="hljs-title class_">Hive</span>.<span class="hljs-title function_">get</span>(id) ).<span class="hljs-title function_">send</span>( [message] )
+</code></pre>
+<h1>The [In]Complete jQuery.Hive.Pollen.js API</h1>
+<p class="snippet caption">workers-8.js</p>
+<pre><code class="js hljs language-javascript">$.<span class="hljs-title function_">now</span>([uts]) -&gt; <span class="hljs-title class_">Microseconds</span> or <span class="hljs-variable constant_">UTS</span> <span class="hljs-keyword">if</span> $.<span class="hljs-title function_">now</span>(<span class="hljs-literal">true</span>)
+
+$.<span class="hljs-title function_">noop</span>() -&gt; <span class="hljs-title class_">Empty</span> <span class="hljs-keyword">function</span>, <span class="hljs-title class_">Lifted</span> <span class="hljs-keyword">from</span> jQuery <span class="hljs-number">1.4</span>+, returns empty <span class="hljs-keyword">function</span> (<span class="hljs-params">replaced $.emptyFn()</span>)
+
+$.<span class="hljs-title function_">bind</span>( <span class="hljs-keyword">function</span>, context, args ) -&gt; <span class="hljs-title class_">Function</span> <span class="hljs-keyword">with</span> explicit context, context sets <span class="hljs-string">'this'</span>
+
+$.<span class="hljs-title function_">isObj</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, object was created <span class="hljs-keyword">with</span> {} or <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>()
+
+$.<span class="hljs-title function_">isEmptyObj</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Empty</span> <span class="hljs-title class_">Object</span>
+
+$.<span class="hljs-title function_">isArr</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Array</span>
+
+$.<span class="hljs-title function_">isRegExp</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Regular</span> <span class="hljs-title class_">Expression</span>
+
+$.<span class="hljs-title function_">isFn</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Function</span>
+
+$.<span class="hljs-title function_">isStr</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">String</span>
+
+$.<span class="hljs-title function_">isNum</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Number</span>
+
+$.<span class="hljs-title function_">isJson</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Valid</span> <span class="hljs-title class_">JSON</span> <span class="hljs-title class_">String</span>
+
+$.<span class="hljs-title function_">isDef</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Defined</span>
+
+$.<span class="hljs-title function_">isNull</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Null</span>
+
+$.<span class="hljs-title function_">isEmpty</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-string">''</span>
+
+$.<span class="hljs-title function_">eq</span>( arg, array ) -&gt; <span class="hljs-title class_">Arg</span> is equal to at least one definition <span class="hljs-keyword">in</span> array
+
+$.<span class="hljs-title function_">trim</span>( arg ) -&gt; <span class="hljs-title class_">Removes</span> all L and R whitespace
+
+$.<span class="hljs-title function_">inStr</span>( arg ) -&gt; <span class="hljs-title class_">Boolean</span>, arg <span class="hljs-keyword">in</span> string
+
+$.<span class="hljs-title function_">each</span>( object, <span class="hljs-keyword">function</span> ) -&gt; <span class="hljs-title class_">Enumerate</span> [object] (object,array), apply [<span class="hljs-keyword">function</span>]
+
+$.<span class="hljs-title function_">toArray</span>( arg ) -&gt; <span class="hljs-title class_">Convert</span> [arg] into an array
+
+$.<span class="hljs-title function_">isAtIndex</span>( array, index, needle ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-title class_">Checks</span> <span class="hljs-keyword">if</span> [needle] is located at [index] <span class="hljs-keyword">in</span> [array]
+
+$.<span class="hljs-title function_">getIndex</span>( array, needle ) -&gt; <span class="hljs-title class_">Int</span>, index <span class="hljs-keyword">of</span> [needle] <span class="hljs-keyword">in</span> [array]
+
+$.<span class="hljs-title function_">inArr</span>( array, needle ) -&gt; <span class="hljs-title class_">Boolean</span>, <span class="hljs-literal">true</span> <span class="hljs-keyword">if</span> [needle] <span class="hljs-keyword">in</span> [array]
+
+$.<span class="hljs-title function_">clone</span>( arg ) -&gt; <span class="hljs-title class_">Array</span> || <span class="hljs-title class_">Object</span>, clone <span class="hljs-keyword">of</span> [array] or <span class="hljs-title class_">Object</span>, deep clone <span class="hljs-keyword">of</span> [object]
+
+$.<span class="hljs-title function_">last</span>( array ) -&gt; <span class="hljs-title class_">Array</span> <span class="hljs-title class_">Item</span>, last item <span class="hljs-keyword">in</span> [array]
+
+$.<span class="hljs-title function_">first</span>( array ) -&gt; <span class="hljs-title class_">Array</span> <span class="hljs-title class_">Item</span>, first item <span class="hljs-keyword">in</span> [array]
+
+$.<span class="hljs-title function_">unique</span>( arg ) -&gt; <span class="hljs-title class_">Array</span> || <span class="hljs-title class_">Object</span>, removes duplicate values <span class="hljs-keyword">from</span> [arg](array||object), returns uniques
+
+$.<span class="hljs-title function_">merge</span>( arr, ) -&gt; <span class="hljs-title class_">Array</span>, <span class="hljs-title class_">Merges</span> [*](array), removes duplicate values
+
+$.<span class="hljs-title function_">combine</span>( keys, values ) -&gt; <span class="hljs-title class_">Object</span>, <span class="hljs-title class_">An</span> object, where [keys](array) = [values](array)
+
+$.<span class="hljs-title function_">filter</span>( arg , <span class="hljs-keyword">function</span>, iteration ) -&gt; (<span class="hljs-title class_">Array</span>||<span class="hljs-title class_">Object</span>), apply [<span class="hljs-keyword">function</span>](<span class="hljs-literal">true</span>||<span class="hljs-literal">false</span>) to each item <span class="hljs-keyword">in</span> [arg], <span class="hljs-keyword">return</span> (array||object) <span class="hljs-keyword">of</span> <span class="hljs-literal">true</span>
+
+$.<span class="hljs-title function_">map</span>( array, <span class="hljs-keyword">function</span> ) -&gt; <span class="hljs-title class_">Array</span>, apply [<span class="hljs-keyword">function</span>] to each item <span class="hljs-keyword">in</span> [array], <span class="hljs-keyword">return</span> array <span class="hljs-keyword">of</span> <span class="hljs-keyword">new</span> values
+
+$.<span class="hljs-title function_">grep</span>( array, expression, <span class="hljs-keyword">function</span> ) -&gt; <span class="hljs-title class_">Object</span>, values that match [expression] and/or [<span class="hljs-keyword">function</span>]
+
+$.<span class="hljs-title function_">size</span>( array ) -&gt; <span class="hljs-title class_">Int</span>, size <span class="hljs-keyword">of</span> arr
+
+$.<span class="hljs-title function_">extend</span>( object, _object ) -&gt; <span class="hljs-title class_">Object</span>, copy properties fron [_object] to [object]
+
+$.ajax.<span class="hljs-title function_">get</span>( request ) -&gt; <span class="hljs-title class_">Implemented</span>. <span class="hljs-title class_">Documention</span> incomplete.
+--&gt; request.<span class="hljs-property">url</span> -&gt; url to open
+--&gt; request.<span class="hljs-property">data</span> -&gt; params
+--&gt; request.<span class="hljs-property">success</span> -&gt; success callback
+
+$.ajax.<span class="hljs-title function_">post</span>( request ) -&gt; <span class="hljs-title class_">Implemented</span>. <span class="hljs-title class_">Documention</span> incomplete.
+--&gt; request.<span class="hljs-property">url</span> -&gt; url to open
+--&gt; request.<span class="hljs-property">data</span> -&gt; params
+--&gt; request.<span class="hljs-property">success</span> -&gt; success callback
+
+$.<span class="hljs-title function_">param</span>( arg ) -&gt; <span class="hljs-title class_">String</span>, <span class="hljs-title class_">Derived</span> and <span class="hljs-title class_">Adapted</span> <span class="hljs-keyword">from</span>, similar <span class="hljs-keyword">in</span> behavior to jQuery.<span class="hljs-title function_">param</span>()
+
+$.<span class="hljs-title function_">storage</span>( key, val ) -&gt; ?, persistant across worker messages (by worker) data storage - setter
+
+$.<span class="hljs-title function_">storage</span>( key ) -&gt; <span class="hljs-title class_">Val</span>, persistant across worker messages (by worker) data storage - getters
+
+$.<span class="hljs-title function_">query</span>( selector, object ) -&gt; *, <span class="hljs-title class_">Query</span> json or object <span class="hljs-keyword">with</span> <span class="hljs-title class_">JSON</span>Path selector
+--&gt; <span class="hljs-attr">http</span>:<span class="hljs-comment">//goessner.net/articles/JsonPath/</span>
+
+$.<span class="hljs-title function_">send</span>( message ) -&gt; <span class="hljs-title class_">Wraps</span> and normalizes <span class="hljs-title function_">postMessage</span>() across supporting clients, sends [message](object||string||array) to client
+--&gt; <span class="hljs-keyword">if</span> [message] is an object, and message.<span class="hljs-property">SEND_TO</span> &amp;amp; message.<span class="hljs-property">SEND_FROM</span> is defined, the message will be sent directly to the worker defined by <span class="hljs-variable constant_">SEND_TO</span>
+
+$.<span class="hljs-title function_">receive</span>( <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {} ) -&gt; <span class="hljs-title class_">Worker</span>, execute [<span class="hljs-keyword">function</span>] when worker receives a message <span class="hljs-keyword">from</span> the client
+--&gt; first argument is message object
+--&gt; <span class="hljs-string">'this'</span> is <span class="hljs-title class_">WorkerGlobalScope</span>
+--&gt; can be shortened to $(<span class="hljs-keyword">function</span> (<span class="hljs-params">message</span>) { } );
+
+$.<span class="hljs-title function_">decode</span>( arg ) -&gt; <span class="hljs-title class_">JSON</span> <span class="hljs-keyword">as</span> <span class="hljs-title class_">String</span>, turns <span class="hljs-title class_">JSON</span> [arg] into a str
+
+$.<span class="hljs-title function_">encode</span>( arg ) -&gt; <span class="hljs-title class_">JSON</span> <span class="hljs-title class_">Object</span>, turns [arg] into <span class="hljs-title class_">JSON</span>
+
+</code></pre>
+<p>Considering it’s youth as a project, the API is subject to change.</p>
+<p><em>Edit</em><br>
+In the time since this was originally published, <a href="/bocoup_lume/weblog/javascript-web-workers-chrome-5-now-supports-complex-messages/">Chrome</a>, <a href="/bocoup_lume/weblog/javascript-web-workers-safari-5-now-supports-complex-messages/">Safari</a> &amp; <a href="/bocoup_lume/weblog/javascript-web-workers-opera-10-60-beta-supports-complex-messages/">Opera</a> now support complex JSON messages.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-web-workers-chrome-5-now-supports-complex-messages/" rel="prev">Javascript Web Workers: Chrome 5 Now Supports Complex Messages</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-web-workers-from-basics-to-jquery-hive-part-i/" rel="next">Javascript Web Workers: From Basics to jQuery.Hive</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-web-workers-from-basics-to-jquery-hive-part-iii/ -->
+  
+
+</body></html>

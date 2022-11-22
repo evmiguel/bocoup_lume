@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacking Your Event Space</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Hacking Your Event Space</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/bocoup/" class="tag">bocoup</a>
+    
+      <a href="/bocoup_lume/tags/meetups/" class="tag">meetups</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>One of the best things about working at Bocoup has been the <a target="_blank" href="http://twitter.com/figital/bocoup-speakers" rel="noopener">fabulous lineups of speakers</a> we’ve had over the past year and the top-notch development squads who show up month-after-month to learn/lobby/scheme over querying, scripting, and visualizing the future.</p>
+<p style="clear:both;">Our event crowds have (more often than we’ve even expected) been so large that we’ve had to worry about having enough space on our current wireless router for everyone’s laptops, cell phones, and tablets.</p>
+<p><a href="/bocoup_lume/loft/events/2010/john-resig-advanced-jquery/"><img decoding="async" style="float:left;border:4px solid #ccc;width:500px;height:333px;" src="https://farm3.static.flickr.com/2694/4405689897_da3085bb42.jpg"></a></p>
+<div>A packed house at one of our jQuery meetups last March. Click the image to check out <a target="_blank" href="http://twitter.com/jeresig" rel="noopener">ejohn’s</a> slides or more digipics from <a target="_blank" href="http://twitter.com/cowboy" rel="noopener">@cowboy</a></div>
+<p>As someone who is at the same time a data-mining junkie, data visualization afficionado, and responsible for helping maintain our local wireless network, I wanted to track and visualize routing performance statistics enhance our ability to appropriate network resources for our <a href="/bocoup_lume/about/" target="_blank" rel="noopener">employees</a>, partners/clients, <a href="/bocoup_lume/loft/coworking/">coworkers</a>, <a target="_blank" href="/bocoup_lume/education/" rel="noopener">trainees</a>, Gratis et Libre participants, and event attendees.</p>
+<p><img decoding="async" loading="lazy" style="float:right;margin-left:30px;" title="Hacksaw" src="https://static.bocoup.com/blog/hacksaw.png" alt="Hacksaw!" width="300" height="166"></p>
+<h2>The Hack</h2>
+<p>Our current Cisco wireless router happens to have a network management screen whereby we can see a list of all of the devices who have been given IP address leases from our DHCP server, along with each device’s MAC addresses and time remaining on their current session.</p>
+<p>I’ve been working with PHP and wget lately on a few projects and decided to script some custom reports to give us more timely access to our active and available wireless resources.</p>
+<p><img decoding="async" style="clear:both;float:right;margin-bottom:20px;padding-bottom:0px;border:1px solid #333;" src="https://farm6.static.flickr.com/5179/5405112814_00ca7fa479.jpg"></p>
+<p style="">Here’s a quick bash script that I’ve scheduled with crontab to run every minute that grabs an HTML page from our router. Every router is going to have slightly different managment screens so consider that part of this article your homework. If you happen to be using a Linksys E-Series router you’ll find your DHCP routing table by clicking on a button or link like this in your administration panel.</p>
+<p class="snippet caption">pull-dhcp.sh</p>
+<pre><code class="shell hljs language-shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">!/bin/bash</span>
+<span class="hljs-meta prompt_">
+# </span><span class="language-bash">This script runs every minute using crontab. It logs into your router</span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">and grabs a DHCP that will be scraped later with PHP.</span>
+
+HOST='192.168.1.1'
+FEEDDIR='/home/sfitchet/git-repos/roto'
+COOKIES=$FEEDDIR'/cookies.txt'
+USER='admin'
+PASS='alpine' # j/k ;)
+FILENAME='/DHCP_Static.asp' # This is URI we want from our router's admin page
+<span class="hljs-meta prompt_">
+# </span><span class="language-bash">Get the DHCP HTML page and save it to a temporary location</span>
+wget -E -O $FEEDDIR$FILENAME'.html.temp' --cookies=on --keep-session-cookies --save-cookies=$COOKIES $HOST$FILENAME --http-user $USER --http-password $PASS
+<span class="hljs-meta prompt_">
+# </span><span class="language-bash">When the download is complete, copy the file to the production path and <span class="hljs-keyword">then</span></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">delete the temp file.</span>
+cp $FEEDDIR$FILENAME'.html.temp' $FEEDDIR$FILENAME'.html'
+rm $FEEDDIR$FILENAME'.html.temp'
+
+
+
+</code></pre>
+<p>Once the raw data from our router has been stored locally we can just use something like PHP to parse it into an array and then count the number of records ….</p>
+<pre><code class="php hljs language-php"><span class="hljs-meta">&lt;?php</span>
+
+  <span class="hljs-comment">// Grab the raw data feed from the filesystem</span>
+  <span class="hljs-variable">$filename</span> = <span class="hljs-string">"DHCP_Static.asp.html"</span>;
+  <span class="hljs-variable">$file</span> = <span class="hljs-title function_ invoke__">file_get_contents</span>(<span class="hljs-variable">$filename</span>);
+
+  <span class="hljs-comment">// Find the range of characters we'll scrape from the raw data feed</span>
+  <span class="hljs-comment">// Sure I could regex this part but I didn't :p</span>
+  <span class="hljs-variable">$startpos</span> = <span class="hljs-title function_ invoke__">strpos</span>(<span class="hljs-variable">$file</span>, <span class="hljs-string">"var table = new Array("</span>) + <span class="hljs-number">22</span>;
+  <span class="hljs-variable">$endpos</span> = <span class="hljs-title function_ invoke__">strpos</span>(<span class="hljs-variable">$file</span>, <span class="hljs-string">");"</span>, <span class="hljs-variable">$startpos</span>);
+  <span class="hljs-variable">$length</span> = <span class="hljs-variable">$endpos</span> - <span class="hljs-variable">$startpos</span>;
+
+  <span class="hljs-comment">// Scrape the file into a PHP var</span>
+  <span class="hljs-variable">$scrapeage</span> = <span class="hljs-title function_ invoke__">substr</span>(<span class="hljs-variable">$file</span>, <span class="hljs-variable">$startpos</span>, <span class="hljs-variable">$length</span>);
+
+  <span class="hljs-comment">// Pull the semi-formatted data into a PHP array</span>
+  <span class="hljs-variable">$datalist</span> = <span class="hljs-title function_ invoke__">explode</span>(<span class="hljs-string">","</span>, <span class="hljs-variable">$scrapeage</span>);
+
+  <span class="hljs-comment">// Calculate the total number of active DHCP leases</span>
+  <span class="hljs-variable">$numhosts</span> = <span class="hljs-title function_ invoke__">count</span>(<span class="hljs-variable">$datalist</span>) / <span class="hljs-number">5</span>;
+
+<span class="hljs-meta">?&gt;</span>
+</code></pre>
+<p>From that PHP script we now have our magic number of remaining DHCP addresses which can now be easily show on an HTML page to be reloaded every minute or so via AJAX (or even a meta-refresh if you’re in a hurry).</p>
+<p><img decoding="async" loading="lazy" style="float:left;margin-right:20px;" src="https://static.bocoup.com/blog/hacking-event-scoreboard1-300x243.png" alt="" width="210" height="170"></p>
+<h2 style="clear: both;">What Did I Learn From This?</h2>
+<p>The available data from this particular router isn’t very extensive but I think I’ve managed to learn a few things from this exercise:</p>
+<ul style="list-style-type:square;">
+<li> If you’re going to be paranoid about providing enough addresses at an event, double your expected attendance number and multiply that by at least 3 devices per person.</li>
+<li> We’ve been setting our IP leases to the default 24-hour span. This is perfectly acceptable for our daily bocoupers, coworkers, and workshops — but for larger events where we might be at risk of running out of address space, a seperate address range (and/or router) with much shorter lease times would help avoid network lockouts. If you’re event is overbooked, your attendees are more likely to help you conserve network resources if you can visualize the situation (or a fun way to advertise that you’ve prepared for a landslide)</li>
+<li> The default software on most home and small business routers is very limited in terms of usage reports and API programming functionality. I’m very much looking forward to trying one of the freely downloadable WiFi firmware options like <a href="http://en.wikipedia.org/wiki/OpenWrt" target="_blank" rel="noopener">OpenWrt/LuCI</a> which have Javascript APIs and lots of other goodies for the most popular small Linksys routers.</li>
+<li> My favorite hostnames on the DHCP service today are: DONT-TAZE-ME, ALECTO, and <a href="http://thingsthatrhymeiwthorange.files.wordpress.com/2010/08/lincoln.jpg" target="_blank" rel="noopener">ULTRA-LINCOLN</a>.</li>
+</ul>
+<p><a href="http://bit.ly/hg1jRu" target="_blank" rel="noopener"><img decoding="async" loading="lazy" style="float:right;border:2px solid #999;margin-left:20px;" src="https://static.bocoup.com/blog/rabbit.jpg" alt="" width="205" height="226"></a></p>
+<h2>Future Things I’d Like To Try</h2>
+<ul style="list-style-type:square;">
+<li>A hardware inventory of everyone who joins our network based on MAC address and stored in MySQL. There are freely available databases that identify most device manufacturers based on its’ MAC address.</li>
+<li>Creating more reliable aggregate statistics of how many people show up at our events. Most of the time RSVPs aren’t very accurrate.</li>
+</ul>
+<h2 style="clear: both;">By The Way!</h2>
+<p>
+In case you haven’t heard, <a href="/bocoup_lume/weblog/bocoup-recommits-to-boston-innovation-district/">Bocoup is moving to an even better space next month</a> just one block away above Lucky’s Lounge on Congress Street (yes we’re upgrading our wireless router too!). I’ll look forward to seeing everyone there and hope you’ll can help me dream up the next round of “Event Hacking”.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/training-jquery-san-francisco/" rel="prev">Training: jQuery San Francisco</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/can-i-draw-an-inset-shadow-with-the-html5-canvas-api/" rel="next">Inset shadows with HTML5 Canvas</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/hacking-your-event-space/ -->
+  
+
+</body></html>

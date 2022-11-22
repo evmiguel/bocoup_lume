@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: Arduino Bumper Switch Controlling a Led Tutorial</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: Arduino Bumper Switch Controlling a Led Tutorial</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/javascript robotics/" class="tag">javascript robotics</a>
+    
+      <a href="/bocoup_lume/tags/johnny-five/" class="tag">johnny-five</a>
+    
+      <a href="/bocoup_lume/tags/microprocessor/" class="tag">microprocessor</a>
+    
+      <a href="/bocoup_lume/tags/nodebots/" class="tag">nodebots</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web connected devices/" class="tag">web connected devices</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Welcome to the third tutorial in <a target="_blank" href="/bocoup_lume/weblog/category/johnny-five/" rel="noopener">our series</a> geared towards Arduino programming on Node.js, using the <a target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener">Johnny-Five</a> framework. <a target="_blank" href="/bocoup_lume/weblog/category/johnny-five/" rel="noopener">Get caught up here</a>.</p>
+<blockquote>
+<p><a target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener"><img decoding="async" src="https://static.bocoup.com/blog/johnny-five.png"></a> Johnny-Five is a <a target="_blank" href="https://github.com/jgautier/firmata/" rel="noopener">Firmata</a> based  Arduino programming framework. See: <a target="_blank" href="/bocoup_lume/weblog/javascript-arduino-programming-with-nodejs/" rel="noopener">JavaScript: Arduino Programming on Node.js</a>.</p>
+</blockquote>
+<p></p>
+<p>In the first tutorial <a target="_blank" href="/bocoup_lume/weblog/javascript-arduino-servo-control-tutorial/" rel="noopener">you created a program to control a servo via REPL</a>; then, in the second tutorial <a target="_blank" href="/bocoup_lume/weblog/javascript-arduino-slide-controlling-servo-tutorial/" rel="noopener">you added a slider to control the servo</a>. In this tutorial, we’re going to set the servo and slider aside and build a simple “on/off” switch with a bumper and an led:</p>
+<ul class="blog-block-grid">
+<li>
+    <a target="_blank" href="https://www.adafruit.com/products/818" rel="noopener"><br>
+      <img decoding="async" src="https://static.bocoup.com/blog/818-02.jpg"><br>
+    </a>
+  </li>
+<li>
+    <a target="_blank" href="http://www.sparkfun.com/search/results?term=led&amp;what=products" rel="noopener"><br>
+      <img decoding="async" src="https://static.bocoup.com/blog/09881-02.jpg"><br>
+    </a>
+  </li>
+</ul>
+<p>New Parts list:</p>
+<ul>
+<li><a href="https://www.adafruit.com/products/818">Bumper Switch</a></li>
+<li><a href="http://www.sparkfun.com/search/results?term=led&amp;what=products">Led</a></li>
+</ul>
+<p>Tutorial Requirements:</p>
+<ul>
+<li>One (1) Arduino Microcontroller Board</li>
+<li>One (1) 9V wall wart adapter plug or 9v battery harness</li>
+<li>Seven (7) Jumper cables: red (3), black (2), yellow (2)</li>
+<li>One (1) Any color Led</li>
+<li>One (1) Bumper Switch/Button</li>
+<li>One (1) 10k OHM</li>
+</ul>
+<p>First, set up the hardware using this schematic as your guide:</p>
+<p><img decoding="async" src="https://static.bocoup.com/blog/button-bumper.png"></p>
+<p>Connect the following…</p>
+<ol>
+<li>Bumper: Black &gt; GND to Breadboard to 10k OHM Resistor</li>
+<li>Bumper: Red &gt; 5v to Breadboard</li>
+<li>Bumper: Red &gt; Breadboard to Bumper</li>
+<li>Bumper: Yellow &gt; Signal to Breadboard on grounded resistor</li>
+<li>Bumper: Yellow &gt; Breadboard to Pin 7</li>
+<li>Led: Cathode &gt; GND</li>
+<li>Led: Anode &gt; Pin 13</li>
+<li>Microcontroller &gt; USB</li>
+<li>9V Power</li>
+</ol>
+<p>Assuming you’re using the actual repo, open up <code>eg/button-bumper.js</code>, or follow along here…</p>
+<p class="snippet caption">button-bumper.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> five = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../lib/johnny-five.js"</span>),
+    bumper, led;
+
+five.<span class="hljs-title class_">Board</span>().<span class="hljs-title function_">on</span>(<span class="hljs-string">"ready"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  bumper = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Button</span>(<span class="hljs-number">7</span>);
+  led = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Led</span>(<span class="hljs-number">13</span>);
+
+  bumper.<span class="hljs-title function_">on</span>(<span class="hljs-string">"hit"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    led.<span class="hljs-title function_">on</span>();
+
+  }).<span class="hljs-title function_">on</span>(<span class="hljs-string">"release"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    led.<span class="hljs-title function_">off</span>();
+
+  });
+});
+
+</code></pre>
+<p><strong>And that’s it!</strong></p>
+<p>Run <code>node eg/button-bumper.js</code><sup><a href="#1">1</a></sup> and try tapping and/or holding the bumper down — the led should switch on and off as you press and release.</p>
+<p><video muted="" controls="" class="blog-full-width-block"><source src="https://dl.dropbox.com/u/3531958/button-bumper-led.mp4"><source src="https://dl.dropbox.com/u/3531958/button-bumper-led.ogv"><source src="https://dl.dropbox.com/u/3531958/button-bumper-led.webm"></video></p>
+<p>Remember to watch this space for more tutorials!</p>
+<p></p>
+<p><a name="1">Note</a>: There is a known issue in where the Firmata protocol layer has issues freeing itself on the serial line which results in the program hanging in the ready state. For now, <code>^C</code> to kill the hanging program and simply run it again.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/getting-bitwise-with-javascript/" rel="prev">Getting Bitwise with JavaScript</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/writing-testable-javascript/" rel="next">New Training: Writing Testable JavaScript</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-arduino-bumper-switch-controlling-led-tutorial/ -->
+  
+
+</body></html>

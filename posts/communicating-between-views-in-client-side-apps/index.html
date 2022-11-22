@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communicating Between Views in Client-Side Apps</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Communicating Between Views in Client-Side Apps</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I got to hear some great presentations and have some great conversations at last week’s inaugural <a href="http://backboneconf.org">Backbone Conf</a>, and one thing that came up over and over again was how to effectively communicate between views in client-side applications. There are lots of patterns for doing this — and we love <a href="https://bocoup.com/weblog/organizing-your-backbone-js-application-with-modules/">talking</a> <a href="http://bocoup.com/weblog/the-strategy-pattern-in-javascript/">patterns</a> at Bocoup — so I thought I’d go over a few.</p>
+<p>For the sake of this conversation, we’ll talk about my favorite demo app, <a href="https://github.com/rmurphey/srchr-demo">Srchr</a>. When a user enters a search term into Srchr, three things happen:</p>
+<ul>
+<li>the recent searches list is updated</li>
+<li>the request is sent to the server</li>
+<li>when the server responds, the results area is updated</li>
+</ul>
+<p>A naive, non-MV*, jQuery-based way to solve this might look like:</p>
+<p class="snippet caption">mvc-less-srchr.js</p>
+<pre><code class="js hljs language-javascript">$(<span class="hljs-string">"#searchForm form"</span>).<span class="hljs-title function_">submit</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+  e.<span class="hljs-title function_">preventDefault</span>();
+
+  <span class="hljs-keyword">var</span> term = $(<span class="hljs-string">'#searchForm input'</span>).<span class="hljs-title function_">val</span>(),
+      req = $.<span class="hljs-title function_">getJSON</span>(<span class="hljs-string">'http://search.twitter.com/search.json?'</span> +
+            <span class="hljs-string">'callback=?&amp;amp;q='</span> + <span class="hljs-built_in">encodeURIComponent</span>(term));
+
+  $(<span class="hljs-string">'#recentSearches'</span>).<span class="hljs-title function_">append</span>(<span class="hljs-string">'&lt;li&gt;'</span> + term + <span class="hljs-string">'&lt;/li&gt;'</span>);
+
+  req.<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">resp</span>) {
+    <span class="hljs-keyword">var</span> resultsHTML = $.<span class="hljs-title function_">map</span>(resp.<span class="hljs-property">results</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">r</span>) {
+      <span class="hljs-keyword">return</span> <span class="hljs-string">'&lt;li&gt;'</span> +
+        <span class="hljs-string">'&lt;p class="tweet"&gt;'</span> + r.<span class="hljs-property">text</span> + <span class="hljs-string">'&lt;/p&gt;'</span> +
+        <span class="hljs-string">'&lt;p class="username"&gt;'</span> + r.<span class="hljs-property">from_user</span> + <span class="hljs-string">'&lt;/p&gt;'</span> +
+      <span class="hljs-string">'&lt;/li&gt;'</span>;
+    }).<span class="hljs-title function_">join</span>(<span class="hljs-string">''</span>);
+
+    $(<span class="hljs-string">'#searchResults'</span>).<span class="hljs-title function_">html</span>(resultsHTML);
+  });
+});
+</code></pre>
+<p>In an MV* land, we throw away this tightly coupled approach, and split our user interface into three distinct views:</p>
+<ul>
+<li>the search form</li>
+<li>the search results list</li>
+<li>the recent searches list</li>
+</ul>
+<p>Once we’ve split up our app into these three views, we need to reconnect them  so that they interact with each other appropriately. The challenge is to do so in a way that doesn’t reintroduce the tight coupling we saw above. Below, we’ll go over a few of our options.</p>
+<h2>Pub/Sub</h2>
+<p>One option is to have views broadcast messages to the entire application when something interesting happens. For example, the search form could announce that a user had searched for something.</p>
+<p>You’ll see this work in a couple of ways. In the <a href="https://github.com/tbranyen/backbone-boilerplate">Backbone Boilerplate</a>, for example, there is an  object named <code>app</code> that is extended with the <a href="http://backbonejs.org/#Events"><code>Backbone.Events</code></a> functionality. Views are given access to this object, and they trigger events on it; other views with access to the object can bind to events on it.</p>
+<p>You can also use a <a href="https://gist.github.com/661855">pub/sub plugin</a> to achieve the same effect.</p>
+<p>So, for example, we might do the following in our search form view’s submit handler:</p>
+<p class="snippet caption">pubsub.js</p>
+<pre><code class="js hljs language-javascript">onSubmit : <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+  e.<span class="hljs-title function_">preventDefault</span>();
+  <span class="hljs-keyword">var</span> term = $.<span class="hljs-title function_">trim</span>(<span class="hljs-variable language_">this</span>.$(<span class="hljs-string">'input'</span>).<span class="hljs-title function_">val</span>());
+  <span class="hljs-keyword">if</span> (!term) { <span class="hljs-keyword">return</span>; }
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">app</span>.<span class="hljs-title function_">trigger</span>(<span class="hljs-string">'search'</span>, term);
+}
+</code></pre>
+<p>Then, anywhere else in our app, we could bind to the app object’s <code>search</code> event, and react accordingly. Generally, we’d give all of our views access to this app object.</p>
+<p>Pub/sub is very much a “fire-and-forget” approach — we have no idea whether anything in our application responded to the announcement of the search. This may seem undesirable, but it actually makes unit testing a view incredibly straightforward: we can simply test that a view announced what it should have announced when it should have announced it. It also makes a view’s functionality easy to mock when we’re testing other pieces of code — rather than needing to set up an actual view, we can just trigger an event on the app object.</p>
+<p>There are a few potential downsides of pub/sub, however:</p>
+<ul>
+<li>There’s no built-in namespacing for your published “topics” — if another piece of your application starts using the <code>search</code> topic for a different meaning, your application is likely to start misbehaving, so it’s up to you to make sure there’s no accidental overlap. </li>
+<li>You’ll need to take care that bindings to events on the app object (or to published topics in the more traditional pub/sub model) are properly torn down to avoid memory leaks.</li>
+<li>The fire-and-forget nature of pub/sub can be more global than you’d like it to be — literally any piece of your application that has access to the app object can react to pub/sub announcements.</li>
+<li>Debugging a system where anything can talk to anything can be painful — when things go wrong, the code that breaks can be far from the code that triggered the event. </li>
+</ul>
+<h2>Evented Views</h2>
+<p>The shortcomings of a pub/sub approach lead us to a more refined, less global option: evented views. In this pattern, rather than sending messages through an effectively global bus, we trigger events directly on our views; only code that has a reference to a view has an opportunity “hear” the announcement.</p>
+<p>In this pattern, we’d start by setting up our views in our route code (or similar):</p>
+<p class="snippet caption">evented-views-route.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-string">'/search'</span> : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> searchForm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SearchForm</span>();
+  <span class="hljs-keyword">var</span> recentSearches = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RecentSearchesCollection</span>();
+  <span class="hljs-keyword">var</span> searchResults = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SearchResultsCollection</span>();
+
+  <span class="hljs-keyword">new</span> <span class="hljs-title class_">SearchResults</span>({ collection : searchResults });
+  <span class="hljs-keyword">new</span> <span class="hljs-title class_">RecentSearches</span>({ collection : recentSearches });
+
+  searchForm.<span class="hljs-title function_">on</span>(<span class="hljs-string">'search'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">term</span>) {
+    recentSearches.<span class="hljs-title function_">add</span>({ term : term });
+    searchResults.<span class="hljs-title function_">fetch</span>({ add : <span class="hljs-literal">true</span>, data : { q : term }});
+  });
+}
+</code></pre>
+<p>Then we’d do the following in our search form view’s submit handler:</p>
+<p class="snippet caption">evented-views-view.js</p>
+<pre><code class="js hljs language-javascript">onSubmit : <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+  e.<span class="hljs-title function_">preventDefault</span>();
+  <span class="hljs-keyword">var</span> term = $.<span class="hljs-title function_">trim</span>(<span class="hljs-variable language_">this</span>.$(<span class="hljs-string">'input'</span>).<span class="hljs-title function_">val</span>());
+  <span class="hljs-keyword">if</span> (!term) { <span class="hljs-keyword">return</span>; }
+  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">trigger</span>(<span class="hljs-string">'search'</span>, term);
+}
+</code></pre>
+<p>This approach lets us ensure that only code that has a reference to our search form can react to its announcements; it also essentially eliminates the namespacing issues of the pub/sub approach. Finally, our bindings to view events will get torn down when the view itself is destroyed.</p>
+<p>How well this approach fits into your application will depend on your app’s overall structure and architecture — for example, if you aren’t setting up views in a consistent way, you’ll definitely find this difficult. You also run the risk of tying yourself in knots trying to make your views available in all the places you need them — if you find yourself doing that, it’s probably time to pause and consider a different approach.</p>
+<h2>Application Model</h2>
+<p>A third approach is to use one or more models to transmit messages between views by leveraging the events that are triggered when we <code>get</code> or <code>set</code> a property on a model. In this pattern, we’d give our views access to an application model, in addition to giving them the models they’ll need to display the appropriate data.</p>
+<p class="snippet caption">application-model-route.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-string">'/search'</span> : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> recentSearches = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RecentSearchesCollection</span>();
+  <span class="hljs-keyword">var</span> searchResults = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SearchResultsCollection</span>();
+  <span class="hljs-keyword">var</span> applicationState = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Backbone</span>.<span class="hljs-title class_">Model</span>();
+
+  <span class="hljs-keyword">new</span> <span class="hljs-title class_">SearchForm</span>({
+    app : applicationState
+  });
+
+  <span class="hljs-keyword">new</span> <span class="hljs-title class_">SearchResults</span>({
+    app : applicationState,
+    collection : searchResults
+  });
+
+  <span class="hljs-keyword">new</span> <span class="hljs-title class_">RecentSearches</span>({
+    app : applicationState,
+    collection : recentSearches
+  });
+}
+</code></pre>
+<p>Our search form’s submit handler might then look like this:</p>
+<p class="snippet caption">application-model-view1.js</p>
+<pre><code class="js hljs language-javascript">onSubmit : <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+  e.<span class="hljs-title function_">preventDefault</span>();
+  <span class="hljs-keyword">var</span> term = $.<span class="hljs-title function_">trim</span>(<span class="hljs-variable language_">this</span>.$(<span class="hljs-string">'input'</span>).<span class="hljs-title function_">val</span>());
+  <span class="hljs-keyword">if</span> (!term) { <span class="hljs-keyword">return</span>; }
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">options</span>.<span class="hljs-property">app</span>.<span class="hljs-title function_">set</span>(<span class="hljs-string">'searchTerm'</span>, term);
+}
+</code></pre>
+<p>Our search results view would be listening for the application model to change:</p>
+<p class="snippet caption">application-model-view2.js</p>
+<pre><code class="js hljs language-javascript">initialize : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">options</span>.<span class="hljs-property">app</span>.<span class="hljs-title function_">on</span>(<span class="hljs-string">'change:searchTerm'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">coll, term</span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">collection</span>.<span class="hljs-title function_">fetch</span>({ add : <span class="hljs-literal">true</span>, data : { q : term }});
+  }, <span class="hljs-variable language_">this</span>);
+
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">collection</span>.<span class="hljs-title function_">on</span>(<span class="hljs-string">'add'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">update</span>();
+  }, <span class="hljs-variable language_">this</span>);
+}
+</code></pre>
+<p>You might also implement this approach with multiple models for representing different pieces of application state; for example, a User model for keeping track of user information, and a UI model for keeping track of UI state (such as whether a panel is open or closed). Sometimes these models will have a direct relationship to your server-side models, but more frequently, they’ll be used only for managing client-side state, and won’t have a server-side representation.</p>
+<p>If we choose this path, we still have our unbinding problem — realistically, this is easily dealt with by adding some convenience methods to our view to help us with smarter binding (and I hear that this may become easier in a future version of Backbone) — but overall, this might be the most MV*-ish way of dealing with relationships between views.</p>
+<p>How is this different from a pub/sub approach? In some ways, pub/sub is just a more generic version of the event system used by models, and our application model(s) are ultimately just another method of getting a message from one place to another. Unlike a simple pub/sub pass-through, however, a model can make decisions about when and whether to announce changes. For example, in Ember, related changes are batched and announced all at once, rather than one at a time, and a similar system can be implemented in other MV* frameworks as well. It’s also possible to <a href="http://backbonejs.org/#Model-set">instruct a model not to announce a change</a>. These are all beneficial features, but they make models a bit less straghtforward to work with than pub/sub.</p>
+<h2>Which Approach is the Right Approach?</h2>
+<p>I find that I’m still partial to the second approach — evented views that localize the announcement of interesting view-related occurrences, without having a strong opinion about what those occurrences <em>mean</em>. The pub/sub approach is a bit too global for me in most cases, and while the application model approach is appropriate in many cases, it’s good not to fall into the habit of using models just because you feel like “MV*” says that’s what you’re supposed to do.</p>
+<p>In all likelihood, though, your application will use some combination of these methods: perhaps pub/sub for occurrences of truly global interest, evented views for transferring messages within a page, and an application model for information that is meaningful across multiple “pages” of a single-page application.</p>
+<p>There is one thing that I feel strongly that you should almost always avoid: views with direct knowledge of other views, unless those views have a clear parent-child relationship. When you tightly couple views, you effectively require that one cannot exist without the other. This increases your testing burden, and decreases reusability. In a parent-child situation, this might make sense, but in other cases, the downsides are abundant.</p>
+<p>Finally, I think it remains to be seen whether a library can effectively generalize this portion of client-side app development. Making generalizations about models, routers, and even views is clearly possible, but good decisions about this portion of app development still involves some context-specific decision making, and I think we’re still a ways away from a consensus on the best approach. How are you solving communication between views?</p>
+<p><em>Thanks to <a href="https://bocoup.com/weblog/author/mike-pennisi/">Mike</a> and <a href="http://bocoup.com/weblog/author/greg-smith/">Greg</a> for their detailed feedback; it made this post much better.</em></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/writing-testable-javascript/" rel="prev">New Training: Writing Testable JavaScript</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/padding-time-series-with-r/" rel="next">Padding a Time Series in R</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/communicating-between-views-in-client-side-apps/ -->
+  
+
+</body></html>

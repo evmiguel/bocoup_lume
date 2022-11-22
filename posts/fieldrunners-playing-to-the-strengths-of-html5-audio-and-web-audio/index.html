@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fieldrunners: Playing to the Strengths of HTML5 Audio and Web Audio</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Fieldrunners: Playing to the Strengths of HTML5 Audio and Web Audio</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/fieldrunners-header.png" alt="Fieldrunners gameplay" title="Fieldrunners" width="595" height="116"></p>
+<p><em>Bocoup is excited to be working with <a href="http://www.gradient-studios.com/">Gradient Studios</a> to port the hit mobile game <a href="http://fieldrunners.com/">Fieldrunners</a>, by Subatomic Studios, to HTML5. This is the third in a <a href="/bocoup_lume/weblog/category/fieldrunners/">series of weekly development blog posts</a>.</em></p>
+<p>This week, we focused on incorporating sound into the Fieldrunners port. Lucky for us, in-browser audio support has come a long way in the past few years. Given that Google Chrome is a target browser, we were excited to have the opportunity to use the <a href="https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html">Web Audio</a> API. Before we began, we wanted a clear understanding of what was possible with this new technology and how it compared to <a href="http://dev.w3.org/html5/spec/Overview.html#the-audio-element">HTML5 Audio</a>.</p>
+<h2>Comparisons</h2>
+<p><em>Resource Management.</em> The audio tag is capable of streaming audio data, facilitating playback as soon as “enough” of the file has loaded (it even has a dedicated handler for this event, <code>oncanplay()</code>). Just provide a valid <code>src</code> parameter, call <code>load()</code>, and you’re good to go. Web Audio is somewhat more low-level and requires the entire audio file to be loaded into a buffer before playback is possible. The best way to accomplish this is making AJAX requests for the files (just make sure the <code>responseType</code> of your request is set to <code>arraybuffer</code>).</p>
+<p><em>Compression.</em> <del datetime="2011-08-27T16:46:43+00:00">Web Audio does not natively decompress audio data, so without a lot of involved front-end decompression logic, you can’t play those MP3’s (<a href="http://jsmad.org/">although it is possible</a>).</del> Starting with Chrome 14, the Web Audio API does in fact support audio decompression. It hasn’t made it into the specification yet, but you can find examples <a href="http://code.google.com/p/chromium/source/browse/trunk/samples/audio/doc/loading-sounds.html">here</a> and in the source code <a href="http://www.htmlfivewow.com/demos/hal/index.html">here</a>. HTML5 audio does support compression, although there is no universally-accepted codec, so you should provide multiple versions whenever possible (<a href="http://www.scirra.com/blog/44/on-html5-audio-formats-aac-and-ogg">see here for more on that</a>).</p>
+<p><em>Level of Control.</em> HTML5 audio provides about the same level of control you would expect from a standard MP3 player: you can play, pause, seek through, and load tracks at will. Managing a large array of sounds would be a little like having dedicated MP3 players for each album in your music collection–cumbersome but doable. The Web Audio API realizes each audio source as a node in a directed graph. Audio effects (like pitch and volume controls) are modeled the same way. This makes managing large sets of assets like sound effects very easy.</p>
+<p><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/html5-and-web-audio-diagram.png" alt="HTML5 Audio and Web Audio Diagram" title="HTML5 Audio and Web Audio Diagram" width="590" height="333"></p>
+<p><em>Browser Support.</em> The Web Audio API is supported in Google Chrome (although, as an experimental feature, it must be enabled by navigating to chrome://flags ). On the other hand, all major browsers support HTML5 Audio.</p>
+<h2>Delegating Responsibility</h2>
+<p>In order to play to the strengths of each technology, we chose to leverage the Web Audio API for sound effects and HTML5 Audio for background music. This approach gives us the control we want over short samples like explosions and gunfire, but also allows for the streaming and caching over the much larger music files. As an added benefit, the experience gracefully degrades in browsers that do not support the Audio API but do support HTML5 Audio (in those cases, no errors will be raised and the user will still hear the background music).</p>
+<p>(Note that it is possible to tie the HTML5 Audio background music into the Web Audio node graph via a <code>MediaElementAudioSourceNode</code>. We decided against this approach because it would lead to a completely silent experience on non-Web-API-supporting browsers without providing extra functionality.)</p>
+<p>In the end, we were able to faithfully re-produce the sonic landscape of Fieldrunners using the best open web technologies for the job.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/problem-with-diginotar-ssl-certificates/" rel="prev">Problem with DigiNotar SSL Certificates</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/new-training-building-web-applications-with-backbone-js/" rel="next">New Training: Building Web Applications with Backbone.js</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/fieldrunners-playing-to-the-strengths-of-html5-audio-and-web-audio/ -->
+  
+
+</body></html>

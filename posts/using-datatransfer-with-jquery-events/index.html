@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using dataTransfer and other HTML5 event properties with jQuery Events</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Using dataTransfer and other HTML5 event properties with jQuery Events</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/html5/" class="tag">html5</a>
+    
+      <a href="/bocoup_lume/tags/jquery/" class="tag">jquery</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><em><strong>Update:</strong> I put this utility up at <a href="http://datauri.com">datauri.com</a> for convenience.</em><br>
+<em><strong>Update:</strong> The <code>jQuery.event.props</code> event property list has since been documented in the <a href="http://api.jquery.com/category/events/event-object">Event Object documentation</a>.</em></p>
+<p>This past weekend, I made a handy <a href="http://static.bocoup.com/code/dataurl">utility for converting files to data URLs</a>. This utility is part of a larger tool that we are developing for a client.</p>
+<p>I used the dragenter dragover and drop native host events to respond to drag/dropping files from the desktop.  The event objects supplied to the <a href="https://developer.mozilla.org/en/DragDrop/Drag_and_Drop#section_2">drag host events</a> have a special <a href="https://developer.mozilla.org/En/DragDrop/DataTransfer">dataTransfer</a> property which holds information about the user interaction, including what files (if any) the user dropped on the element to which the event is bound.</p>
+<p class="snippet caption">drag-drop-demo.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> body = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementByTagname</span>(<span class="hljs-string">'body'</span>)[<span class="hljs-number">0</span>];
+
+body.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'dragenter'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> event </span>) {
+  <span class="hljs-comment">// event is a reference to the event object</span>
+  <span class="hljs-comment">// created for each event that triggers this callback</span>
+  <span class="hljs-comment">// in a 'drop' event, event.dataTransfer.files is a FileList</span>
+  <span class="hljs-comment">// of dropped files</span>
+}, <span class="hljs-literal">false</span>);
+</code></pre>
+<p>If there are files on the dataTransfer, you can pass this<a href="https://developer.mozilla.org/En/DOM/FileList">FileList</a> to a <a href="https://developer.mozilla.org/en/DOM/FileReader">FileReader</a> to using one of the <code>FileReader</code> methods like so:</p>
+<p class="snippet caption">file-reader-example.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">eventHandler</span> ( event ) {
+
+  <span class="hljs-keyword">var</span> myFileReader = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>(),
+      myFile = e.<span class="hljs-property">dataTransfer</span>.<span class="hljs-property">files</span>[<span class="hljs-number">0</span>]
+
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( myFileReader.<span class="hljs-title function_">readAsDataURL</span>( myFile ) );
+
+}
+</code></pre>
+<p>This is the second project on which I’ve worked with the native host drag events, and since I was using jQuery for other parts of the code, I decided to use jQuery to bind to the drag events.</p>
+<p class="snippet caption">drag-drop-file-reader-broken.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-title function_">jQuery</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+  <span class="hljs-keyword">var</span> body = <span class="hljs-title function_">jQuery</span>(<span class="hljs-string">'body'</span>)
+    .<span class="hljs-title function_">bind</span>( <span class="hljs-string">'dragenter dragover'</span>, <span class="hljs-literal">false</span>)
+    .<span class="hljs-title function_">bind</span>( <span class="hljs-string">'drop'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> e </span>) {
+      e.<span class="hljs-title function_">stopPropagation</span>();
+      e.<span class="hljs-title function_">preventDefault</span>();
+
+      jQuery.<span class="hljs-title function_">each</span>( e.<span class="hljs-property">dataTransfer</span>.<span class="hljs-property">files</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">index, file</span>){
+        <span class="hljs-keyword">var</span> fileReader = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>();
+            fileReader.<span class="hljs-property">onload</span> = (<span class="hljs-keyword">function</span>(<span class="hljs-params">file</span>) {
+               <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+                 body.<span class="hljs-title function_">append</span>(<span class="hljs-string">'&lt;div class="dataurl"&gt;&lt;strong&gt;'</span> + file.<span class="hljs-property">fileName</span> + <span class="hljs-string">'&lt;/strong&gt;'</span> + e.<span class="hljs-property">target</span>.<span class="hljs-property">result</span> + <span class="hljs-string">'&lt;/div&gt;'</span>)
+               };
+            })(file);
+        fileReader.<span class="hljs-title function_">readAsDataURL</span>(file);
+      });
+
+    });
+
+});
+</code></pre>
+<p>For performance reasons, jQuery copies the event object for every event, and only copies the minimum viable properties required for what it needs to do. Unfortunately<code>dataTransfer</code> is not on this list, because it was not available three years ago when this decision was made. jQuery selects the properties to copy for each event object based on the <a href="https://github.com/jquery/jquery/blob/master/src/event.js#L478">jQuery.event.props</a> string which is split into an array on initialization.</p>
+<p>So, in order to get a FileList out of a native host drag event object when binding with jQuery, you have to push the <code>dataTransfer</code> property onto the<code>jQuery.event.props</code> array:</p>
+<p class="snippet caption">drag-drop-datatransfer-hack.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Originally solved by Tim Branyen in his drop file plugin</span>
+<span class="hljs-comment">// http://dev.aboutnerd.com/jQuery.dropFile/jquery.dropFile.js</span>
+jQuery.<span class="hljs-property">event</span>.<span class="hljs-property">props</span>.<span class="hljs-title function_">push</span>(<span class="hljs-string">'dataTransfer'</span>);
+</code></pre>
+<p>After doing this, the jQuery copy of each event object will get a<code>dataTransfer</code> property. Since<code>jQuery.event.props</code> is not formally exposed, it should not be considered stable for use in production code. I imagine that eventually some API for adding properties to the jQuery event object will be exposed, or perhaps a new approach will be taken to expose access to emerging native and native host event properties in the jQuery event callback system. It is not clear that this approach will work with future versions of jQuery, so use with caution. There is currently an <a href="http://bugs.jquery.com/ticket/7808">open ticket</a> in the jQuery bug tracker dealing with this issue.</p>
+<p>You can see a completed implementation below, or try out the data urlifier at <a href="http://static.bocoup.com/code/dataurl/">http://static.bocoup.com/code/dataurl</a></p>
+<p class="snippet caption">drag-drop-file-reader-works.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>File Converter<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://code.jquery.com/jquery.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css">
+      <span class="hljs-selector-tag">body</span> {<span class="hljs-attribute">min-height</span>: <span class="hljs-number">800px</span>;}
+    </span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/javascript"</span>&gt;</span><span class="language-javascript">
+    <span class="hljs-title function_">jQuery</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){
+
+      <span class="hljs-comment">// jQuery creates it's own event object, and it doesn't have a</span>
+      <span class="hljs-comment">// dataTransfer property yet. This adds dataTransfer to the event object.</span>
+      <span class="hljs-comment">// Thanks to l4rk for figuring this out!</span>
+      jQuery.<span class="hljs-property">event</span>.<span class="hljs-property">props</span>.<span class="hljs-title function_">push</span>(<span class="hljs-string">'dataTransfer'</span>);
+
+      <span class="hljs-keyword">var</span> body = <span class="hljs-title function_">jQuery</span>(<span class="hljs-string">'body'</span>)
+        .<span class="hljs-title function_">bind</span>( <span class="hljs-string">'dragenter dragover'</span>, <span class="hljs-literal">false</span>)
+        .<span class="hljs-title function_">bind</span>( <span class="hljs-string">'drop'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> e </span>) {
+          e.<span class="hljs-title function_">stopPropagation</span>();
+          e.<span class="hljs-title function_">preventDefault</span>();
+
+
+          body.<span class="hljs-title function_">html</span>(<span class="hljs-string">"&lt;h2&gt;You're welcome ;)&lt;/h2&gt;"</span>)
+
+          jQuery.<span class="hljs-title function_">each</span>( e.<span class="hljs-property">dataTransfer</span>.<span class="hljs-property">files</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">index, file</span>){
+            <span class="hljs-keyword">var</span> fileReader = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>();
+                fileReader.<span class="hljs-property">onload</span> = (<span class="hljs-keyword">function</span>(<span class="hljs-params">file</span>) {
+                   <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+                     body.<span class="hljs-title function_">append</span>(<span class="hljs-string">'&lt;div class="dataurl"&gt;&lt;strong&gt;'</span> + file.<span class="hljs-property">fileName</span> + <span class="hljs-string">'&lt;/strong&gt;'</span> + e.<span class="hljs-property">target</span>.<span class="hljs-property">result</span> + <span class="hljs-string">'&lt;/div&gt;'</span>)
+                   };
+                })(file);
+            fileReader.<span class="hljs-title function_">readAsDataURL</span>(file);
+          });
+
+        });
+
+    });
+    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Drop one or more files here to convert them to <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"https://developer.mozilla.org/en/DOM/FileReader#section_10"</span>&gt;</span>Data URLs<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/the-catch-with-try-catch/" rel="prev">The &amp;#8220;catch&amp;#8221; with try&amp;#8230;catch</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/think-long-term-focus-short-term/" rel="next">Think long term, focus short term</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/using-datatransfer-with-jquery-events/ -->
+  
+
+</body></html>

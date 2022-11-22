@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript IS Object Oriented Programming</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript IS Object Oriented Programming</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I spent a good half hour writing an answer to a question on <a href="http://www.quora.com/" target="_blank" rel="noopener">Quora</a> today and I thought it was good enough to qualify as a blog post. The question was <a href="http://www.quora.com/How-do-you-implement-object-orientation-in-JavaScript" target="_blank" rel="noopener">How do you implement object orientation in JavaScript?</a></p>
+<p>I’ll be honest, I was a little disappointed by the answers posted prior to mine, however that just fueled the fire and gave me good reason  to thoroughly and properly answer the question. As always, I like to let the code do the most talking.</p>
+<p>This was the answer I posted:</p>
+<p>The real answer is JavaScript IS object oriented already, without any “help” from libraries. It seems that most developers simply don’t get it, and cannot get past the concept of traditional “Classes”. Javascript is a prototypal, object oriented, instance based programming language. In JavaScript, everything is an object that can have properties and methods (sounds familiar, right? maybe like… “classes”?). Behavior and characteristic reuse is accomplished by extending, or “decorating” an existing object; the existing object serves as a “blueprint” or more literally, a prototype.</p>
+<p>In JavaScript, traditional classes do not exist, however the equivalent is surprisingly simple and straight forward, all you need is a function(){}:</p>
+<p class="snippet caption">blanky.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">//  Posted at: http://www.quora.com/How-do-you-implement-object-orientation-in-JavaScript</span>
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">SafetyBlanket</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">isObject</span> = <span class="hljs-literal">true</span>;
+}
+
+<span class="hljs-comment">// Declare and assign a new instance</span>
+<span class="hljs-keyword">var</span> blanky = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SafetyBlanket</span>();
+
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky); <span class="hljs-comment">// `object definition`</span>
+
+</code></pre>
+<p>To be really, really picky…</p>
+<p class="snippet caption">always-an-object.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky); <span class="hljs-comment">// `object definition`</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky); <span class="hljs-comment">// object</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky.<span class="hljs-property">__proto__</span>); <span class="hljs-comment">// object</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky.<span class="hljs-property">__proto__</span>); <span class="hljs-comment">// object</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky.<span class="hljs-property">constructor</span>); <span class="hljs-comment">// SafetyBlanket()</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky.<span class="hljs-property">constructor</span>); <span class="hljs-comment">// function</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky.<span class="hljs-property">constructor</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>); <span class="hljs-comment">// object{}</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky.<span class="hljs-property">constructor</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>); <span class="hljs-comment">// object</span>
+
+<span class="hljs-comment">// Notice it always comes back to an object</span>
+
+<span class="hljs-comment">// ------------------------</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky.<span class="hljs-property">isObject</span>); <span class="hljs-comment">// true</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky.<span class="hljs-property">isObject</span>); <span class="hljs-comment">// boolean</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky.<span class="hljs-property">isObject</span>.<span class="hljs-property">__proto__</span>); <span class="hljs-comment">// object</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky.<span class="hljs-property">isObject</span>.<span class="hljs-property">__proto__</span>); <span class="hljs-comment">// object</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky.<span class="hljs-property">isObject</span>.<span class="hljs-property">constructor</span>); <span class="hljs-comment">// Boolean()</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky.<span class="hljs-property">isObject</span>.<span class="hljs-property">constructor</span>); <span class="hljs-comment">// function</span>
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(blanky.<span class="hljs-property">isObject</span>.<span class="hljs-property">constructor</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>); <span class="hljs-comment">// false {}</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> blanky.<span class="hljs-property">isObject</span>.<span class="hljs-property">constructor</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>); <span class="hljs-comment">// object</span>
+
+<span class="hljs-comment">// Again, it always comes back to an object</span>
+
+</code></pre>
+<p>The “class” or object instance can be extended/decorated:</p>
+<p class="snippet caption">extend.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">SafetyBlanket</span>(<span class="hljs-params">material</span>) {
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">isObject</span> = <span class="hljs-literal">true</span>;
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">madeOf</span>   = material;
+}
+
+<span class="hljs-comment">// Extend the prototype with a new method</span>
+<span class="hljs-title class_">SafetyBlanket</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">tuckIn</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">madeOf</span>;
+}
+
+<span class="hljs-comment">// Declare and assign a new instance</span>
+<span class="hljs-keyword">var</span> myBlanky    = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SafetyBlanket</span>(<span class="hljs-string">'silk'</span>),
+    yourBlanky  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SafetyBlanket</span>(<span class="hljs-string">'fiberglass'</span>);
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(myBlanky);
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(yourBlanky);
+
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(myBlanky.<span class="hljs-title function_">tuckIn</span>());
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(yourBlanky.<span class="hljs-title function_">tuckIn</span>());
+
+
+</code></pre>
+<p>The “class” or object instance can be inherited:</p>
+<p class="snippet caption">inherit.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Developer</span>(<span class="hljs-params">lang</span>) {
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">isObject</span> = <span class="hljs-literal">true</span>;
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>    = {
+    <span class="hljs-attr">lang</span>: lang
+  };
+}
+
+<span class="hljs-title class_">Developer</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">getPrefs</span>  = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">prefs</span>;
+};
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">FrontEnd</span>(<span class="hljs-params"></span>) {}
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">BackEnd</span>(<span class="hljs-params"></span>)  {}
+
+<span class="hljs-title class_">FrontEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Developer</span>(<span class="hljs-string">'javascript'</span>);
+<span class="hljs-title class_">BackEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>   = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Developer</span>(<span class="hljs-string">'python'</span>);
+
+<span class="hljs-comment">// Reassign the constructor to reflect itself</span>
+<span class="hljs-title class_">FrontEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">constructor</span>  = <span class="hljs-title class_">FrontEnd</span>;
+<span class="hljs-title class_">BackEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">constructor</span>   = <span class="hljs-title class_">BackEnd</span>;
+
+
+<span class="hljs-comment">// Extend the prototype with a new method</span>
+<span class="hljs-title class_">FrontEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">getDOMWindow</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">window</span>;
+}
+
+<span class="hljs-comment">// Extend the prototype with a new method</span>
+<span class="hljs-title class_">BackEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">getInterpreter</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;
+}
+
+<span class="hljs-comment">// Inspect them now, they have the characteristics of</span>
+<span class="hljs-comment">// the Developer object as well as their own methods</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">FrontEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>);
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">BackEnd</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>);
+
+
+<span class="hljs-comment">// Declare new instances of our two objects</span>
+<span class="hljs-keyword">var</span> frontEndDev = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FrontEnd</span>(),
+    backEndDev  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BackEnd</span>();
+
+<span class="hljs-comment">// To be sure, run their methods</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(frontEndDev.<span class="hljs-title function_">getDOMWindow</span>());
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(backEndDev.<span class="hljs-title function_">getInterpreter</span>());
+
+
+</code></pre>
+<p>As you can see, JavaScript doesn’t need any libraries to “implement object orientation”, as it is VERY capable on its own.</p>
+<p>If you want to play with this code, I’ve posted a Gist at Github: <a href="https://gist.github.com/553982" target="_blank" rel="noopener">https://gist.github.com/553982</a></p>
+<p><em>Edit</em> Thanks to Dmitry for reminding me of his <a href="http://dmitrysoshnikov.com/ecmascript/" target="_blank" rel="noopener">excellent resource</a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/jquery-fastest-way-to-select-nothing/" rel="prev">jQuery: Fastest Way To Select Nothing</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-creating-an-eventsource-within-a-worker/" rel="next">JavaScript: Creating an EventSource within a Worker</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-is-object-oriented-programming/ -->
+  
+
+</body></html>

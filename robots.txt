@@ -1,0 +1,3 @@
+User-agent: *
+
+Sitemap: https://aleenaloves.github.io/bocoup_lume/sitemap.xml

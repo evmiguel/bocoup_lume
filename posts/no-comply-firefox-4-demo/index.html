@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Comply &amp;#8211; Firefox 4 Demo</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">No Comply &amp;#8211; Firefox 4 Demo</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <div style="float:right;margin:0 0 10px 20px;"><a href="http://webofwonder.org/en-US/#nocomply"><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/no-comply-firefox-4-demo-webgl-audio-data.png" alt="" title="No Comply - Click to Watch Demo" width="400" height="225"></a><br><b>No Comply</b> – a WebGL, Audio-API Demo: <a href="http://webofwonder.org/en-US/#nocomply">click here to watch this demo</a>.</div>
+<p>Over the past few months I have been working with <a href="https://wiki.mozilla.org/Audio_Data_API">Mozilla’s Audio API Team</a> to create a WebGL/Audio API Demo for the release of <a href="http://getfirefox.com">Firefox 4</a>.</p>
+<p>We wanted to create something a little different for this demo so we enlisted the help of Glitch artist <a href="http://www.myspace.com/kraddy">Kraddy</a>. Kraddy’s new Album is called Labyrinth and has some sweet tracks. Kraddy’s concept for the track was a “Double-Dragon” style aesthetic in which Kraddy gets sucked into his own 8-bit nightmare. We spent a week in California at Mozilla, working on the proof of concept and the tools we would use to create the demo.</p>
+<p>Once Kraddy’s help had been enlisted, we needed an artist. <a href="http://twitter.com/@thesearethings">Omar Noory</a> stepped up to the 8-bit challenge and did a wonderful job turning our half-baked ideas into awesome sprite sheets for the game engine. I encourage you to check out Omar’s site, “<a href="http://www.thesearethings.com/">These are Things</a>“: his graphics are simply stunning.</p>
+<h2>Less Work, More Tools</h2>
+<div style="float:left;margin:0 20px 10px 0;"><a href="http://audioscene.org/scene-files/ccliffe/no_comply_browser/"><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/no-comply-blender3d.png" alt="" title="No Comply - Click to Browse Levels in WebGL" width="400" height="225"></a><br><b>Blender 3D</b> – <a href="http://audioscene.org/scene-files/ccliffe/no_comply_browser/">click here to browse levels in WebGL</a> (requires Firefox 4).</div>
+<p>One thing we realized pretty quickly, was that with a little tweaking, <a href="http://blender3d.org">Blender3D</a> could be used to export Collada files that we could load into <a href="http://twitter.com/ccliffe">CCliffe’s</a> very own <a href="http://www.cubicvr.org/index.php?option=com_content&amp;view=article&amp;id=73&amp;Itemid=88">Cubic-VR WebGL engine</a>. CCliffe championed this effort, which greatly sped up development time and also allowed us to push the WebGL demo envelope, baking animation paths and exporting <a href="http://www.google.com/search?sourceid=chrome&amp;ie=UTF-8&amp;q=bullet+phyics">Bullet-Physics</a> data from Blender’s Game Engine.</p>
+<div style="float:right;margin:0 0 10px 20px;"><a href="http://code.bocoup.com/no-comply-sandbox/TheSandboxFX.html"><img decoding="async" src="https://static.bocoup.com/blog/no-comply-shader-sandbox.png" alt="" title="No Comply - Click to try Shader/Sequencer Sandbox"></a><br><b>Sandbox</b> – try out this <a href="http://code.bocoup.com/no-comply-sandbox/TheSandboxFX.html">shader-sandbox and audio-event sequencer</a>.</div>
+<p>While CJ hacked away on Blender, <a href="http://twitter.com/corban">Corban Brook</a> get to work on the Audio API section of the demo. Corban built a circular audio sequencer that mapped all of the kicks and claps in the track so we could use them to fire visual events in time with the music.</p>
+<p>With all the other bases covered, I jumped into the sprite work. I started by defining a data structure for my sprite files that I would store in <a href="http://www.json.org/">JSON format</a>. I wanted to store the image data in the actual JSON file itself, so I used Boaz Sender’s <a href="http://datauri.com/">Drag &amp; Drop Data URI</a> tool to run a few experiments. Once I bounced the data-structure off the rest of the team and made some tweaks, I was ready to start building some play-back methods.</p>
+<p><b>Storing Sprite Data in JSON Format</b></p>
+<pre><code><br></code></pre>
+<h2>Sprite Viking</h2>
+<p>After defining a data format for my sprites, I created a play-back script called “Sprite Viking Player”. Sprite-Viking-Player renders a sprite’s image data onto a 2D Canvas element based on the current selected action. With a data-format and a player in working commission, the last phase of my sprite creation process was to build a sprite editor. For this I used <a href="https://github.com/cjcliffe/CubicVR.js">CJ’s Cubic-VR.js</a> WebGL engine as a base, and sprinkled some <a href="http://jqueryui.com/">jQuery UI</a> magic on top. Once I had the editor working, the production line from artist to game-engine was very quick. Unfortunately this sprite editor still has a few bugs and missing features, but it worked well for the task at hand.</p>
+<div><a href="http://code.bocoup.com/sprite-viking/bitwall-editor/"><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/no-comply-sprite-viking.png" alt="" title="Click to try Sprite Viking Editor" width="590" height="412"></a><br><b>Sprite Viking Editor:</b> <a href="http://code.bocoup.com/sprite-viking/bitwall-editor/">click here to try this WebGL sprite editor in Firefox 4</a>.</div>
+<h2>What Did We Learn?</h2>
+<p>We learned many subtle differences between the Chrome and Firefox WebGL implementations. As usual, Mozilla squashed some very difficult bugs and performance improvements as result of the demo-work. We learned how to usefully profile code that was pushing the limits in almost every area of the application. This helped the team to develop a balanced asset pre-loading system, an important piece of the puzzle required to keep things running smoothly across the Web.</p>
+<p>It may look all glitz-and-glam when you see these demos released, but the amount of hard work that goes in to producing them is almost immeasurable. We learned so much from doing this demo it would be impossible to record everything into one blog post. I only wish I had the time to cover some of the outstanding solutions produced by <a href="http://twitter.com/humphd">David Humphrey</a> and <a href="http://twitter.com/secretrobotron">Bobby Richter</a>, but you will have to find them on <a href="irc://irc.mozilla.org/audio">irc.mozilla.org/audio</a> and ask them about some of the awesome things they are working on.</p>
+<p>I can’t thank Mozilla and the Audio team enough for their hospitality during the making of this demo. You guys are awesome!</p>
+<hr>
+<ul>
+<li>Meet the team: come join the Audio community at Mozilla: <a href="irc://irc.mozilla.org/audio">irc.mozilla.org/audio</a></li>
+<li>Read more about the making of No Comply on Mozilla Hacks: <a href="http://hacks.mozilla.org/2011/03/nocomply/">No Comply Article</a></li>
+<li>Follow the progress of W3C Audio standards: <a href="http://www.w3.org/2011/audio//">W3C Audio Working Group</a></li>
+</ul>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/bocoup-training-portland-or/" rel="prev">Training: Bocoup goes to Portland</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-rotoscoping-tool/" rel="next">JavaScript Rotoscoping Tool</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/no-comply-firefox-4-demo/ -->
+  
+
+</body></html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synchronizing HTML5 Slides with Node.js</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Synchronizing HTML5 Slides with Node.js</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I gave a talk in February on <a href="/bocoup_lume/loft/events/2011/tim-branyen-jquery-templates/" target="_blank" rel="noopener">Advanced jQuery Templates</a> that had an interesting&nbsp;and unique twist.  Instead of changing slides using traditional presentation delivery methods such as a clicker or a laptop keyboard, I used my smartphone which made&nbsp;asynchronous calls to a Node.js server.  The server then propagated events to all connected viewers,  regardless of Internet connection or device.</p>
+<p>This post provides all the code necessary&nbsp;to run the Node.js server, the controller on a smartphone (or any device that&nbsp;has a web browser) and the client-side component necessary to work with various&nbsp;HTML5 slide decks.</p>
+<p><b>Before diving in, here is a demo of the code in action:</b></p>
+<p><iframe loading="lazy" src="https://player.vimeo.com/video/25388879?title=0&amp;byline=0&amp;portrait=0&amp;color=ff9933" width="580" height="338" frameborder="0"></iframe></p>
+<h3>Dependencies</h3>
+<p>As with any new technology demonstration, there are certain dependencies needed in order to run the code successfully.  The following must be installed on your server:</p>
+<ul>
+<li>Node.js – <a href="http://nodejs.org/" target="_blank" rel="noopener">http://nodejs.org/</a></li>
+<li>NPM – <a href="http://npmjs.org/" target="_blank" rel="noopener">http://npmjs.org/</a></li>
+<li>Socket.io – <a href="http://socket.io/" target="_blank" rel="noopener">http://socket.io/</a></li>
+<li>Express – <a href="http://expressjs.com/" target="_blank" rel="noopener">http://expressjs.com/</a></li>
+</ul>
+<p>I recommend installing Node.js first and then installing NPM.  Create a directory to contain the server code, cd into it in the terminal and install Socket.io and express with the following command <code>npm install socket.io express</code>.  You install inside a folder, because NPM puts modules in a <code>node_modules</code> subfolder locally.</p>
+<p>I am using <code>tabdeveloper.com</code> as my hostname and port <code>1987</code> in all my examples.  <b>You will need to change these to match your own environment</b>.</p>
+<h3>Assembling the server</h3>
+<p>The server component runs continuously and listens for messages to be sent by the remote controller.  It then propagates the message to all connected clients.  Routing is handled by Express and the message propagation is executed through Socket.io. Express creates a wrapped HTTP server with createServer() and returns an app to bind Socket.io and define routes on.</p>
+<p>The following code blocks are excerpts that can be viewed as a whole at the end of the post:</p>
+<p>The server must maintain two variables: current slide position <code>state</code> and connected clients <code>clients</code>.  The last line binds Socket.io to Express so the same port can be used.</p>
+<p class="snippet caption">slides-requirements.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Required dependancies</span>
+<span class="hljs-keyword">var</span> io = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io'</span>);
+<span class="hljs-keyword">var</span> app = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>).<span class="hljs-title function_">createServer</span>();
+<span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+
+<span class="hljs-comment">// State is the current slide position</span>
+<span class="hljs-keyword">var</span> state = <span class="hljs-number">1</span>
+<span class="hljs-comment">// Clients is a list of users who have connected</span>
+<span class="hljs-keyword">var</span> clients = [];
+<span class="hljs-comment">// Bind socket.io to express</span>
+<span class="hljs-keyword">var</span> socket = io.<span class="hljs-title function_">listen</span>(app);
+</code></pre>
+<p>Before defining the routes for the server to handle moving forwards and backwards, the server socket must listen for incoming connections from clients and save them for reuse.  The socket has only one task: sending messages.  The <code>send</code> function facilitates the message sending and prunes out disconnected clients.  Pruning keeps the looping efficient (no unusable items) this keeps memory usage lower (assuming hundreds/thousands connecting and disconnecting at a conference).</p>
+<p class="snippet caption">slides-connection.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// For each connection made add the client to the</span>
+<span class="hljs-comment">// list of clients.</span>
+socket.<span class="hljs-title function_">on</span>(<span class="hljs-string">'connection'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">client</span>) {
+  clients.<span class="hljs-title function_">push</span>(client);
+});
+
+<span class="hljs-comment">// This is a simple wrapper for sending a message</span>
+<span class="hljs-comment">// to all the connected users and pruning out the</span>
+<span class="hljs-comment">// disconnected ones.</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">send</span>(<span class="hljs-params">message</span>) {
+  <span class="hljs-comment">// Iterate through all potential clients</span>
+  clients.<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">client</span>) {
+    <span class="hljs-comment">// User is still connected, send message</span>
+    <span class="hljs-keyword">if</span>(client.<span class="hljs-property">_open</span>) {
+      client.<span class="hljs-title function_">send</span>(message);
+    }
+    <span class="hljs-comment">// Prune out disconnected user</span>
+    <span class="hljs-keyword">else</span> {
+      <span class="hljs-keyword">delete</span> client;
+    }
+  });
+}
+</code></pre>
+<p>Defining routes is very easy and intuitive.  Routes are created for each action handled inside the slide deck code.  The <code>state</code> variable is only updated inside the <code>advance</code> and <code>recede</code> routes.  The default route is specified by the asterisk and will serve up the remote for a controller device.</p>
+<p class="snippet caption">slides-routes.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Advancing will... move the slides forward!</span>
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">'/advance'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) {
+  <span class="hljs-comment">// Increment and send over socket</span>
+  state++;
+  <span class="hljs-title function_">send</span>({ <span class="hljs-attr">state</span>: state });
+
+  <span class="hljs-comment">// Send the state as a response</span>
+  res.<span class="hljs-title function_">send</span>(state.<span class="hljs-title function_">toString</span>());
+});
+
+<span class="hljs-comment">// Receding will... move the slides backwards!</span>
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">'/recede'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) {
+  state--;
+  <span class="hljs-title function_">send</span>({ <span class="hljs-attr">state</span>: state });
+
+  res.<span class="hljs-title function_">send</span>(state.<span class="hljs-title function_">toString</span>());
+});
+
+<span class="hljs-comment">// This will allow the presenter to clear the</span>
+<span class="hljs-comment">// slides of any cornification.</span>
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">'/refresh'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) {
+  client.<span class="hljs-title function_">send</span>({ <span class="hljs-attr">refresh</span>: <span class="hljs-literal">true</span> });
+
+  res.<span class="hljs-title function_">send</span>(state.<span class="hljs-title function_">toString</span>());
+});
+
+<span class="hljs-comment">// Reset will not refresh cornfication, but</span>
+<span class="hljs-comment">// will send the slides back to the beginning.</span>
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">'/reset'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) {
+  state = <span class="hljs-number">1</span>;
+  <span class="hljs-title function_">send</span>({ <span class="hljs-attr">state</span>: state });
+
+  res.<span class="hljs-title function_">send</span>(state.<span class="hljs-title function_">toString</span>());
+});
+
+<span class="hljs-comment">// Give your viewers what they really want...</span>
+<span class="hljs-comment">// an unrepentable amount of unicorns.</span>
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">'/cornify'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) {
+  <span class="hljs-title function_">send</span>({ <span class="hljs-attr">cornify</span>: <span class="hljs-literal">true</span> });
+
+  res.<span class="hljs-title function_">send</span>(state.<span class="hljs-title function_">toString</span>());
+});
+
+<span class="hljs-comment">// Send the controller for any other request to this</span>
+<span class="hljs-comment">// Node.js server.</span>
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">'*'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) {
+  fs.<span class="hljs-title function_">readFile</span>(<span class="hljs-string">'controller.html'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">err, buffer</span>) {
+    res.<span class="hljs-title function_">send</span>(buffer.<span class="hljs-title function_">toString</span>());
+  });
+});
+</code></pre>
+<p>Once all routes are defined, set the port to listen on.</p>
+<p class="snippet caption">slides-listen.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Listen on some high level port to avoid dealing</span>
+<span class="hljs-comment">// with authbind or root user privileges.</span>
+app.<span class="hljs-title function_">listen</span>(<span class="hljs-number">1987</span>);
+</code></pre>
+<h3>Injecting the client into the slide deck</h3>
+<p>The client component resides in the existing slide deck and augments it by establishing a real-time socket which receives messages from the server and reacting.  The slide deck <b>must</b> use <a href="https://developer.mozilla.org/en/DOM/window.onhashchange" target="_blank" rel="noopener">hashchange</a> for the following code to work.  If the slide deck does not respond to hashchange events to change the slide, other options should be explored such as simulating keyboard events or finding the functions in the slide deck source and triggering them manually.</p>
+<p>This file will most likely be included with the rest of the slide deck source, or embedded inline.  End users should have a choice to disable remote control, so logic is implemented in the beginning to allow a button to enable and disable synchronization.</p>
+<p>Messages sent from the server can be handled elegantly with conditional logic:  If a <code>state</code> property is provided, then change the slide.  If the <code>cornify</code>* function is present and the message is sent, then cornify* the user.  Lastly if the refresh message is sent, then reload the page.</p>
+<p class="snippet caption">client.js</p>
+<pre><code class="js hljs language-javascript">(<span class="hljs-keyword">function</span>(<span class="hljs-params"><span class="hljs-variable language_">window</span>, <span class="hljs-variable language_">document</span></span>) {
+
+  <span class="hljs-comment">// The end user should be allowed to disable synchronization.  This button</span>
+  <span class="hljs-comment">// is optional on the page</span>
+  <span class="hljs-keyword">var</span> syncAllow = <span class="hljs-literal">true</span>;
+  <span class="hljs-keyword">var</span> syncButton = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(<span class="hljs-string">'.sync-button'</span>);
+
+  <span class="hljs-comment">// If the sync button exists bind a click event and toggle the syncAllow</span>
+  <span class="hljs-comment">// boolean.  Set the value of the button.</span>
+  <span class="hljs-keyword">if</span>(syncButton) {
+    syncButton.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      syncAllow = !syncAllow;
+      syncButton.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">'value'</span>, syncAllow ? <span class="hljs-string">'Turn Sync Off'</span>
+        : <span class="hljs-string">'Turn Sync On'</span>);
+    }, <span class="hljs-literal">true</span>);
+  }
+
+  <span class="hljs-comment">// The socket.io client side library connects to your server, the node address</span>
+  <span class="hljs-comment">// can be a domain name or an ip address.</span>
+  <span class="hljs-keyword">var</span> socket = <span class="hljs-keyword">new</span> io.<span class="hljs-title class_">Socket</span>(<span class="hljs-string">'tabdeveloper.com'</span>, { <span class="hljs-attr">port</span>: <span class="hljs-number">1987</span> });
+
+  <span class="hljs-comment">// Connect the websocket (or fallback)</span>
+  socket.<span class="hljs-title function_">connect</span>();
+
+  <span class="hljs-comment">// When the server pushes a message handle it accordingly</span>
+  socket.<span class="hljs-title function_">on</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+    <span class="hljs-comment">// Set the hash to match the state</span>
+    <span class="hljs-keyword">if</span>(syncAllow &amp;amp;&amp;amp; e.<span class="hljs-property">state</span>) {
+      location.<span class="hljs-property">hash</span> = e.<span class="hljs-property">state</span>;
+    }
+
+    <span class="hljs-comment">// If the message is cornify and cornify_add is a function, trigger.</span>
+    <span class="hljs-keyword">if</span>(e.<span class="hljs-property">cornify</span> &amp;amp;&amp;amp; <span class="hljs-keyword">typeof</span> cornify_add === <span class="hljs-string">'function'</span>) {
+      <span class="hljs-title function_">cornify_add</span>();
+    }
+
+    <span class="hljs-comment">// Reload the page to clear all the cornification.</span>
+    <span class="hljs-keyword">if</span>(e.<span class="hljs-property">refresh</span>) {
+      location.<span class="hljs-title function_">reload</span>(<span class="hljs-literal">true</span>);
+    }
+  });
+
+})(<span class="hljs-variable language_">this</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">document</span>);
+</code></pre>
+<h3>The remote controller</h3>
+<p>The basic markup necessary to use the actions above:<br>
+<em>(styling is required for the swipe area, visible in the full file)</em></p>
+<p class="snippet caption">controller-markup.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"reset"</span>&gt;</span>RESET<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"refresh"</span>&gt;</span>REFRESH<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"swipe"</span>&gt;</span> SWIPE <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"cornify"</span>&gt;</span>CORNIFY<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+</code></pre>
+<p>The controller has several responsibilities, but the most important is getting the correct action from the presenter and sending it to the server as a message.  Since the server doesn’t respond with anything particularly useful, triggering asynchronous requests can happen without needing a callback.  The xhr function simply creates a new XHR object, opens a connection, and sends the request.  In my markup the button values directly correspond with the server route mapping.</p>
+<p class="snippet caption">controller-def-n-req.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> server = <span class="hljs-string">'http://tabdeveloper.com:1987/'</span>;
+
+<span class="hljs-comment">// Luckily a response from the server is never required. So</span>
+<span class="hljs-comment">// a basic XHR GET request to the server will trigger the</span>
+<span class="hljs-comment">// action appropriately.</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">xhr</span>(<span class="hljs-params">url</span>) {
+  <span class="hljs-keyword">var</span> request = <span class="hljs-keyword">new</span> <span class="hljs-variable language_">window</span>.<span class="hljs-title class_">XMLHttpRequest</span>();
+  request.<span class="hljs-title function_">open</span>(<span class="hljs-string">'GET'</span>, url, <span class="hljs-literal">true</span>);
+  request.<span class="hljs-title function_">send</span>(<span class="hljs-literal">null</span>);
+}
+
+<span class="hljs-comment">// The values of the buttons correspond with the Node.js server</span>
+<span class="hljs-comment">// routes.</span>
+<span class="hljs-keyword">var</span> buttons = [].<span class="hljs-property">slice</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByTagName</span>(<span class="hljs-string">'button'</span>));
+buttons.<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">button</span>) {
+  button.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'click'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+    <span class="hljs-title function_">xhr</span>(server + button.<span class="hljs-property">value</span>);
+  }, <span class="hljs-literal">true</span>);
+});
+</code></pre>
+<p><b>The swipe code isn’t covered in this post, but I chose that approach for changing slides.  You can see it in the complete controller file.</b></p>
+<h3>Putting it all together</h3>
+<p>If this is new ground for you and you’ve made it this far, great! It’s not complicated when taken step-by-step.  The remote controller sends messages to the server.  The server listens for messages and dispatches them to all connected clients.  Each client handles received messages and manipulates the slide deck.</p>
+<p><img decoding="async" src="https://static.bocoup.com/blog/slide-sync-demo.png" alt="demo"></p>
+<p>To put all this together yourself, you may want to look at the full source of each file:</p>
+<ul>
+<li><b>Server source: <a href="https://raw.github.com/gist/1005747/9f4ceed2a7de26c7ce50103815a6b107e43993a4/slides.js" target="_blank" rel="noopener">slides.js</a></b></li>
+<li><b>Client source: <a href="https://raw.github.com/gist/1005747/92a18c1ac7cab9e6cefe20fa86e755fadea65ee3/client.js" target="_blank" rel="noopener">client.js</a></b></li>
+<li><b>Controller source: <a href="https://raw.github.com/gist/1005747/9ae83d503014fd35913a8c0408ebae7bf548eb14/controller.html" target="_blank" rel="noopener">controller.html</a></b></li>
+</ul>
+<p>I have included the client component like this in my own slides:</p>
+<p class="snippet caption">example.html</p>
+<pre><code class="html hljs language-xml">...
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+...
+  <span class="hljs-comment">&lt;!-- HTML5 slides scripts, put these underneath --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://www.cornify.com/js/cornify.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://tabdeveloper.com:1987/socket.io/socket.io.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"client.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+...
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+...
+
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+...
+<span class="hljs-comment">&lt;!-- Optionally slap in a sync button --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"button"</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"sync-button"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"Turn Sync Off"</span>&gt;</span>
+...
+</code></pre>
+<ul>
+<li>I use the terms <b>cornify</b> and <b>cornification</b> throughout the article to refer to an Internet gag that is popular throughout the client-side development community.  <a href="http://www.cornify.com/" target="_blank" rel="noopener">Cornify</a> when triggered will add unicorn images and distort the page.</li>
+</ul>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/announcing-new-game-conference/" rel="prev">Announcing: New Game Conference</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/the-strategy-pattern-in-javascript/" rel="next">The Strategy Pattern in JavaScript</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/synchronizing-html5-slides-with-node-js/ -->
+  
+
+</body></html>

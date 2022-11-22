@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find the closest Power of 2 with JavaScript</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Find the closest Power of 2 with JavaScript</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>One of the things I have been working on over the last couple of days, is a convenient set of functions to manipulate a Processing.js Canvas for use in the <a href="http://www.cubicvr.org/index.php?option=com_content&amp;view=article&amp;id=73&amp;Itemid=88">CubicVR WebGL Engine</a>. You may already know that a OpenGL performs best with textures with 2^n (power of 2) dimensions. To minimize CPU load, We wanted a way to resize a Processing.js sketch based on it’s distance from the camera.</p>
+<p>Why on earth would you want to do this? Well… imagine you have a 3D box spinning around on your screen. The box is far away from the camera and only takes up 16 pixels of the display. On that box you have a texture that is created on the Canvas with Processing.js. The Canvas’s default size is 256px by 256px, but there is absolutely no reason to make the processor calculate a 256×256 pixel animated texture, if the user only ever sees the texture mapped to a 16×16 pixel area.</p>
+<p>So the ideal situation is for CubicVR to be able to hook into a Processing.js script and dynamically resize it based on it’s distance from the camera. So one thing we need to be able to do, to create this balance between performance and quality, is to know how to find the closest power of 2.</p>
+<p>The following script demonstrates how to find the nearest power of 2 in JavaScript:</p>
+<pre lang="javascript">
+function nearestPow2( aSize ){
+  return Math.pow( 2, Math.round( Math.log( aSize ) / Math.log( 2 ) ) ); 
+}
+
+nearestPow2( 127 ); //  128
+nearestPow2( 180 ); //  128
+nearestPow2( 200 ); //  256
+nearestPow2( 256 ); //  256
+</pre>
+<p>I got the original algorithm from <a href="http://twitter.com/corban">Corban Brook</a> &amp; NotMasterYet on the <a href="irc://irc.mozilla.org/processing.js">Processing.js IRC Channel</a> who pointed me to <a href="http://stackoverflow.com/questions/466204/rounding-off-to-nearest-power-of-2">StackOverflow</a>, and I thought it was worth sharing, thanks guys!</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-web-workers-chrome-5-supports-new-sharedworker/" rel="prev">Javascript Web Workers: Chrome 5+ supports new SharedWorker()</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-web-workers-opera-10-6-beta-supports-sharedworkers/" rel="next">Javascript Web Workers: Opera 10.6 Beta Supports SharedWorkers</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/find-the-closest-power-of-2-with-javascript/ -->
+  
+
+</body></html>

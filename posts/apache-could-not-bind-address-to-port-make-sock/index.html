@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apache: Could not bind address to port (make_sock)</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Apache: Could not bind address to port (make_sock)</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/deployment/" class="tag">deployment</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>If you’re upgrading server software, or changing your port config, you may accidentally Funk your Wagnalls. You’ll know the error when you try to restart apache.</p>
+<pre><code class="shell hljs language-shell">~: sudo /etc/init.d/apache2 start
+ * Starting web server apache2
+(98)Address already in use: make_sock: could not bind to address 0.0.0.0:8080
+no listening sockets available, shutting down
+Unable to open logs
+   ...fail!
+
+</code></pre>
+<p>Apache is attempting to listen on port 8080, but cannot because it’s already in use. There are a few reasons why this might be happening.</p>
+<h3>Port configuration problem</h3>
+<p>If you have have duplicate entries, Apache will yell at you. Make sure that your apache.conf &amp; ports.conf don’t both include this directive. If it’s only being listed once (see the example ports.conf below), then make sure you didn’t accidentally duplicate your ports.conf somewhere apache would notice.</p>
+<pre><code class="shell hljs language-shell">Listen 8080
+<span class="hljs-meta prompt_">
+#</span><span class="language-bash">&lt;IfModule mod_ssl.c&gt;</span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">Listen 443</span>
+<span class="hljs-meta prompt_">#</span><span class="language-bash">&lt;/IfModule&gt;</span>
+
+</code></pre>
+<h3>Another service could be using the port</h3>
+<p>When I ran into this error, it was because another instance of apache was already running. This next example uses <a href="http://www.faqs.org/docs/linux_network/x-087-2-iface.netstat.html">netstat</a>, <a href="http://www.panix.com/~elflord/unix/grep.html">grep</a>, and <a href="http://www.computerhope.com/unix/ukill.htm">kill</a> to root out &amp; fix the problem.</p>
+<pre><code class="shell hljs language-shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">try to start apache, receive error</span>
+
+~: sudo /etc/init.d/apache2 start
+ * Starting web server apache2
+(98)Address already in use: make_sock: could not bind to address 0.0.0.0:8080
+no listening sockets available, shutting down
+Unable to open logs
+   ...fail!
+<span class="hljs-meta prompt_">
+# </span><span class="language-bash">see what<span class="hljs-string">'s using the port (note that I'</span>m searching <span class="hljs-keyword">for</span> :80, I could also use :8080)</span>
+
+~: sudo netstat -tulpn| grep :80
+
+tcp        0      0 0.0.0.0:8080            0.0.0.0:*               LISTEN      29004/apache2
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      28964/nginx
+<span class="hljs-meta prompt_">
+# </span><span class="language-bash">I see that apache2 is using 8080! Kill it!</span>
+
+~: killall -9 apache2
+<span class="hljs-meta prompt_">
+# </span><span class="language-bash">Let<span class="hljs-string">'s try again, with success</span></span>
+
+~: sudo /etc/init.d/apache2 start
+ * Starting web server apache2
+   ...done.
+</code></pre>
+<p>Remember to dig in and evaluate server problems instead of just rebooting. I rebooted four times before I decided that I must have screwed something up.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-web-workers-support-testing-the-browser/" rel="prev">JavaScript Web Workers: Support &amp;#038; Testing The Browser</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/social-primatives-for-a-brave-new-web/" rel="next">Social Primitives  for A Brave New Web</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/apache-could-not-bind-address-to-port-make-sock/ -->
+  
+
+</body></html>

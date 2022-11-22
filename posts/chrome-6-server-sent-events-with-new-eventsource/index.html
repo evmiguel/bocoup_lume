@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome 6: Server Push Events with new EventSource()</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Chrome 6: Server Push Events with new EventSource()</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><a href="http://dev.w3.org/html5/eventsource/">This is mighty awesome.</a> I’ve put together some test demos, to run them you’ll first need to get this Chromium build:</p>
+<ul>
+<li><a href="http://build.chromium.org/buildbot/continuous/win/2010-05-14/47357/chrome-win32.zip">47357 WIN32</a></li>
+<li><a href="http://build.chromium.org/buildbot/continuous/mac/2010-05-14/47357/chrome-mac.zip">47357 MAC</a></li>
+<li><a href="http://build.chromium.org/buildbot/continuous/linux/2010-05-14/47357/chrome-linux.zip">47357 32-Bit Linux</a></li>
+<li><a href="http://build.chromium.org/buildbot/continuous/linux64/2010-05-14/47357/chrome-linux.zip">47357 32-Bit Linux</a></li>
+</ul>
+<hr>
+<p>Then download <a href="https://gist.github.com/gists/415116/download">these</a>:</p>
+<p><a href="https://gist.github.com/415116" target="blank" rel="noopener">https://gist.github.com/415116</a></p>
+<hr>
+<p class="snippet caption">client.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"event-source.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>;
+</code></pre>
+<hr>
+<p class="snippet caption">event-source.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'DOMContentLoaded'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">var</span> eventSrc  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">EventSource</span>(<span class="hljs-string">'events.php'</span>);
+
+  eventSrc.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'open'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(event.<span class="hljs-property">type</span>);
+  });
+
+  eventSrc.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(event.<span class="hljs-property">type</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(event.<span class="hljs-property">data</span>);
+
+  });
+
+
+}, <span class="hljs-literal">false</span>);
+
+</code></pre>
+<hr>
+<p class="snippet caption">events.php</p>
+<pre><code class="php hljs language-php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">"Content-Type: text/event-stream\n\n"</span>);
+
+<span class="hljs-comment">// despite not having the while(true){}</span>
+<span class="hljs-comment">// this seems to repeat pushing messages to the client</span>
+<span class="hljs-keyword">echo</span> <span class="hljs-string">'data: '</span> . <span class="hljs-title function_ invoke__">time</span>() . <span class="hljs-string">"\n"</span>;
+<span class="hljs-meta">?&gt;</span>
+</code></pre>
+<h1>For something (only slightly) more involved</h1>
+<p><a href="https://gist.github.com/415294">https://gist.github.com/415294</a></p>
+<hr>
+<p class="snippet caption">event-source-2.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"event-source-2.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<hr>
+<p class="snippet caption">event-source-2.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'DOMContentLoaded'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">var</span> eventSrc  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">EventSource</span>(<span class="hljs-string">'event-source-2.php'</span>);
+
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">group</span>(<span class="hljs-string">'EventSource Created'</span>);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">dir</span>( eventSrc );
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">groupEnd</span>();
+
+  eventSrc.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'open'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">'Time Elapsed between open and message'</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(event.<span class="hljs-property">type</span>);
+  });
+
+  eventSrc.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">'Time Elapsed between open and message'</span>);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(event);
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">dir</span>( <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(event.<span class="hljs-property">data</span>) );
+
+  });
+}, <span class="hljs-literal">false</span>);
+
+</code></pre>
+<hr>
+<p class="snippet caption">event-source-2.php</p>
+<pre><code class="php hljs language-php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">"Content-Type: text/event-stream\n\n"</span>);
+
+<span class="hljs-comment">// despite not having the while(true){}</span>
+<span class="hljs-comment">// this seems to repeat pushing messages to the client</span>
+<span class="hljs-keyword">echo</span> <span class="hljs-string">'data: '</span> . <span class="hljs-title function_ invoke__">json_encode</span>(
+                  <span class="hljs-keyword">array</span>(
+                    <span class="hljs-number">0</span> =&gt; <span class="hljs-keyword">array</span>(
+                      <span class="hljs-string">'time'</span> =&gt; <span class="hljs-title function_ invoke__">time</span>(),
+                      <span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'Some kind of foo'</span>
+                    ),
+                    <span class="hljs-number">1</span> =&gt; <span class="hljs-keyword">array</span>(
+                      <span class="hljs-string">'time'</span> =&gt; <span class="hljs-title function_ invoke__">time</span>(),
+                      <span class="hljs-string">'message'</span> =&gt; <span class="hljs-string">'Some kind of quux'</span>
+                    )
+                  )
+                ) . <span class="hljs-string">"\n"</span>;
+<span class="hljs-meta">?&gt;</span>
+</code></pre>
+<p>Both examples can be found here:<br>
+<a href="https://code.bocoup.com/event-source/event-source-1.html">http://code.bocoup.com/event-source/event-source-1.html</a><br>
+<a href="https://code.bocoup.com/event-source/event-source-2.html">http://code.bocoup.com/event-source/event-source-2.html</a></p>
+<p>They have only been tested in a Chromium nightly and definitely don’t work in FireFox. Be sure to have the javascript console open when running these in order to see the output.</p>
+<hr>
+<h1>EDIT</h1>
+<p>In the comments below, there is some interesting info about how this is actually implemented, most notably the comment left by <b>obigid</b> and my reply to them.</p>
+<hr>
+<h1>More Findings, May 27, 2010</h1>
+<p>In case you’re wondering what kind of HTTP request is being made, it is a GET request. Here are the passing tests:</p>
+<p><a href="https://gist.github.com/415836">https://gist.github.com/415836</a><br>
+<a href="https://gist.github.com/gists/415836/download">https://gist.github.com/gists/415836/download</a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-web-workers-motormouth-is-a-twitter-client/" rel="prev">JavaScript Web Workers: Motörmouth is a Twitter Client</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-web-workers-chrome-5-now-supports-complex-messages/" rel="next">Javascript Web Workers: Chrome 5 Now Supports Complex Messages</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/chrome-6-server-sent-events-with-new-eventsource/ -->
+  
+
+</body></html>

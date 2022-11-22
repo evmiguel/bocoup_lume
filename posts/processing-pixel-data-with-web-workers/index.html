@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Pixel Data with Web Workers…</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Processing Pixel Data with Web Workers…</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/design/" class="tag">design</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>One of the questions that came up in the Processing track was: “Can you pass the image data from a Canvas to a Web-Worker for processing?” My assumption was “yes” as the specs declare you can paste any complex object to and from workers so long as you’re not trying to pass a DOM element.</p>
+<p>But then again… you never know what you can and cant do with all these security folk lurking around on browser development teams — making life difficult for the unclean web developer massive. So I went about creating a quick demo to prove, or disprove the point.</p>
+<pre lang="javascript">
+  // The script inside my HTML document...
+
+  // Create a new Worker thread
+  var myPixelWorker = new Worker( 'pixelWorker.js' );
+  
+  // When the Worker posts a message back to the Window
+  myPixelWorker.onmessage = function( event ){
+  
+    // Log the message that was passed back
+    console.log( event.data );
+  
+  };
+  
+  // When the Document has loaded...
+  addEventListener( 'DOMContentLoaded', function(){ 
+    
+    // Get the Canvas and Context
+    var canvas = document.getElementById( 'myCanvas' );
+    var context = canvas.getContext( '2d' );
+    
+    // Paint the Canvas green
+    context.fillStyle = "rgb(0,255,0);"
+    context.fillRect( 0, 0, 10, 10 );
+   
+    // Get 100 pixels of the green Canvas
+    var data = context.getImageData( 0, 0, 10, 10 ).data;
+   
+    // Post the 100 pixel array to the Worker thread
+    myPixelWorker.postMessage( data );
+  
+  }, false );
+
+</pre>
+<p>The script creates a Worker thread from the file “pixelWorker.js” and then adds an onmessage handler for logging what was passed between the Window and the Thread. The when the document has loaded, the JavaScript paints the canvas green, grabs the pixel data from the canvas, and passes the data to the worker.</p>
+<pre lang="javascript">
+  // The script inside my Worker thread
+
+  onmessage = function( event ){
+     
+    postMessage( event.data );
+
+  }
+  
+</pre>
+<p>The worker then takes the incoming message and fires it straight back to the Window where the result is logged in the Firebug console. Here are the results:</p>
+<pre lang="javascript">[0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255, 100 more...]
+</pre>
+<p>BINGO! Kind of obvious, but it needed to be blogged somewhere… that passing Canvas pixels to a Worker thread, <i>definitely does work</i>. 🙂</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-web-workers-opera-10-6-beta-supports-sharedworkers/" rel="prev">Javascript Web Workers: Opera 10.6 Beta Supports SharedWorkers</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/javascript-web-workers-opera-10-60-beta-supports-complex-messages/" rel="next">Javascript Web Workers: Opera 10.60 Beta Supports Complex Messages</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/processing-pixel-data-with-web-workers/ -->
+  
+
+</body></html>

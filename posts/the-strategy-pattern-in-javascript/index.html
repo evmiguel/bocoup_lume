@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Strategy Pattern in JavaScript</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">The Strategy Pattern in JavaScript</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>I was recently re-factoring some code under <a href="/bocoup_lume/weblog/author/rick-waldron/">Rick</a>‘s guidance, and we implemented what I would later recognize as <a href="http://en.wikipedia.org/wiki/Strategy_pattern">the Strategy pattern</a>. JavaScript’s objects and first-class functions make this pattern extremely simple to implement, although you can optionally take some additional steps to add robustness.</p>
+<h2>Background: Design Patterns</h2>
+<p>A lot of my troubles with design patterns come from understanding their goal and recognizing appropriate situations to use them. In fact, many people begin practicing them without any formal education into design patterns. This leads many seasoned programmers to respond with, “well, duh” when first confronted. Design patterns are derived from scrutiny of best practices in the real world (not your old CS prof’s black cauldron). They can seem artificial because they have been abstracted to describe general programming paradigms. That means any discussion of a specific pattern should really begin with an explanation of use cases–keep reading!</p>
+<h2>Motivation: Why Strategy?</h2>
+<p>Abstractly speaking, the Strategy pattern is relevant whenever you have a number of algorithms (or some combination of functions and inputs) that share some common behavior. Put another way, try using this pattern whenever you have a single Goal to accomplish with a number of Approaches. Here are some concrete examples, with the Goal and Approaches highlighted:</p>
+<ul>
+<li>You know two different ways to generate an audio tone, each with benefits and drawbacks
+<ul>
+<li>Goal: Generate an audio tone</li>
+<li>Approaches: fixed-size buffer, dynamic buffer</li>
+</ul>
+</li>
+<li>You want to “clean” various types of data based on different rules, each with different “fallback” values
+<ul>
+<li>Goal: Ensure data is within expected bounds</li>
+<li>Approaches: Names of functions, frequencies between 1 and 20,000, buffer sizes that are powers of 2</li>
+</ul>
+</li>
+<li>You have a number of buttons, and you want each to have a unique label and response when clicked.
+<ul>
+<li>Goal: Create a functional button</li>
+<li>Approaches: log in, log out, get contacts</li>
+</ul>
+</li>
+</ul>
+<h2>Implementation</h2>
+<p>That last example is exactly what <a href="http://boazsender.com/">Boaz</a> discussed in <a href="/bocoup_lume/weblog/implementing-the-google-contacts-authsub-flow-with-jquery/">his most recent blog post</a>.  Let’s use a stripped-down version of his code to see how simple this pattern can be:</p>
+<p class="snippet caption">boaz_strategy.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> buttons = {
+  <span class="hljs-attr">login</span>: {
+    <span class="hljs-attr">label</span>: <span class="hljs-string">'Login to Google'</span>,
+    <span class="hljs-attr">action</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      google.<span class="hljs-property">accounts</span>.<span class="hljs-property">user</span>.<span class="hljs-title function_">login</span>(<span class="hljs-string">'https://www.google.com/m8/feeds'</span>);
+    }
+  },
+  <span class="hljs-attr">logout</span>: {
+    <span class="hljs-attr">label</span>: <span class="hljs-string">'Logout from Google'</span>,
+    <span class="hljs-attr">action</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      google.<span class="hljs-property">accounts</span>.<span class="hljs-property">user</span>.<span class="hljs-title function_">logout</span>();
+    }
+  },
+  <span class="hljs-attr">getContacts</span>: {
+    <span class="hljs-attr">label</span>: <span class="hljs-string">'Get contacts'</span>,
+    <span class="hljs-attr">action</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+      <span class="hljs-keyword">var</span> contactsService = <span class="hljs-keyword">new</span> google.<span class="hljs-property">gdata</span>.<span class="hljs-property">contacts</span>.<span class="hljs-title class_">ContactsService</span>( <span class="hljs-string">'Contacts Viewer'</span> ),
+      query = <span class="hljs-keyword">new</span> google.<span class="hljs-property">gdata</span>.<span class="hljs-property">contacts</span>.<span class="hljs-title class_">ContactQuery</span>( <span class="hljs-string">'https://www.google.com/m8/feeds/contacts/default/full'</span> );
+      query.<span class="hljs-title function_">setMaxResults</span>( $(<span class="hljs-string">'#numContacts'</span>).<span class="hljs-title function_">val</span>() );
+      contactsService.<span class="hljs-title function_">getContactFeed</span>(
+        query,
+        <span class="hljs-keyword">function</span>(<span class="hljs-params"> result </span>) {
+          $(<span class="hljs-string">'#contacts'</span>).<span class="hljs-title function_">remove</span>();
+          <span class="hljs-keyword">var</span> $contactsHolder = $(<span class="hljs-string">'&lt;ul&gt;'</span>, {
+            <span class="hljs-attr">id</span>: <span class="hljs-string">'contacts'</span>
+          });
+          $.<span class="hljs-title function_">each</span>( result.<span class="hljs-property">feed</span>.<span class="hljs-property">entry</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> i, entry </span>){
+            $.<span class="hljs-title function_">each</span>( entry.<span class="hljs-title function_">getEmailAddresses</span>(), <span class="hljs-keyword">function</span>(<span class="hljs-params"> j, address </span>){
+              $contactsHolder.<span class="hljs-title function_">append</span>( <span class="hljs-string">'&lt;li&gt;'</span> + address.<span class="hljs-property">address</span> + <span class="hljs-string">'&lt;/li&gt;'</span> );
+            });
+          });
+          $contactsHolder.<span class="hljs-title function_">appendTo</span>( <span class="hljs-string">'body'</span>);
+        },
+        <span class="hljs-keyword">function</span>(<span class="hljs-params"> result </span>) {
+          <span class="hljs-comment">// Log the error</span>
+          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'error: '</span>, result);
+        }
+      );
+    }
+  }
+};
+</code></pre>
+<p>(You can see his inspiration in <a href="https://gist.github.com/898710">this Gist from Rick</a>, where the <code>handlers</code> object holds dummy Approaches.) Each property of the <code>buttons</code> object represents a unique <code>button</code>. This code recognizes the common aspects (the Goals: label the button and perform some action) that are shared by each unique button (the Approaches: log in, log out, get contacts). Now that this relationship has been set up, we can leverage its representational power:</p>
+<p class="snippet caption">boaz_leverage.js</p>
+<pre><code class="js hljs language-javascript">$.<span class="hljs-title function_">each</span>( buttons, <span class="hljs-keyword">function</span>(<span class="hljs-params"> propertyName, button </span>) {
+  $(<span class="hljs-string">'&lt;button&gt;'</span>, {
+    <span class="hljs-attr">html</span>: button.<span class="hljs-property">label</span>,
+    <span class="hljs-attr">id</span>: propertyName
+  })
+  .<span class="hljs-title function_">bind</span>(<span class="hljs-string">'click'</span>, button.<span class="hljs-property">action</span>)
+  .<span class="hljs-title function_">appendTo</span>( <span class="hljs-string">'nav'</span> );
+});
+</code></pre>
+<p>This code leverages the common interface (Goals) we teased out of each button (Approaches). We simply iterate over the controls object, confident that each member has some label and action. In this way, we’ve saved ourselves from having to write blocks of redundant code (<a href="https://raw.github.com/gist/1027926/0b05c1df3db64c6eaeff8ce1881208a66b8404a6/boaz_nopattern.js">you can see what I mean here</a>). Adding new buttons is also much easier because you only need to define the unique aspect of each—no need to retrace through the code adding logic for binding functions to buttons, etc.</p>
+<h2>Making it Robust</h2>
+<p>Although this is perfectly serviceable, there are steps we can take to make sure every Approach conforms to the same standard. Simply define a generic approach for the others to inherit from:</p>
+<p class="snippet caption">robust.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> <span class="hljs-title class_">Button</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">opts</span>) {
+    <span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> attr <span class="hljs-keyword">in</span> opts ) {
+      <span class="hljs-keyword">if</span>(opts.<span class="hljs-title function_">hasOwnProperty</span>(attr)) {
+        <span class="hljs-variable language_">this</span>[attr] = opts[attr];
+      }
+    }
+  };
+<span class="hljs-title class_">Button</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">label</span> = <span class="hljs-string">'button'</span>;
+<span class="hljs-title class_">Button</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">action</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {};
+</code></pre>
+<p>Using this <code>Button</code> object admittedly adds a small amount of code to the <code>buttons</code> definition, for example:<br>
+ <code>getContacts: { /* ... */ }</code> becomes <code>getContacts: new Button({ /* ... */ })</code></p>
+<p>(<a href="https://raw.github.com/gist/1027926/3a43a92580097e33fb3256a3667ad5cb7fe235e7/boaz_strategy_robust.js">See here for the complete definition.</a>) In return, we’ve built a clear contract of what each <code>Button</code> provides.</p>
+<h2>Runtime</h2>
+<p>So far, I have motivated the use of this pattern for object instantiation. While this makes code more readable and maintainable, it still might not be clear how this increases the power of the code. Consider another example (as mentioned earlier, working with audio tones):</p>
+<p class="snippet caption">runtime.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> waveImplementations = {
+    <span class="hljs-attr">discrete</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Wave</span>({
+      <span class="hljs-attr">node</span>: context.<span class="hljs-title function_">createBufferSource</span>(),
+      <span class="hljs-attr">is_initialized</span>: <span class="hljs-literal">false</span>,
+      <span class="hljs-attr">init</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) { <span class="hljs-comment">/* ... */</span> },
+      <span class="hljs-attr">readData</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> channel, callback </span>) { <span class="hljs-comment">/* ... */</span> },
+      <span class="hljs-attr">connect</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> target </span>) { <span class="hljs-comment">/* ... */</span> },
+      <span class="hljs-attr">disconnect</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) { <span class="hljs-comment">/* ... */</span> }
+    }),
+    <span class="hljs-attr">continuous</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Wave</span>({
+      <span class="hljs-attr">node</span>: context.<span class="hljs-title function_">createJavaScriptNode</span>( waveForm.<span class="hljs-property">bufferSize</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span> ),
+      <span class="hljs-attr">is_initialized</span>: <span class="hljs-literal">false</span>,
+      <span class="hljs-attr">callback</span>: noop,
+      <span class="hljs-attr">init</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) { <span class="hljs-comment">/* ... */</span> },
+      <span class="hljs-attr">readData</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> channel, callback </span>) { <span class="hljs-comment">/* ... */</span> },
+      <span class="hljs-attr">connect</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> target </span>) { <span class="hljs-comment">/* ... */</span> },
+      <span class="hljs-attr">disconnect</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) { <span class="hljs-comment">/* ... */</span> }
+    })
+  },
+  wave = waveImplementations.<span class="hljs-property">discrete</span>;
+</code></pre>
+<p>Once again, the data structures and methods unique to each approach have been teased out into dedicated objects. By defining the <code>wave</code> object in this way, the rest of the code can be written without any regard for the unique implementation details of <code>continuous</code> and <code>discrete</code> waves. More importantly, we can <strong>switch implementations at any time</strong> with one simple line of code: <code>wave = waveImplementations.continuous;</code></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/synchronizing-html5-slides-with-node-js/" rel="prev">Synchronizing HTML5 Slides with Node.js</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/welcome-irene-ros/" rel="next">Welcome Irene Ros</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/the-strategy-pattern-in-javascript/ -->
+  
+
+</body></html>

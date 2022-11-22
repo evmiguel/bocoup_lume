@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miso Dataset 0.3 Release</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Miso Dataset 0.3 Release</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/data analysis/" class="tag">data analysis</a>
+    
+      <a href="/bocoup_lume/tags/data visualization/" class="tag">data visualization</a>
+    
+      <a href="/bocoup_lume/tags/miso project/" class="tag">miso project</a>
+    
+      <a href="/bocoup_lume/tags/open source/" class="tag">open source</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><em>This post was written in collaboration with <a href="http://sho.ch">Alex Graul</a>, <a href="http://misoproject.com">Miso Project</a>‘s<br>
+co-creator.</em></p>
+<p>We are excited to release version 0.3.0 of <a href="http://github.com/misoproject/Dataset">Miso Dataset</a> today that<br>
+is full of new features. For the gory details, you can take a look at<br>
+the <a href="https://github.com/misoproject/Dataset/issues?milestone=13&amp;state=closed">closed issues</a>, but<br>
+this post will cover the major enhancements to the Dataset library.</p>
+<p>Miso Dataset has been on quite a world tour! It has helped visualize the <a href="http://www.sbs.com.au/news/census/">Australian Census</a>,<br>
+<a href="http://newsapps.pudo.org/BosniaMedia/">Bosnian Media</a>, and <a href="http://apps.npr.org/swing-state-scorecard/">explored Electoral College votes</a><br>
+for the US election. Thanks to all your valuable feedback, we are making improvements all the time. We wanted to<br>
+share a few major ones in this release.</p>
+<p>Miso Dataset now supports:</p>
+<ul>
+<li>Computed columns</li>
+<li>User defined ID column</li>
+<li>A revamped <code>update</code> method, and</li>
+<li>A much faster <code>sort</code> method</li>
+</ul>
+<h3>Computed Columns</h3>
+<p>Until now, if you wanted to add columns to your dataset that were somehow based on your existing<br>
+set of columns, you had to manually create a column, compute the data and update the rows. This was<br>
+both computationally expensive and somewhat cumbersome. In this release, we’ve added the ability to<br>
+add a computed column – a column that is based off of the existing rows that also updates its values<br>
+as data is added or updated.</p>
+<p>Here is an example of creating a computed column:</p>
+<p class="snippet caption">computed.columns.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> data = [
+  { age : <span class="hljs-number">23</span>, weight : <span class="hljs-number">140</span>, height : <span class="hljs-number">65</span> },
+  { age : <span class="hljs-number">40</span>, weight : <span class="hljs-number">290</span>, height : <span class="hljs-number">72</span> },
+  { age : <span class="hljs-number">13</span>, weight : <span class="hljs-number">110</span>, height : <span class="hljs-number">60</span> }
+];
+
+<span class="hljs-keyword">var</span> healthData = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Miso</span>.<span class="hljs-title class_">Dataset</span>({
+  <span class="hljs-attr">data</span>: data
+});
+
+healthData.<span class="hljs-title function_">fetch</span>().<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-comment">// Let's add a BMI Column</span>
+  healthData.<span class="hljs-title function_">addComputedColumn</span>(<span class="hljs-string">"BMI"</span>, <span class="hljs-string">"number"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">row</span>) {
+    <span class="hljs-keyword">return</span> [row.<span class="hljs-property">weight</span> / <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">pow</span>(row.<span class="hljs-property">height</span>, <span class="hljs-number">2</span>)] * <span class="hljs-number">703</span>;
+  });
+
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(healthData.<span class="hljs-title function_">column</span>(<span class="hljs-string">"BMI"</span>).<span class="hljs-property">data</span>);
+  <span class="hljs-comment">// =&gt; [23.294674556213018, 39.326774691358025, 21.480555555555554]</span>
+
+  <span class="hljs-comment">// If we add a row:</span>
+  healthData.<span class="hljs-title function_">add</span>({
+    age : <span class="hljs-number">30</span>,
+    weight : <span class="hljs-number">180</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">68</span>
+  });
+
+  <span class="hljs-comment">// the computed column will add the correct value at the</span>
+  <span class="hljs-comment">// correct place:</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(healthData.<span class="hljs-title function_">column</span>(<span class="hljs-string">"BMI"</span>).<span class="hljs-property">data</span>);
+  <span class="hljs-comment">// =&gt; [23.294674556213018, 39.326774691358025, 21.480555555555554, 27.3659169550173]</span>
+
+  <span class="hljs-comment">// if we update a row:</span>
+  <span class="hljs-keyword">var</span> firstRow = healthData.<span class="hljs-title function_">rowByPosition</span>(<span class="hljs-number">0</span>);
+  healthData.<span class="hljs-title function_">update</span>({
+    _id : firstRow.<span class="hljs-property">_id</span>,
+    <span class="hljs-attr">weight</span>: <span class="hljs-number">120</span>
+  });
+
+  <span class="hljs-comment">// Our computed column will recompute the appropriate</span>
+  <span class="hljs-comment">// cell:</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(healthData.<span class="hljs-title function_">column</span>(<span class="hljs-string">"BMI"</span>).<span class="hljs-property">data</span>);
+  <span class="hljs-comment">// =&gt; [19.966863905325443, 39.326774691358025, 21.480555555555554, 27.3659169550173]</span>
+});
+
+
+</code></pre>
+<h3> Custom ID Column </h3>
+<p>Prior to this release, when creating a Dataset, a custom column was created called <code>_id</code> as a unique identifier for your rows. Most of the time however, our data already<br>
+contains unique identifiers that we would much rather use. Dataset has been updated to support this<br>
+functionality which you can enable by setting the <code>idAttribute</code> property on dataset<br>
+creation. This also makes it much simpler to access a specific row by<br>
+its custom identifier. For example, if your dataset is using its ISO3 column as<br>
+IDs, you can now simply write <code>dataset.rowById('AU').population</code>.</p>
+<p>Here is an example:</p>
+<p class="snippet caption">idAttribute.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> data = [
+  { userId : <span class="hljs-number">1</span>, age : <span class="hljs-number">23</span>, weight : <span class="hljs-number">140</span>, height : <span class="hljs-number">65</span> },
+  { userId : <span class="hljs-number">2</span>, age : <span class="hljs-number">40</span>, weight : <span class="hljs-number">290</span>, height : <span class="hljs-number">72</span> },
+  { userId : <span class="hljs-number">3</span>, age : <span class="hljs-number">13</span>, weight : <span class="hljs-number">110</span>, height : <span class="hljs-number">60</span> }
+];
+
+<span class="hljs-keyword">var</span> healthData = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Miso</span>.<span class="hljs-title class_">Dataset</span>({
+  <span class="hljs-attr">data</span>: data,
+  idAttribute : <span class="hljs-string">'userId'</span>
+});
+
+healthData.<span class="hljs-title function_">fetch</span>().<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-comment">// Will return our first row</span>
+  <span class="hljs-comment">// =&gt; {"userId":1,"age":23,"weight":140,"height":65}</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title class_">Stringify</span>(healthData.<span class="hljs-title function_">rowById</span>(<span class="hljs-number">1</span>)));
+
+});
+</code></pre>
+<h3> Improved API for ‘update’ Method</h3>
+<p>Our <code>update</code> method was one of our trickier APIs to remember. Not only did it allow for updating<br>
+a single row, sets of rows or function-based updating, but each one of those updates required a slightly different<br>
+signature. In this release we are changing how the update function looks but keeping the functionality intact.</p>
+<p>Here is an example of all the ways to update your dataset:</p>
+<p class="snippet caption">update.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> data = [
+  { userId : <span class="hljs-number">1</span>, age : <span class="hljs-number">23</span>, weight : <span class="hljs-number">140</span>, height : <span class="hljs-number">65</span> },
+  { userId : <span class="hljs-number">2</span>, age : <span class="hljs-number">40</span>, weight : <span class="hljs-number">290</span>, height : <span class="hljs-number">72</span> },
+  { userId : <span class="hljs-number">3</span>, age : <span class="hljs-number">13</span>, weight : <span class="hljs-number">110</span>, height : <span class="hljs-number">60</span> }
+];
+
+<span class="hljs-keyword">var</span> healthData = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Miso</span>.<span class="hljs-title class_">Dataset</span>({
+  data : data,
+  idAttribute : <span class="hljs-string">'userId'</span>
+});
+
+healthData.<span class="hljs-title function_">fetch</span>().<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-comment">// let's update a single record:</span>
+  healthData.<span class="hljs-title function_">update</span>({
+    userId : <span class="hljs-number">1</span>,
+    age : <span class="hljs-number">24</span>
+  });
+
+  <span class="hljs-comment">// The age is now 24:</span>
+  <span class="hljs-comment">// =&gt; {"userId":1,"age":24,"weight":140,"height":65}</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(healthData.<span class="hljs-title function_">rowById</span>(<span class="hljs-number">1</span>)));
+
+  <span class="hljs-comment">// let's update two records</span>
+  healthData.<span class="hljs-title function_">update</span>([
+    { userId : <span class="hljs-number">1</span>, age : <span class="hljs-number">25</span>, weight : <span class="hljs-number">140</span>, height : <span class="hljs-number">65</span> },
+    { userId : <span class="hljs-number">2</span>, age : <span class="hljs-number">42</span>, weight : <span class="hljs-number">140</span>, height : <span class="hljs-number">65</span> }
+  ]);
+
+  <span class="hljs-comment">// Our age column should now look like this:</span>
+  <span class="hljs-comment">// =&gt; [25, 42, 13]</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(healthData.<span class="hljs-title function_">column</span>(<span class="hljs-string">"age"</span>).<span class="hljs-property">data</span>);
+
+  <span class="hljs-comment">// Let's update all the ages at once</span>
+  healthData.<span class="hljs-title function_">update</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">row</span>) {
+    row.<span class="hljs-property">age</span> += <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">return</span> row;
+  });
+
+  <span class="hljs-comment">// Our age column should now look like this:</span>
+  <span class="hljs-comment">// =&gt; [25, 42, 15]</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(healthData.<span class="hljs-title function_">column</span>(<span class="hljs-string">"age"</span>).<span class="hljs-property">data</span>);
+
+});
+</code></pre>
+<p>This makes it much easier to update a set of arbitary rows with individual changes in one go and only generate a single event.</p>
+<h3> ‘sort’ Method Performane Improvements </h3>
+<p>Last but not least, we have rewritten our sort routine to increase its performance substantially.<br>
+You should now see an improvement of about 8x in your routines that utilize the <code>sort</code> method.</p>
+<p>Thank you all for the invaluable feedback and keep telling us what you want to see Miso Dataset do!</p>
+<p>— Irene and Alex</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/miso-storyboard/" rel="prev">Building Your Control Flow with Miso.Storyboard</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/recon2012-launch/" rel="next">ReConstitution 2012 &amp;#8211; Live Debate Deconstruction and Visualization</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/miso-dataset-03-release/ -->
+  
+
+</body></html>

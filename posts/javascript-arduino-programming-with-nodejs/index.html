@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: Arduino Programming on Node.js</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: Arduino Programming on Node.js</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/javascript robotics/" class="tag">javascript robotics</a>
+    
+      <a href="/bocoup_lume/tags/johnny-five/" class="tag">johnny-five</a>
+    
+      <a href="/bocoup_lume/tags/microprocessor/" class="tag">microprocessor</a>
+    
+      <a href="/bocoup_lume/tags/nodebots/" class="tag">nodebots</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web connected devices/" class="tag">web connected devices</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Today is Tuesday, May 15th 2012. Just over a year ago, I discovered <a target="_blank" href="https://github.com/voodootikigod/node-serialport" rel="noopener">node-serialport</a> by <a target="_blank" href="https://twitter.com/voodootikigod" rel="noopener">Chris Williams</a> and went immediately to the closest <a target="_blank" href="http://microcenter.com" rel="noopener">Microcenter</a> and purchased the <a target="_blank" href="http://www.makershed.com/Getting_Started_with_Arduino_Kit_V3_0_p/msgsa.htm" rel="noopener">Getting Started with Arduino</a> kit.</p>
+<div class="blog-media">
+  <a class="img" target="_blank" href="http://www.arduino.cc/" rel="noopener"><br>
+    <img decoding="async" class="arduino" src="https://arduino.cc/en/pub/skins/arduinoWide_SSO/img/logo.png"><br>
+  </a><p></p>
+<div class="bd">
+    Arduino is an open-source electronics prototyping platform based on flexible, easy-to-use hardware and software. It’s intended for artists, designers, hobbyists, and anyone interested in creating interactive objects or environments.
+  </div>
+</div>
+<p>With my new kit and Chris’s serialport code, I was able to produce a <a target="_blank" href="https://github.com/voodootikigod/node-serialport/blob/master/tests/arduino-ldr-read.js" rel="noopener">JavaScript program</a> and an <a target="_blank" href="https://github.com/voodootikigod/node-serialport/blob/master/tests/arduino-ldr-read.js" rel="noopener">Arduino program</a> coupled to produce a simple Light Dependant Resistor demo (Arduino programs are written in the <a target="_blank" href="http://arduino.cc/en/Reference/HomePage" rel="noopener">Arduino programming language</a> which is based on <a target="_blank" href="http://www.open-std.org/jtc1/sc22/wg14/" rel="noopener">C</a>/<a target="_blank" href="http://www2.research.att.com/~bs/3rd.html" rel="noopener">C++</a>, which is then compiled with <a target="_blank" href="http://www.avrfreaks.net/wiki/index.php/Documentation:AVR_GCC" rel="noopener">avr-gcc</a> and shipped to the microcontroller. The program was simple: print the current value of the LDR to the terminal via <a target="_blank" href="http://nodejs.org/docs/v0.7.8/api/repl.html" rel="noopener">interactive REPL</a>. Take a look:</p>
+<p><iframe loading="lazy" width="420" height="315" src="https://www.youtube.com/embed/PqUiRK5Llk8" frameborder="0" allowfullscreen="true"></iframe></p>
+<p><strong>Pretty cool, right? Maybe, but I don’t want to write Processing, C or C++. I want make robots that are driven by JavaScript programs.</strong></p>
+<p>About a month later at <a target="_blank" href="http://2011.jsconf.us/" rel="noopener">JSConf 2011</a> in Porland Oregon, while sitting on the floor in the hallway, <a target="_blank" href="https://twitter.com/maxogden" rel="noopener">Max Ogden</a> and I hacked together a rad demo that allowed him to slide his finger back and forth over a <a target="_blank" href="http://danplows.com/blog/how-to-hook-up-a-soft-pot/" rel="noopener">Soft</a> <a target="_blank" href="http://www.sparkfun.com/products/8680" rel="noopener">Potentiometer Membrane</a> to control video playback. The sensor was attached to an Arduino board, the board then connected via USB to his laptop, which was running a Node.js program that listened for <a target="_blank" href="https://github.com/voodootikigod/node-serialport" rel="noopener">serialport</a> data events and pushed the sensor data back out to a web browser client via <a target="_blank" href="http://socket.io/" rel="noopener">Socket.IO</a>, which was processed into time and handed off to <a target="_blank" href="http://popcornjs.org" rel="noopener">Popcorn.js</a>.</p>
+<pre><code>Soft Pot &gt; Arduino &gt; USB &gt; Node Serialport &gt; Socket.IO &gt; Popcorn.js
+</code></pre>
+<p>Once the touch data reached the client on the browser, which was being displayed on my laptop, we used Popcorn.js and the data values to fast-forward and rewind a video of a <a target="_blank" href="http://www.youtube.com/watch?v=IolGVHkv1vQ" rel="noopener">Monkey Riding a Dog</a>. That code is available <a target="_blank" href="https://gist.github.com/968773" rel="noopener">here</a> and you can watch the <a target="_blank" href="http://blip.tv/jsconf/jsconf2011-rick-waldron-5949929" rel="noopener">demo here (jump to 22:34)</a>.</p>
+<p><strong>Neat, isn’t it? Maybe, but I don’t want to write Processing, C or C++. I want make robots that are driven by JavaScript programs.</strong></p>
+<p>After returning from JSConf, things got very busy at Bocoup and I simply didn’t have time, nor interest, to spend on my ideas. My kit collected dust for nearly a year, occassionally I would come across interesting JavaScript, Node and Arduino projects, but I was too busy to really spend any time with them.</p>
+<p>In December 2011, <a target="_blank" href="https://github.com/ecto/duino" rel="noopener">Duino</a> was released, but I didn’t discover it until March of 2012. This was very exciting, because it was doing all of the things I had hoped to do with JavaScript and Arduino – so I cloned the repo and tried out a few of the demos. Then I started writing code and making <a target="_blank" href="https://github.com/ecto/duino/commits/master" rel="noopener">pull requests</a>. There was still a problem however – Duino expected me to extend the protocol written in C++ that it shipped with, in order to add new features. I sucked it up and wrote several modules including <a target="_blank" href="https://github.com/rwldrn/duino/blob/development/lib/gps.js" rel="noopener">GPS</a>, <a target="_blank" href="https://github.com/rwldrn/duino/blob/development/lib/ping.js" rel="noopener">Ping</a>, <a target="_blank" href="https://github.com/rwldrn/duino/blob/development/lib/pir.js" rel="noopener">PIR</a> and <a target="_blank" href="https://github.com/rwldrn/duino/blob/development/lib/sensor.js" rel="noopener">Sensor</a>.</p>
+<p><strong>So this was cool, but I don’t want to write Processing, C or C++. I want make robots that are driven by JavaScript programs.</strong></p>
+<p>Then this happened…</p>
+<blockquote class="twitter-tweet tw-align-center">
+<p>@<a href="https://twitter.com/paultag">paultag</a> @<a href="https://twitter.com/rwaldron">rwaldron</a> @<a href="https://twitter.com/campedersen">campedersen</a> wouldnt that basically be this <a href="https://t.co/WengfVhe" title="https://github.com/jgautier/firmata">github.com/jgautier/firma…</a> ?</p>
+<p>— julian gautier (@Jagautier) <a href="https://twitter.com/Jagautier/status/185505233256972289" data-datetime="2012-03-29T23:14:28+00:00">March 29, 2012</a></p></blockquote>
+<blockquote class="twitter-tweet tw-align-center" data-in-reply-to="185510567233073152">
+<p>@<a target="_blank" href="https://twitter.com/rwaldron" rel="noopener">rwaldron</a> lol! you do know you have a fork right 😛 <a target="_blank" href="https://t.co/KtXQxIRZ" title="https://github.com/rwldrn/firmata" rel="noopener">github.com/rwldrn/firmata</a></p>
+<p>— julian gautier (@Jagautier) <a target="_blank" href="https://twitter.com/Jagautier/status/185510827015684097" data-datetime="2012-03-29T23:36:42+00:00" rel="noopener">March 29, 2012</a></p></blockquote>
+<p><script src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+<p>And everything changed.</p>
+<p>The package Julian had created was a <a target="_blank" href="https://github.com/jgautier/firmata/" rel="noopener">JavaScript implementation</a> of <a target="_blank" href="http://firmata.org/wiki/Main_Page" rel="noopener">Firmata</a>, which is a protocol for communicating with Arduino microcontrollers from software on a host computer, written in any language. Free of Processing, C and C++ bondage, and using Firmata as the baseline communication channel, I rebooted and started from scratch. First, I endeavored to write a <code>Board</code> constructor that, while inspired by and conceptually similar to Cam’s <code>duino.Board()</code>, had finer abstractions for instance management, active serial/USB discovery and by-default REPL sessions built in to every program. This is the foundation of <a target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener">Johnny-Five</a>.</p>
+<p>Once I had the initial <code>Board</code> constructor, I created a slightly modified version of Julian’s <a target="_blank" href="https://github.com/jgautier/firmata/blob/master/examples/servosweep.js" rel="noopener">servo-sweep.js</a> as a proof of concept for baseline of the framework:</p>
+<p class="snippet caption">claw-original.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> five = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../lib/johnny-five.js"</span>),
+    board;
+
+board = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Board</span>();
+
+board.<span class="hljs-title function_">on</span>(<span class="hljs-string">"ready"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">var</span> claw = <span class="hljs-number">9</span>,
+      arm = <span class="hljs-number">11</span>,
+      degrees = <span class="hljs-number">10</span>,
+      incrementer = <span class="hljs-number">10</span>,
+      last;
+
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">board</span>.<span class="hljs-title function_">pinMode</span>( claw, <span class="hljs-number">3</span> );
+  <span class="hljs-variable language_">this</span>.<span class="hljs-property">board</span>.<span class="hljs-title function_">pinMode</span>( arm, <span class="hljs-number">3</span> );
+
+  <span class="hljs-built_in">setInterval</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    <span class="hljs-keyword">if</span> ( degrees &gt;= <span class="hljs-number">180</span> || degrees === <span class="hljs-number">0</span> ) {
+      incrementer *= -<span class="hljs-number">1</span>;
+    }
+
+    degrees += incrementer;
+
+    <span class="hljs-keyword">if</span> ( degrees === <span class="hljs-number">180</span> ) {
+      <span class="hljs-keyword">if</span> ( !last || last === <span class="hljs-number">90</span> ) {
+        last = <span class="hljs-number">180</span>;
+      } <span class="hljs-keyword">else</span> {
+        last = <span class="hljs-number">90</span>;
+      }
+
+      <span class="hljs-variable language_">this</span>.<span class="hljs-property">board</span>.<span class="hljs-title function_">servoWrite</span>( arm, last );
+    }
+
+    <span class="hljs-variable language_">this</span>.<span class="hljs-property">board</span>.<span class="hljs-title function_">servoWrite</span>( claw, degrees );
+
+  }.<span class="hljs-title function_">bind</span>(<span class="hljs-variable language_">this</span>), <span class="hljs-number">50</span>);
+});
+</code></pre>
+<p><video controls="" class="blog-full-width-block"><source src="https://dl.dropbox.com/u/3531958/johnny-five-claw.mp4"><source src="https://dl.dropbox.com/u/3531958/johnny-five-claw.webm"><source src="https://dl.dropbox.com/u/3531958/johnny-five-claw.ogv"><br>
+  <iframe loading="lazy" width="560" height="315" src="https://www.youtube.com/embed/ZHFbFymbR04" frameborder="0" allowfullscreen=""></iframe></video></p>
+<p>With a stronger <code>Board</code> constructor, porting all of the modules I had created for Duino into this new framework was mostly a breeze. A few days later, the <code>Servo</code> module emerged, transforming the code into this:</p>
+<p class="snippet caption">claw-servo-api.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> five = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../lib/johnny-five.js"</span>),
+    board;
+
+board = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Board</span>();
+
+board.<span class="hljs-title function_">on</span>(<span class="hljs-string">"ready"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">var</span> claw = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Servo</span>( <span class="hljs-number">9</span> ),
+      arm =  <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Servo</span>( <span class="hljs-number">10</span> ),
+      degrees = <span class="hljs-number">10</span>,
+      incrementer = <span class="hljs-number">10</span>,
+      last;
+
+  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">loop</span>( <span class="hljs-number">25</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+    <span class="hljs-keyword">if</span> ( degrees &gt;= <span class="hljs-number">180</span> || degrees === <span class="hljs-number">0</span> ) {
+      incrementer *= -<span class="hljs-number">1</span>;
+    }
+
+    degrees += incrementer;
+
+    <span class="hljs-keyword">if</span> ( degrees === <span class="hljs-number">180</span> ) {
+      <span class="hljs-keyword">if</span> ( !last || last === <span class="hljs-number">90</span> ) {
+        last = <span class="hljs-number">180</span>;
+      } <span class="hljs-keyword">else</span> {
+        last = <span class="hljs-number">90</span>;
+      }
+      arm.<span class="hljs-title function_">move</span>( last );
+    }
+
+    claw.<span class="hljs-title function_">move</span>( degrees );
+  });
+});
+</code></pre>
+<p>Over the next few weeks as I acquired <a target="_blank" href="https://github.com/rwldrn/johnny-five/blob/master/parts.md" rel="noopener">new hardware and sensors</a>, each new piece brought with it a new physical engineering and software engineering challenge. Several times I found myself revisiting a stable module and starting over when a useful abstraction presented itself. One of the most important refactorings that occurred had nothing to do with code. Early on it became clear that I would need to document the hardware that I was building, especially if I was to continue creating sans permanence. Arduino tutorials are often published with colorful illustrations of the microcontroller connected to a breadboard and various gadgets – this is what I wanted and what I found in <a target="_blank" href="http://fritzing.org/" rel="noopener">Fritzing</a>. With Fritzing, I now had the tools to quickly and easily create detailed, visually appealing documentation of the hardware that accompanied each of the example programs that I created.</p>
+<p class="snippet caption">led-strobe.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> five = <span class="hljs-built_in">require</span>(<span class="hljs-string">"johnny-five"</span>),
+    board, led;
+
+board = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Board</span>();
+
+board.<span class="hljs-title function_">on</span>(<span class="hljs-string">"ready"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  <span class="hljs-comment">// Create a standard `led` on pin 13</span>
+  led = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Led</span>(<span class="hljs-number">13</span>);
+
+  <span class="hljs-comment">// "strobe" the led in 100ms on-off phases</span>
+  led.<span class="hljs-title function_">strobe</span>(<span class="hljs-number">100</span>);
+});
+
+</code></pre>
+<p><img decoding="async" src="https://static.bocoup.com/blog/led-strobe.png"></p>
+<p>Once assembled, the program can be run from the command line as</p>
+<p><code>node led-strobe.js</code></p>
+<p>and should look like this:</p>
+<p><video controls="" class="blog-full-width-block"><source src="https://dl.dropbox.com/u/3531958/led-strobe.mp4"><source src="https://dl.dropbox.com/u/3531958/led-strobe.webm"><source src="https://dl.dropbox.com/u/3531958/led-strobe.ogv"><br>
+  <iframe loading="lazy" width="560" height="315" src="https://www.youtube.com/embed/nOlUpNDtSkk" frameborder="0" allowfullscreen=""></iframe></video></p>
+<p>Admittedly, this example is less-then-mind-blowing — but it’s just one piece of a larger whole.</p>
+<p>My goal for <a target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener">Johnny-Five</a> is to create a framework for programming Arduino Robots with nothing more then JavaScript. I believe that JavaScript, inherently asynchronous and the platform that Node.js has built around this paradigm, is the perfect environment for writing evented, streaming programs for controlling the highly synchronous world of hardware.</p>
+<p>As part of Johnny-Five’s development process, I’ve created 28 component-centric mini-programs. I intend to publish these along with breadboard schematics and parts lists, twice each week over the next few months.</p>
+<p><strong>…And this is how I’ll make robots that are driven by JavaScript programs.</strong></p>
+<p><video controls="" class="blog-full-width-block"><source src="https://dl.dropbox.com/u/3531958/joystick-claw.mp4"><source src="https://dl.dropbox.com/u/3531958/joystick-claw.ogv"><source src="https://dl.dropbox.com/u/3531958/joystick-claw.webm"><br>
+  <iframe loading="lazy" width="560" height="315" src="https://www.youtube.com/embed/0QzpWzzo7FM" frameborder="0" allowfullscreen=""></iframe></video></p>
+<p>As the language continues to prove itself worthy of high performance use beyond the browser and its <a target="_blank" href="https://twitter.com/#!/BrendanEich/status/199407462133145600" rel="noopener">lower level capabilities improve</a>, I don’t think it’s unreasonable to at least open our minds and imagine a future where we control things like home and vehicle automation, assembly lines, meteorological equipment, robotics… etc. with <a target="_blank" href="http://www.infoq.com/presentations/JavaScript-Today-and-Tomorrow" rel="noopener">programs written in JavaScript</a>.</p>
+<p><a target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener"><img decoding="async" src="https://static.bocoup.com/blog/sgier-johnny-five.png"></a></p>
+<p><small><br>
+References:<br>
+[0] <a href="https://github.com/voodootikigod/node-serialport">node-serialport</a><br>
+[1] <a href="https://twitter.com/voodootikigod">Chris Williams</a><br>
+[2] <a href="http://microcenter.com">Microcenter</a><br>
+[3] <a href="http://www.makershed.com/Getting_Started_with_Arduino_Kit_V3_0_p/msgsa.htm">Getting Started with Arduino</a><br>
+[4] <a href="http://www.arduino.cc/">Arduino</a><br>
+[5] <a href="https://github.com/voodootikigod/node-serialport/blob/master/tests/arduino-ldr-read.js">Arduino LDR Demo</a><br>
+[6] <a href="https://github.com/voodootikigod/node-serialport/blob/master/tests/arduino-ldr-read.js">Arduino program</a><br>
+[7] <a href="http://arduino.cc/en/Reference/HomePage">Arduino programming language</a><br>
+[8] <a href="http://www.open-std.org/jtc1/sc22/wg14/">C</a><br>
+[9] <a href="http://www2.research.att.com/~bs/3rd.html">C++</a><br>
+[10] <a href="http://www.avrfreaks.net/wiki/index.php/Documentation:AVR_GCC">avr-gcc</a><br>
+[11] <a href="http://nodejs.org/docs/v0.7.8/api/repl.html">Node REPL</a><br>
+[12] <a href="http://2011.jsconf.us/">JSConf 2011</a><br>
+[13] <a href="https://twitter.com/maxogden">Max Ogden</a><br>
+[14] <a href="http://danplows.com/blog/how-to-hook-up-a-soft-pot/">Soft Potentiometer</a><br>
+[15] <a href="http://www.sparkfun.com/products/8680">Soft Potentiometer Membrane</a><br>
+[16] <a href="http://socket.io/">Socket.IO</a><br>
+[17] <a href="http://popcornjs.org">Popcorn.js</a><br>
+[18] <a href="http://www.youtube.com/watch?v=IolGVHkv1vQ">Monkey Riding a Dog</a><br>
+[19] <a href="https://gist.github.com/968773">Monkey Riding a Dog Demo Code</a><br>
+[20] <a href="https://github.com/ecto/duino">Duino</a><br>
+[22] <a href="https://github.com/rwldrn/duino/blob/development/lib/gps.js">GPS</a><br>
+[23] <a href="https://github.com/rwldrn/duino/blob/development/lib/ping.js">Ping</a><br>
+[24] <a href="https://github.com/rwldrn/duino/blob/development/lib/pir.js">PIR</a><br>
+[25] <a href="https://github.com/rwldrn/duino/blob/development/lib/sensor.js">Sensor</a><br>
+[26] <a href="https://github.com/jgautier/firmata/">Firmata JavaScript implementation</a><br>
+[27] <a href="http://firmata.org/wiki/Main_Page">Firmata</a><br>
+[28] <a href="https://github.com/rwldrn/johnny-five">Johnny-Five</a><br>
+[29] <a href="https://github.com/jgautier/firmata/blob/master/examples/servosweep.js">servo-sweep.js</a><br>
+[30] <a href="https://github.com/rwldrn/johnny-five/blob/master/parts.md">Hardware and Sensors</a><br>
+[31] <a href="http://fritzing.org/">Fritzing</a><br>
+[32] <a href="https://twitter.com/#!/BrendanEich/status/199407462133145600">int64/uint64 value objects prototyped in SpiderMonkey</a><br>
+[33] <a href="http://www.infoq.com/presentations/JavaScript-Today-and-Tomorrow">JavaScript Today and Tomorrow: Evolving the Ambient Language of the Ambient Computing Era</a><br>
+[34] <a href="http://www.juliangautier.com/2011/02/controlling-big-mean-deviceswith.html">Controlling Big, Mean, Devices…..With Javascript!</a><br>
+</small></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/bocoup-goes-to-the-white-house/" rel="prev">Bocoup goes to the White House</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/introducing-boxbox/" rel="next">Introducing boxbox</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-arduino-programming-with-nodejs/ -->
+  
+
+</body></html>

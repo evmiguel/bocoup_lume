@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Web Workers: Opera 10.6 Beta Supports SharedWorkers</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Javascript Web Workers: Opera 10.6 Beta Supports SharedWorkers</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <hr>
+<p>While poking around the Web Worker API in the latest Opera Beta Release, I discovered that they had also implemented support for Shared Web Workers. If you’re not familiar with Shared Web Workers, <a href="http://www.whatwg.org/specs/web-workers/current-work/#shared-workers-introduction">have a look here</a>. The basic premise is that a Shared Worker can have multiple connections made to one Worker.</p>
+<hr>
+<p>Paraphrased from the <a href="http://www.whatwg.org/specs/web-workers/current-work/#shared-state-using-a-shared-worker">specification</a> for clarity:</p>
+<hr>
+<blockquote style="font-size: 14px"><p>[Instead of a single message processing function, workers can attach multiple event listeners, each one performing a quick check to see if it is relevant for the message. If multiple authors wanted to collaborate using a single port to communicate with a worker, it would allow for independent code instead of changes having to all be made to a single event handling function.]</p></blockquote>
+<hr>
+<p>So how about some code? In order to run the demo I’ve prepared, you’ll need <a href="http://www.opera.com/browser/download/?ver=10.60b1">Opera 10.6 Beta 1</a>. Then hop over to <a href="https://gist.github.com/443812">Github and grab the Gist</a>.</p>
+<hr>
+<p>The comments will guide you through each step of the demo’s functionality.</p>
+<hr>
+<p>Basic HTML page for running the test:</p>
+<p class="snippet caption">sharedworker.multi-connect.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">HTML</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>SharedWorker: Multiple Connections<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- Include Firebug Lite Because Dragonfly is terrible --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://getfirebug.com/releases/lite/beta/firebug.jgz"</span>&gt;</span><span class="language-javascript">
+    {
+      <span class="hljs-attr">startOpened</span>: <span class="hljs-literal">true</span>
+    }
+    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"sharedworker.multi-connect.renderer.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">pre</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"shared-worker-log"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">iframe</span> <span class="hljs-attr">style</span>=<span class="hljs-string">"width:100%"</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"sharedworker.multi-connect-inner.html"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">iframe</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;<span class="hljs-name">pre</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"shared-worker-connection-log"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p>The HTML page called in the iframe:</p>
+<p class="snippet caption">sharedworker.multi-connect-inner.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">HTML</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"sharedworker.multi-connect.renderer.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">pre</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"shared-worker-log"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">pre</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p>The Renderer (that’s your browser window)</p>
+<p class="snippet caption">sharedworker.multi-connect.renderer.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-variable language_">document</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'DOMContentLoaded'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">var</span> <span class="hljs-title class_">Share</span>  = {
+    <span class="hljs-attr">worker</span>: (<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+              <span class="hljs-comment">//  CREATE SHARED WORKER AND RETURN IT</span>
+              <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SharedWorker</span>(<span class="hljs-string">'sharedworker.multi-connect.worker.js'</span>);
+            })(),
+    <span class="hljs-attr">logTo</span>:    <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">'shared-worker-log'</span>),
+    <span class="hljs-attr">reportTo</span>: <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">'shared-worker-connection-log'</span>)
+  };
+
+
+  <span class="hljs-comment">//  REFLECT Share OBJECT</span>
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Share</span>);
+
+  <span class="hljs-comment">//  LISTEN ON THE SHAREDWORKER'S PORT FOR NEW MESSAGES</span>
+  <span class="hljs-title class_">Share</span>.<span class="hljs-property">worker</span>.<span class="hljs-property">port</span>.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+
+    <span class="hljs-comment">//  INITIAL CONNECTION</span>
+    <span class="hljs-keyword">if</span> ( event.<span class="hljs-property">data</span>.<span class="hljs-property">connected</span> ) {
+      <span class="hljs-keyword">var</span> workerLog = <span class="hljs-string">'ConnectionId #'</span> + event.<span class="hljs-property">data</span>.<span class="hljs-property">connectionId</span> +
+                                   <span class="hljs-string">' '</span> + event.<span class="hljs-property">data</span>.<span class="hljs-property">pathName</span> +
+                      <span class="hljs-string">' - Connected: '</span> + event.<span class="hljs-property">data</span>.<span class="hljs-property">connected</span> ;
+
+      <span class="hljs-comment">//  APPEND TO LOG FIELD</span>
+      <span class="hljs-title class_">Share</span>.<span class="hljs-property">logTo</span>.<span class="hljs-property">textContent</span>  += <span class="hljs-string">"n"</span> + workerLog;
+
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-comment">//  REPORTING CONNECTIONS TO SHARED WORKER</span>
+    <span class="hljs-keyword">if</span> ( event.<span class="hljs-property">data</span>.<span class="hljs-property">connections</span> ) {
+      <span class="hljs-keyword">var</span> connectionPaths = event.<span class="hljs-property">data</span>.<span class="hljs-property">connections</span>;
+
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">'Total Connections: '</span> + connectionPaths.<span class="hljs-property">length</span>);
+
+      <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> id <span class="hljs-keyword">in</span> connectionPaths ) {
+
+        <span class="hljs-keyword">if</span> ( id !== <span class="hljs-string">'length'</span> )  {
+
+          <span class="hljs-keyword">var</span> connectionLog = <span class="hljs-string">'#'</span> + id + <span class="hljs-string">' '</span> + connectionPaths[id];
+
+          <span class="hljs-comment">//  WRITE TO CONSOLE</span>
+          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( connectionLog  );
+
+          <span class="hljs-comment">//  APPEND TO REPORT FIELD</span>
+          <span class="hljs-title class_">Share</span>.<span class="hljs-property">reportTo</span>.<span class="hljs-property">textContent</span>  += <span class="hljs-string">"n"</span> + connectionLog;
+        }
+      }
+      <span class="hljs-keyword">return</span>;
+    }
+  }, <span class="hljs-literal">false</span>);
+
+  <span class="hljs-comment">//  START THE CONNECTION TO SHAREDWORKER</span>
+  <span class="hljs-comment">//  REQUIRED WHEN USING "addEventListener()"</span>
+  <span class="hljs-title class_">Share</span>.<span class="hljs-property">worker</span>.<span class="hljs-property">port</span>.<span class="hljs-title function_">start</span>();
+  <span class="hljs-comment">//  FIRE CONNECTING MESSAGE TO SHAREDWORKER</span>
+  <span class="hljs-title class_">Share</span>.<span class="hljs-property">worker</span>.<span class="hljs-property">port</span>.<span class="hljs-title function_">postMessage</span>({
+    <span class="hljs-string">'pathName'</span>: location.<span class="hljs-property">pathname</span>,
+    <span class="hljs-string">'connected'</span> : <span class="hljs-literal">false</span>
+  });
+}, <span class="hljs-literal">false</span>);
+</code></pre>
+<p>The SharedWorker</p>
+<p class="snippet caption">sharedworker.multi-connect.worker.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> <span class="hljs-title class_">Connection</span> = {
+  <span class="hljs-attr">count</span>:        <span class="hljs-number">0</span>,
+  <span class="hljs-attr">isConnected</span>:  <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">paths</span>:        {
+    <span class="hljs-attr">length</span>: <span class="hljs-number">0</span>
+  }
+};
+
+<span class="hljs-comment">/*
+  self.addEventListener('connect', callback, false);
+  does not work
+*/</span>
+onconnect = <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+
+  <span class="hljs-comment">//  ASSIGN PORT TO VAR POINTER</span>
+  <span class="hljs-keyword">var</span> port = event.<span class="hljs-property">ports</span>[<span class="hljs-number">0</span>];
+
+  <span class="hljs-comment">//  INCREMENT CONNECTION COUNT</span>
+  <span class="hljs-title class_">Connection</span>.<span class="hljs-property">count</span>++;
+
+  <span class="hljs-comment">//  REPLY TO RENDERER, CONFIRMING CONNECTION</span>
+  port.<span class="hljs-title function_">postMessage</span>({
+    <span class="hljs-string">'connectionId'</span>  : <span class="hljs-title class_">Connection</span>.<span class="hljs-property">count</span>
+  });
+
+  <span class="hljs-comment">/*
+    port.addEventListener('message', callback, false);
+    does not work
+  */</span>
+  <span class="hljs-comment">//  SET UP LISTENER ON PORT</span>
+  port.<span class="hljs-property">onmessage</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) {
+
+    <span class="hljs-comment">//  STORE A REF TO THE CONNECTING RENDERER PAGE</span>
+    <span class="hljs-title class_">Connection</span>.<span class="hljs-property">paths</span>[<span class="hljs-title class_">Connection</span>.<span class="hljs-property">count</span>]  = event.<span class="hljs-property">data</span>.<span class="hljs-property">pathName</span>;
+    <span class="hljs-title class_">Connection</span>.<span class="hljs-property">paths</span>.<span class="hljs-property">length</span>++;
+
+    <span class="hljs-comment">//  UPDATE CONNECTION TO TRUE</span>
+    event.<span class="hljs-property">data</span>.<span class="hljs-property">connected</span>    = <span class="hljs-literal">true</span>;
+
+    <span class="hljs-comment">//  UPDATE WITH THIS CONNECTION ID</span>
+    event.<span class="hljs-property">data</span>.<span class="hljs-property">connectionId</span> = <span class="hljs-title class_">Connection</span>.<span class="hljs-property">count</span>;
+
+    <span class="hljs-comment">//  REPLY TO RENDERER</span>
+    port.<span class="hljs-title function_">postMessage</span>(event.<span class="hljs-property">data</span>);
+  }
+
+
+  <span class="hljs-comment">//  REPORT CONNECTIONS</span>
+  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+    port.<span class="hljs-title function_">postMessage</span>({
+      <span class="hljs-string">'connections'</span> : <span class="hljs-title class_">Connection</span>.<span class="hljs-property">paths</span>
+    });
+  }, <span class="hljs-number">1000</span>);
+}
+
+</code></pre>
+<hr>
+<p>This demonstrates how we can connect two different pages to the same SharedWorker process, and track our connections to them from one persistent object variable. Very exciting!</p>
+<p><em>Edit</em><br>
+In the time since this was originally published, <a href="/bocoup_lume/weblog/javascript-web-workers-chrome-5-now-supports-complex-messages/">Chrome</a>,<br>
+<a href="/bocoup_lume/weblog/javascript-web-workers-safari-5-now-supports-complex-messages/">Safari</a> &amp;<br>
+<a href="/bocoup_lume/weblog/javascript-web-workers-opera-10-60-beta-supports-complex-messages/">Opera</a> now support complex JSON messages.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/find-the-closest-power-of-2-with-javascript/" rel="prev">Find the closest Power of 2 with JavaScript</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/processing-pixel-data-with-web-workers/" rel="next">Processing Pixel Data with Web Workers…</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-web-workers-opera-10-6-beta-supports-sharedworkers/ -->
+  
+
+</body></html>

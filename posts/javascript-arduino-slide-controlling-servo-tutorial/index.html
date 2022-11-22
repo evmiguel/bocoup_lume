@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: Arduino Slide Controlling a Servo Tutorial</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: Arduino Slide Controlling a Servo Tutorial</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/javascript robotics/" class="tag">javascript robotics</a>
+    
+      <a href="/bocoup_lume/tags/johnny-five/" class="tag">johnny-five</a>
+    
+      <a href="/bocoup_lume/tags/microprocessor/" class="tag">microprocessor</a>
+    
+      <a href="/bocoup_lume/tags/nodebots/" class="tag">nodebots</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web connected devices/" class="tag">web connected devices</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Welcome to the second tutorial in <a target="_blank" href="/bocoup_lume/weblog/category/johnny-five/" rel="noopener">our series</a> geared towards Arduino programming on Node.js, using the <a target="_blank" href="https://github.com/rwldrn/johnny-five" rel="noopener">Johnny-Five</a> framework. <a target="_blank" href="/bocoup_lume/weblog/category/johnny-five/" rel="noopener">Get caught up here</a>.</p>
+<div class="blog-media">
+  <a class="img" target="_blank" href="http://johnny-five.io" rel="noopener"><br>
+    <img decoding="async" src="https://static.bocoup.com/blog/johnny-five.png"><br>
+  </a><p></p>
+<div class="bd">
+    Johnny-Five is a <a target="_blank" href="https://github.com/jgautier/firmata/" rel="noopener">Firmata</a> based  Arduino programming framework. See: <a target="_blank" href="/bocoup_lume/weblog/javascript-arduino-programming-with-nodejs/" rel="noopener">JavaScript: Arduino Programming on Node.js</a>.
+  </div>
+</div>
+<p>In the <a target="_blank" href="/bocoup_lume/weblog/javascript-arduino-servo-control-tutorial/" rel="noopener">previous tutorial</a>, you created a program that gave you a simple REPL control interface to a servo motor. In this tutorial, you’ll add a slider to control the servo:</p>
+<ul class="blog-block-grid">
+<li>
+    <a target="_blank" href="http://www.dfrobot.com/index.php?route=product/product&amp;filter_name=slide&amp;product_id=131" rel="noopener"><br>
+      <img decoding="async" class="parts" src="https://static.bocoup.com/blog/arduino-slide-sensor.jpg"><br>
+    </a>
+  </li>
+<li>
+    <a target="_blank" href="http://www.dfrobot.com/index.php?route=product/product&amp;filter_name=FIT0031&amp;product_id=128" rel="noopener"><br>
+      <img decoding="async" class="parts" src="https://static.bocoup.com/blog/arduino-slide-cable.jpg"><br>
+    </a>
+  </li>
+</ul>
+<p>New Parts list:</p>
+<ul>
+<li><a href="http://www.dfrobot.com/index.php?route=product/product&amp;filter_name=slide&amp;product_id=131">Analog Slide Position Sensor</a></li>
+<li><a href="http://www.dfrobot.com/index.php?route=product/product&amp;filter_name=FIT0031&amp;product_id=128">Analog Sensor Cable For Arduino</a></li>
+</ul>
+<p>Tutorial Requirements:</p>
+<ul>
+<li>One (1) Arduino Microcontroller Board</li>
+<li>One (1) 9V wall wart adapter plug or 9v battery harness</li>
+<li>Three (3) Jumper cables: red, black, yellow</li>
+<li>One (1) Any size Servo</li>
+<li>One (1) Slide Potentiometer</li>
+</ul>
+<p>First, set up the hardware using this schematic as your guide:</p>
+<p><img decoding="async" src="https://static.bocoup.com/blog/slider-pan.png"></p>
+<p>Connect the following…</p>
+<ol>
+<li>Servo: Black &gt; GND</li>
+<li>Servo: Red &gt; 5v</li>
+<li>Servo: Signal &gt; Digital PWM Pin 9</li>
+<li>Slider: Black &gt; GND</li>
+<li>Slider: Red &gt; 5v</li>
+<li>Slider: Signal &gt; Analog 0</li>
+<li>Microcontroller &gt; USB</li>
+<li>9V Power</li>
+</ol>
+<p>Assuming you’re using the actual repo, open up <code>eg/slider-servo-control.js</code>, or follow along here…</p>
+<p class="snippet caption">slider-servo-control.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> five = <span class="hljs-built_in">require</span>(<span class="hljs-string">"../lib/johnny-five.js"</span>),
+    board, slider, servo, scalingRange;
+
+board = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Board</span>();
+
+board.<span class="hljs-title function_">on</span>(<span class="hljs-string">"ready"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+
+  scalingRange = [ <span class="hljs-number">0</span>, <span class="hljs-number">170</span> ];
+
+  slider = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Sensor</span>({
+    <span class="hljs-attr">pin</span>: <span class="hljs-string">"A0"</span>,
+    <span class="hljs-attr">freq</span>: <span class="hljs-number">50</span>
+  });
+
+  servo = <span class="hljs-keyword">new</span> five.<span class="hljs-title class_">Servo</span>({
+    <span class="hljs-attr">pin</span>: <span class="hljs-number">9</span>,
+    <span class="hljs-attr">range</span>: scalingRange
+  });
+
+
+  <span class="hljs-comment">// The slider's value will be scaled to match the servo's movement range</span>
+
+  slider.<span class="hljs-title function_">scale</span>( scalingRange ).<span class="hljs-title function_">on</span>(<span class="hljs-string">"slide"</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params"> err, value </span>) {
+
+    servo.<span class="hljs-title function_">move</span>( <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>) );
+
+  });
+});
+
+</code></pre>
+<p><strong>And that’s it!</strong></p>
+<p>Run <code>node eg/slider-servo-control.js</code><sup><a href="#1">1</a></sup> and try moving the slider up and down — the servo should rotate back and forth between 0-180 degrees (or whatever <code>scalingRange</code> was provided).</p>
+<p><video class="blog-full-width-block" controls=""><source src="http://dl.dropbox.com/u/3531958/slider-pan.mp4"><source src="http://dl.dropbox.com/u/3531958/slider-pan.ogv"><source src="http://dl.dropbox.com/u/3531958/slider-pan.webm"></video></p>
+<p>Remember to watch this space for more tutorials!</p>
+<p></p>
+<p><a name="1">Note</a>: There is a known issue in where the Firmata protocol layer has issues freeing itself on the serial line which results in the program hanging in the ready state. For now, <code>^C</code> to kill the hanging program and simply run it again.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/third-party-javascript-development-future/" rel="prev">Third-Party JavaScript Development: The Future!</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/foundations-of-programming-with-javascript/" rel="next">New Training: Foundations of Programming with JavaScript</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-arduino-slide-controlling-servo-tutorial/ -->
+  
+
+</body></html>

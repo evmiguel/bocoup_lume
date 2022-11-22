@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Enumerable.Map() with WebWorkers</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript Enumerable.Map() with WebWorkers</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>For those with short attention spans, here’s how you call the function:</p>
+<pre lang="javascript">map(enumerable, mapFunction, callback, numWorkers);</pre>
+<p>I wanted an easy way to divide up a parallelizable task with <a href="http://www.whatwg.org/specs/web-workers/current-work/">Web Workers</a>, so I create a Worker enabled Map function for arrays and objects.  It works just like the map function in your <a href="http://docs.python.org/library/functions.html#map">favorite</a> <a href="http://haskell.org/ghc/docs/latest/html/libraries/haskell98-1.0.1.1/List.html#v%3Amap">functional</a> <a href="http://ruby-doc.org/core/classes/Enumerable.html#M003128">languages</a>, except that it executes asynchronously with callback.  And of course, that it will go several times faster on multicore machines.</p>
+<p>The function creates a pool of workers (32 by default) and divides the work up among them.  It reassembles the results into a new object of the same type as the original.  Array order is preserved.</p>
+<p>Here’s the function:</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">map</span>(<span class="hljs-params">data, mapper, callback, numWorkers</span>) {
+
+  <span class="hljs-comment">// Support arrays &amp;amp; objects</span>
+  <span class="hljs-keyword">var</span> length = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> d <span class="hljs-keyword">in</span> data) { length++; }
+  <span class="hljs-keyword">var</span> result = <span class="hljs-keyword">new</span> data.<span class="hljs-property">constructor</span>;
+
+  numWorkers = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(numWorkers || <span class="hljs-number">32</span>, length);
+  <span class="hljs-keyword">var</span> workers = [];
+  <span class="hljs-keyword">var</span> messagesReceived = <span class="hljs-number">0</span>;
+
+  <span class="hljs-comment">// Create the workers</span>
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; numWorkers; i++) {
+    workers[i] = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Worker</span>(<span class="hljs-string">"mapper.js"</span>);
+    workers[i].<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+      result[e.<span class="hljs-property">data</span>.<span class="hljs-property">key</span>] = e.<span class="hljs-property">data</span>.<span class="hljs-property">value</span>;
+      <span class="hljs-comment">// Check if we have finished the job.  This should probably be more robust.</span>
+      <span class="hljs-keyword">if</span> (++messagesReceived == length) { <span class="hljs-title function_">callback</span>(result) };
+    }, <span class="hljs-literal">false</span>);
+  }
+
+  <span class="hljs-comment">// Just send out all the tasks.  The messages get queued by the browser.</span>
+  <span class="hljs-comment">// It would probably be better to queue up two or three tasks per worker (to minimize downtime)</span>
+  <span class="hljs-comment">// and add tasks to the queues as results come back.</span>
+  <span class="hljs-keyword">var</span> nextItem=<span class="hljs-number">0</span>
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> d <span class="hljs-keyword">in</span> data) {
+    workers[nextItem++ % numWorkers].<span class="hljs-title function_">postMessage</span>({<span class="hljs-attr">key</span>: d, <span class="hljs-attr">value</span>: data[d], <span class="hljs-attr">mapper</span>: <span class="hljs-string">"("</span> + <span class="hljs-title class_">String</span>(mapper) + <span class="hljs-string">")(value)"</span>});
+  }
+
+}
+</code></pre>
+<p>And here is the worker code.  The worker is pretty bare bones, as you might have assumed.</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Minion</span>
+onmessage = <span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+    <span class="hljs-keyword">var</span> value = e.<span class="hljs-property">data</span>.<span class="hljs-property">value</span>;
+    <span class="hljs-title function_">postMessage</span>({<span class="hljs-attr">key</span>: e.<span class="hljs-property">data</span>.<span class="hljs-property">key</span>, <span class="hljs-attr">value</span>: <span class="hljs-built_in">eval</span>(e.<span class="hljs-property">data</span>.<span class="hljs-property">mapper</span>)});
+}
+</code></pre>
+<p>Next, I’m thinking I’ll do a WebWorker implementation of <a href="http://labs.google.com/papers/mapreduce.html">MapReduce</a>.  I was thinking that I would use the syntax from CouchDB in the interest of standardization (<code>emit</code>, in other words) but I am far from an expert on these things and would love to hear any feedback.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/publishsubscribe-with-jquery-custom-events/" rel="prev">Publish/Subscribe with jQuery Custom Events</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/quickest-loop-through-an-object/" rel="next">Quickest Loop Through an Object</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-enumerable-map-with-webworkers/ -->
+  
+
+</body></html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restart Apache On Redhat</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Restart Apache On Redhat</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/deployment/" class="tag">deployment</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>The path to httpd on redhat 9 is <code>/etc/init.d/httpd</code></p>
+<hr>
+<p>You can run the following commands on it:</p>
+<pre lang="bash">/etc/init.d/httpd configtest</pre>
+<pre lang="bash">/etc/init.d/httpd graceful</pre>
+<pre lang="bash">/etc/init.d/httpd restart</pre>
+<pre lang="bash">/etc/init.d/httpd stop</pre>
+<pre lang="bash">/etc/init.d/httpd start</pre>
+<hr>
+<p>I always run <code>configtest</code> before restarting to make sure I haven’t messed anything up.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/code-repository-analysis/" rel="prev">Code Repository Analysis</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/object-lateral-js/" rel="next">Object Lateral JS</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/restart-apache-on-redhat-at/ -->
+  
+
+</body></html>

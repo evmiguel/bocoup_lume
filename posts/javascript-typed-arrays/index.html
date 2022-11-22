@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Typed Arrays</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript Typed Arrays</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>You probably know by now that JavaScript is getting a lot of upgrades at the moment. One of the upgrades that WebGL is bringing along for the ride is JavaScript Typed Arrays.</p>
+<p>A JavaScript Typed Array is very quick! It exists as a fixed block of memory that can be accessed with JavaScript, where as a regular JS Array is inherently very slow, being a hash lookup. There are a few different kinds of JS Typed Array like Float32Array, Int8Array, and they are designed to work quickly with binary data for use with WebGL. But you can use them for anything.</p>
+<p>Read more about JavaScript Typed Arrays here: <a href="https://developer.mozilla.org/en/JavaScript_typed_arrays">JS Typed Arrays on MDC</a></p>
+<h3>Note:</h3>
+<p>A JavaScript Typed Array will only let you store “one type” of variable within it, you can not mix strings and floats. A JavaScript Typed array will not allow you to change the size of the array after instantiation.</p>
+<h2>Regular vs. Typed</h2>
+<p>Here are the results of a simple test between a regular JavaScript array, and a Float32Array in Firefox4 Beta1 in milliseconds per operation on an array with a length of 100-million indices. The test was run on Win7 64Bit, 4GB Ram, Dual-Core 1.30Ghz Intel U7300. I ran this test about 8 times and used the lowest numbers for each, so it should probably be noted that the Regular JS Array Write test frequently goes above 10 seconds and causes the slow-script dialog.</p>
+<table>
+<tbody><tr>
+<th>Operation</th>
+<th>Regular Array</th>
+<th>Float32Array</th>
+</tr>
+<tr>
+<td>Write</td>
+<td>8947</td>
+<td>1455</td>
+</tr>
+<tr>
+<td>Read</td>
+<td>1948</td>
+<td>1109</td>
+</tr>
+<tr>
+<td>Loop-Copy</td>
+<td>&gt; 10,000 ms</td>
+<td>1969</td>
+</tr>
+<tr>
+<td>Slice-Copy</td>
+<td>1125</td>
+<td>503</td>
+</tr>
+</tbody></table>
+<h2>The Scripts</h2>
+<p>These are the two scripts I ran to get the results above. You can run these tests on your browser now by clicking here: 1) <a href="http://gul.ly/98">JavaScript Typed Array Test</a>, 2) <a href="http://gul.ly/99">Regular JavaScript Array Test</a>. (You will need more than 2Gb of ram to test these.)</p>
+<pre lang="javascript">// Float32Array
+
+var ary32 = new Float32Array(100000000);
+
+var start = +new Date();
+    for(var i=0, l=ary32.length; i &lt; l; i++){
+        ary32[i] = 0.1234567890123456;
+    }
+alert( "Write: " + ( + new Date() - start ) );
+// 1455ms
+
+var val = 0;
+var start = +new Date();
+    for(var i=0, l=ary32.length; i &lt; l; i++){
+        val = ary32[i];
+    }
+alert( "Read: " + ( +new Date() - start ) );
+// 1109ms
+
+var start = +new Date();
+var ary32Copy = new Float32Array(ary32.length);
+    for(var i=0, l=ary32.length; i &lt; l; i++){
+        ary32Copy[i] = ary32[i];
+    }
+alert( "Loop Copy: " + ( + new Date() - start ) );
+// 1969ms
+
+var start = +new Date();
+var ary32SliceCopy = new Float32Array(ary32.slice(0, ary32.length));
+alert( "Slice Copy: " + ( + new Date() - start ) );
+// 503ms
+
+</pre>
+<pre lang="javascript">// Regular JavaScript Array
+
+var ary = new Array(100000000);
+
+var start = +new Date();
+    for(var i=0, l=ary.length; i &lt; l; i++){
+        ary[i] = 0.1234567890123456;
+    }
+alert( "Write: " + ( + new Date() - start ) );
+// 8947
+
+var val = 0;
+var start = +new Date();
+    for(var i=0, l=ary.length; i &lt; l; i++){
+        val = ary[i];
+    }
+alert( "Read: " + ( +new Date() - start ) );
+// 1948
+
+var start = +new Date();
+var aryCopy = new Array(ary.length);
+    for(var i=0, l=ary.length; i &lt; l; i++){
+        aryCopy[i] = ary[i];
+    }
+alert( "Loop Copy: " + ( + new Date() - start ) );
+// SCRIPT STOPS WITHOUT ERROR MESSAGE!!
+
+var start = +new Date();
+var arySliceCopy = new Array(ary.slice(0, ary.length));
+alert( "Slice Copy: " + ( + new Date() - start ) );
+//1125
+
+</pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/record-terminal-output-to-txt-file/" rel="prev">Record Terminal Output to .txt File</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/popcorn-js-walkthrough/" rel="next">Popcorn.js Walkthrough</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-typed-arrays/ -->
+  
+
+</body></html>

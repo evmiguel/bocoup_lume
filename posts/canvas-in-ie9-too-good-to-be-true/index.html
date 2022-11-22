@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas in IE9&amp;#8230;Too Good To Be True?</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Canvas in IE9&amp;#8230;Too Good To Be True?</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <h3>Contents</h3>
+<ul>
+<li><a href="#whatadifferenceadaymakes">What a Difference a Day Makes</a></li>
+<li><a href="#testingprocessingjs">Testing Processing.js</a></li>
+<li><a href="#whatworksandwhatsucks">What Works &amp; What Sucks</a></li>
+<li><a href="#featuretests">Feature Tests</a></li>
+<li><a href="#comparingspeed">Comparing Speed</a></li>
+<li><a href="#bugs">Bugs Submitted &amp; Re-Opened</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+<hr>
+<h2><a name="whatadifferenceadaymakes">What a Difference a Day Makes</a></h2>
+<p>If you have not yet heard the big news, <a href="http://ie.microsoft.com/testdrive/">Internet Explorer 9 is shipping with Canvas support</a>! Also with the Video and Audio tags, WOFF Fonts and tons other other <i>HTML5</i> goodness. Being a huge fan of Canvas, I jumped straight in to the IE9 Preview to take the IE demos for a test-drive. For some unknown reason, the first of the Microsoft script demos I tried threw me a wonderful: <b>“Script Error”</b>. “Oh great!” I thought, <b>“IE9’s Canvas is going to suck!”</b></p>
+<div style="width:200px;float:left;margin:20px 20px 20px 0;"><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/ie9canvas-MCanvasBoxes.gif" alt="M$ Canvas Boxes" title="M$ Canvas Boxes" width="200" height="250"><b>IE9 Canvas:</b> Behold Microsoft’s uncanny ability to make five simple rectangles feel so unmistakably corporate.</div>
+<p>Frustrated, I hit CTRL+F5 to refresh. <b>“Whoa. Déjà vu.”</b> I could have sworn a black cat went past us, and then another that looked just like it… <a href="http://ie.microsoft.com/testdrive/Graphics/CanvasPad/Default.html">the demo</a> started working.</p>
+<p>Boxes… all over my &lt;M$canvas&gt;! I could almost not believe what I was seeing, and checked the Title Bar of the Window. Yes… it really was Internet Explorer, was I dreaming? (pinch-test) No! In my excitement, I hit the notoriously dangerous streets of South Boston, on a mission to find a can of Tab Clear with which to celebrate the arrival of the year 2003.</p>
+<p><a href="http://twitter.com/DmitryBaranovsk/statuses/16885168894">Not everyone was excited about IE9 supporting Canvas</a>, but then the performance gains of lower-level architecture and the rich synthesis of such closely complimentary web technologies are not going to be everybody’s cup of tea. Sure, but <i>I</i> was excited: I had been loving the <a href="http://processingjs.org/blog/?p=77">blogging</a>, emailing and <a href="http://processingjs.org/blog/?p=30">filing bugs on Microsoft Connect</a> long-time.</p>
+<p>And the IE Canvas has been a <i>long-time</i> coming, it was originally unleashed by the Borg… oops I mean… “Apple”… back in 2003. Seven-ish years (if you can really call it like that) is a big hunk of time for a browser vendor to keep the people waiting, even if you do take into account <a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2007-March/010129.html">the patent &amp; spec issues</a> that slowed the whole process down. While it may have been a <i>slow</i> step forward, such a colossal mass of corporate-browser-dom being beaten into shape by the Open-Web is certainly a giant-leap forward for Web-kind.</p>
+<p>To all the IE developers who have clearly worked so hard over the past year, I think congratulations are in order. In my opinion… you done good. I have been futzing around with the <a href="http://ie.microsoft.com/testdrive/">IE9 Preview-3</a> for the last 24 hours, and while there are definitely some things that are not quite hammered out yet… gosh-darn it – it’s really starting to feel like a bona fide HTML5 web-browser!</p>
+<hr>
+<h2><a name="testingprocessingjs">Testing Processing.js</a></h2>
+<div style="width:161px;float:right;margin:20px 0 20px 20px;"><img decoding="async" src="https://static.bocoup.com/blog/ie9canvas-processingjs-just-works-in-ie91.jpg" alt="Resig's Processing.js 'Just Working'" title="Resig's Processing.js 'Just Working'" width="150"><b>Processing.js:</b> “Just worked” in IE 9 Preview 3</div>
+<p>The first thing I tried after the <a href="http://ie.microsoft.com/testdrive/Graphics/CanvasPad/Default.html">Microsoft Canvas-Pad Demos</a> was Processing.js. I used the awkward “Page Open” address bar/box/thing to navigate to <a href="http://processingjs.org/">ProcessingJS.org</a>. Remarkably the page ‘just worked’.</p>
+<p>The interactive banner animation and the pulsing blue-grey circle did their thing without any issues what-so-ever. Surely a testament to <a href="http://ejohn.org">John Resig’s</a> clarity of mind: the number of things that were working, compared to the number of potential IE gotcha’s I well-know are in the code… was pretty impressive.</p>
+<p>I tried a few <a href="/bocoup_lume/html/processing-js/mouse/">old Processing.js demos</a> from my Hyper-Metrix days, <a href="/bocoup_lume/html/processing-js/ui-dial/">and happily they worked</a> well too.</p>
+<div style="width:250px;float:left;margin:20px 20px 20px 0;"><a href="https://www.cloudkick.com/viz/mozilla/"><img decoding="async" src="https://static.bocoup.com/blog/ie9canvas-cloudkick-server-visualization.png" alt="Cloudkick Server Visualization" title="Cloudkick Server Visualization" width="250"></a><b>Cloudkick Viz:</b> A Processing.js based <a href="https://www.cloudkick.com/viz/mozilla/">cloud-network visualization</a> for the Canvas.</div>
+<p>Even the <a href="https://www.cloudkick.com/viz/mozilla/">Cloudkick Server Visualization</a> we put together last year ran without too many issues. Unfortunately the newer Processing.js releases were hitting a few snags in the parsing department, but the quick work of Yuri from the PJS development team, had the library back on trace within a couple of hours.</p>
+<hr>
+<h2><a name="whatworksandwhatsucks">IE9 Canvas, What Works &amp; What Sucks?</a></h2>
+<p>A surprising amount of the Canvas spec seems to work very well. The following two lists are a quick break-down of the good, the bad and the really freekin’ stupid. Even though the “Sucking” list is two times as long as the “Working” list… the 85% delivery on the Canvas spec more than makes up for the problems, most of the issues being fairly minor.</p>
+<p>&nbsp;<br><b>Working:</b></p>
+<ul>
+<li>Processing.js 😀</li>
+<li>85% of The HTML5 Canvas Spec 🙂</li>
+<li>2D Hardware Acceleration, appeared to be a micro-tad faster than Minefield Trunk (off trace), but no way near… “<a href="http://www.youtube.com/watch?v=nCgQDjiotG0">Chrome Fast</a>“</li>
+<li><a href="http://ie.microsoft.com/testdrive/Graphics/DeepZoom/Default.html">Deep Zoom</a>: WTF?! But OK, I guess that’s cool.</li>
+</ul>
+<p><b>Sucking:</b></p>
+<ul>
+<li><a href="http://burst.bocoup.com">Burst Engine SVG Parser</a></li>
+<li>15% of The HTML5 Canvas Spec, 50% of which no other vendor bothered to implement anyway, so who cares?</li>
+<li>Miter limit calculation seems to be a fraction off</li>
+<li><a href="http://canvex.lazyilluminati.com/misc/arcto.html">arcTo</a>: Opera are <i>still</i> the only guys that got that one right</li>
+<li><a href="https://connect.microsoft.com/IE/feedback/details/570750/multiple-img-loads-events-dont-fire-for-same-src">Multiple IMG.onload Firring</a> for when requesting one source multiple times seems to collect onload callbacks and fire them on a per-source basis rather than a per-call basis.</li>
+<li>Video to Canvas was a little “jerky” compared to other browsers</li>
+<li>No Composite operations 🙁</li>
+<li>No “right-click save-as image” :'(</li>
+<li>No canvas.toDataURL(“image/[type]”) ?!</li>
+<li>Turning off ShadowBlur does not behave as expected.</li>
+<li>Microsoft Connect: It’s a labyrinth to get started, and you can’t post symbols like “&lt;" &amp; "&gt;” which makes things super-awkward. I could have filed my bugs quicker with the postal service.</li>
+</ul>
+<hr>
+<h2><a name="featuretests">Some Basic Cross-Browser Feature Tests</a></h2>
+<div style="float:left;width:150px;margin:0 20px 20px 0;"><a href="https://static.bocoup.com/blog/ie9canvas-ie9.png"><img decoding="async" src="https://static.bocoup.com/blog/ie9canvas-ie9-150x150.png" alt="IE9 Canvas Tests" title="IE9 Canvas Tests" width="150"></a><b>IE9 Canvas Test Script:</b> <a href="http://code.bocoup.com/ie9/cross-browser-canvas-tests">Click here to run the tests</a>.</div>
+<p>I knocked out a basic set of <a href="https://code.bocoup.com/ie9/cross-browser-canvas-tests">cross-browser canvas tests</a> in order to make a comparison of where Canvas is at in mid 2010. I tried to use as many of the functions as possible, though you should be aware that this is in no way an exhaustive test-suite. You can click on the image to the left to expand the screen-capture I took of these tests running in Internet Explorer 9 Preview 3 on Win7.</p>
+<p>I ran these simple tests on the five main-stream browsers (Firefox, Chrome, Safari, Opera &amp; IE) and captured the images to disk. I dropped then into Photoshop to get a visual-diff between each browser. When I say “a visual diff” I am referring to the process of blending a source-image with a destination-image using a an “Difference” blend. I then invert the result for visual clarity.</p>
+<div style="float:right;width:150px;margin:20px 0px 20px 20px;"><a href="https://static.bocoup.com/blog/ie9canvas-diff-safari-ei92.png"><img decoding="async" src="https://static.bocoup.com/blog/ie9canvas-diff-safari-ei92.png" alt="Comparing IE9's Canvas With Safari's" title="Comparing IE9's Canvas With Safari's" width="150"></a><b>IE9 vs. Safari:</b> <a href="https://static.bocoup.com/blog/ie9canvas-diff-safari-ei92.png">The Canvas rendering differences are interesting</a>.</div>
+<p>The resulting images reveal all the places in which the browser rendering engines differ. When comparing these visual-diffs, we can see that <a href="https://static.bocoup.com/blog/ie9canvas-diff-safari-ei92.png">IE9’s canvas rendering engine is closest to Safari’s</a>.</p>
+<p>You will also notice at the top right how the Miter Limit value is off by a couple of pixels. This is true when comparing IE9 to all the other browsers, so it is probably safe to assume that there is some kind of miscalculation going on–on Microsoft’s part.</p>
+<p>Another interesting feature to note, is that all the other browsers capable of rendering text, will insert a space where a newline character is used: “EarthnMoon”. The “n”, for some unusual reason does not break the line in any of the canvas implementations. A space is always added instead… but not in IE9.</p>
+<hr>
+<h2><a name="comparingspeed">Comparing Speed</a></h2>
+<div style="float:right;width:200px;margin:20px 0px 20px 20px;"><a href="http://code.bocoup.com/ie9/tests/speed-test.html"><img decoding="async" src="https://static.bocoup.com/blog/ie9canvas-spirographical.png" alt="" title="spirographical" width="200"></a><b>Spirographical:</b> <a href="http://code.bocoup.com/ie9/tests/speed-test.html">a quick canvas test</a> can reveal a lot about a browser.</div>
+<p>While it is nice to see that IE9 is standing up well against other browser vendors in terms of features, it is also important to think about the speed of the implementation. Being an immediate-mode technology, there is obviously a good deal of overlap between the JavaScript engine and the speed that the Canvas draws.</p>
+<p>To compensate somewhat for this overlap in my tests I have run the test with and without the Canvas API calls, and calculated the difference.</p>
+<p>I built a quick <a href="http://en.wikipedia.org/wiki/Spirograph">Spirograph</a> style visual that changes the number of strokes points while rotating the Canvas. The test runs through a <i>for-loop</i> 20,000 times before alerting the result. You can <a href="https://code.bocoup.com/ie9/tests/speed-test.html">click here to run the visual test</a> or click here to run the test <a href="http://code.bocoup.com/ie9/tests/speed-test-no-canvas.html">without Canvas API calls</a>.</p>
+<table>
+<tbody><tr>
+<th>Browser</th>
+<th>Seconds</th>
+<th>Without Canvas</th>
+<th>Time spent in Canvas calls</th>
+</tr>
+<tr>
+<td>Safari </td>
+<td>125.894</td>
+<td>80.537<p></p>
+</td><td>
+</td><td>45.357</td>
+</tr>
+<tr>
+<td>Minefield 3.7a6pre</td>
+<td>111.753</td>
+<td>80.161<p></p>
+</td><td>
+</td><td>31.592</td>
+</tr>
+<tr>
+<td>IE9 Preview 3</td>
+<td>92.009</td>
+<td>79.880<p></p>
+</td><td>
+</td><td>12.129</td>
+</tr>
+<tr>
+<td>Minefield 3.7a1pre</td>
+<td>82.318</td>
+<td>79.989<p></p>
+</td><td>
+</td><td>2.329</td>
+</tr>
+<tr>
+<td>Chrome 5.0.375.70</td>
+<td>80.692</td>
+<td>80.085<p></p>
+</td><td>
+</td><td>0.607</td>
+</tr>
+<tr>
+<td>Opera 10.54.3423</td>
+<td>80.440</td>
+<td>80.043<p></p>
+</td><td>
+</td><td>0.397</td>
+</tr>
+</tbody></table>
+<p><b>Opera Wins!</b> I am very surprised that Opera has beaten Chome in this test. Congratulations Opera. These tests were run in Win7 x64. One thing that has to be said, is that we are testing a small set of features and so it is unlikely that this result accurately represents the full spectrum of results. I also chose a stroke() example because I know that certain browsers should perform strokes faster in this test, but are mind-bogglingly slow. Notably: IE9 has problems turning off shadowBlur.</p>
+<hr>
+<h2><a name="bugs">Bugs Submitted &amp; Re-Opened</a></h2>
+<ul>
+<li><a href="https://connect.microsoft.com/IE/feedback/details/570750/multiple-img-loads-events-dont-fire-for-same-src">Multiple IMG.onload Firring</a></li>
+<li><a href="https://connect.microsoft.com/IE/feedback/details/571503/canvas-miterlimit-calculation-seems-wrong">Bad MiterLimit Calculation</a></li>
+<li><a href="https://connect.microsoft.com/IE/feedback/details/571509/canvas-text-newline-inconsistent">Newline “n” Canvas Text Inconsistent</a>
+</li><li><a href="https://connect.microsoft.com/IE/feedback/details/571513/undefined-shadow-color-should-not-be-rendered">Undefined shadow color still renders</a>
+</li><li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=471281">arcTo()</a></li>
+</ul>
+<hr>
+<h2><a name="conclusion">Conclusion</a></h2>
+<p><b>Canvas in IE9, too good to be true?</b><br> No!</p>
+<p>The Canvas in IE9 is actually pretty decent. It is a little less feature-complete than it’s rival UAs but its speed comes remarkably close to Firefox, and in some cases it appears to come out ahead. (<a href="http://twitter.com/mrdoob/statuses/17284011732">@mrdoob</a> points out that he thinks the hardware acceleration is only for the drawImage() functions) I can only hope that the IE development team finish what they started. If so they do, it will help the Canvas will become a useful cross-browser commercial tool soon enough, perhaps even in the corporate environment of the next decade. 🙂</p>
+<p>The IE development team have proven that they are listening to their users, paying attention to standards and making internet of the future a richer experience for everyone.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/popcorn-js/" rel="prev">Popcorn.js</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/make-your-own-javascript-ninja-with-processing-js/" rel="next">Make your own JavaScript Ninja with Processing.js</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/canvas-in-ie9-too-good-to-be-true/ -->
+  
+
+</body></html>

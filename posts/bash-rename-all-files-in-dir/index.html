@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bash Rename All Files in Dir</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Bash Rename All Files in Dir</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Something I have never known how to do in Linux, is rename a directory full of files. (Crazy right?!) Fortunately for a noob like msyelf, <a href="http://twitter.com/sbisbee">Sam Bisbee</a> does know how to do this, and showed me today. In the following example, I am renaming a directory of files with no file-extension, and moving them to the same location with “.png” appended.</p>
+<pre lang="javascript">for file in `ls` ; do mv $file $file.png; done</pre>
+<p>Simple. Useful. Documented.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/mayor-menino-and-vencorps-announce-welcome-home-challenge-winner/" rel="prev">Mayor Menino and VenCorps Announce Welcome Home Challenge Winner</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/training-jquery-san-francisco/" rel="next">Training: jQuery San Francisco</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/bash-rename-all-files-in-dir/ -->
+  
+
+</body></html>

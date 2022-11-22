@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faster Javascript &amp;#8211; Part 2</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Faster Javascript &amp;#8211; Part 2</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>In Faster Javascript Part 1 we compared a three methods for evaluating a string of alien DNA. With Switch, Boolean &amp; Conditional going head to head, Switch was the clear winner with Conditional (Ternary) trailing way behind.</p>
+<p>Testing methods is one thing, but there’s more to writing fast code than just testing. For example: order and probability.</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> dna = <span class="hljs-string">'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG'</span>;
+
+<span class="hljs-keyword">var</span> times = <span class="hljs-number">100000</span>,
+    len = dna.<span class="hljs-property">length</span>;
+
+<span class="hljs-comment">// Fast</span>
+<span class="hljs-keyword">var</span> inc = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>();
+<span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span> ; j &lt; times; j++ ){
+  <span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; len; i++ ){
+    <span class="hljs-keyword">switch</span>( dna[ i ] ){
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'G'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_00'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_01'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_02'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_03'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_04'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_05'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_06'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_07'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_08'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_09'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_10'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_20'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_21'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_22'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_23'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_24'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_25'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_26'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_27'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_28'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_29'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_30'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+    }
+  }
+}
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">'Fast: '</span>, [ <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>() - time,  ( inc == times * len ) ] );
+
+<span class="hljs-comment">// Slow</span>
+<span class="hljs-keyword">var</span> inc = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>();
+<span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span> ; j &lt; times; j++ ){
+  <span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; len; i++ ){
+    <span class="hljs-keyword">switch</span>( dna[ i ] ){
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_00'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_01'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_02'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_03'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_04'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_05'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_06'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_07'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_08'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_09'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_10'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_20'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_21'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_22'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_23'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_24'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_25'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_26'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_27'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_28'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_29'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'_30'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+      <span class="hljs-keyword">case</span> <span class="hljs-string">'G'</span>: inc += <span class="hljs-number">1</span>; <span class="hljs-keyword">break</span>;
+    }
+  }
+}
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">'Slow: '</span>, [ <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>() - time,  ( inc == times * len ) ] );
+</code></pre>
+<p>I get the following results:</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-title class_">Fast</span>: [<span class="hljs-number">1322</span>, <span class="hljs-literal">true</span>]
+<span class="hljs-title class_">Slow</span>: [<span class="hljs-number">3109</span>, <span class="hljs-literal">true</span>]
+</code></pre>
+<p>If you didn’t catch the trick.. look closely at the order of the the switch. In the first switch, the check for the string “G” is at the top of the block. In the second switch, the “G” is checked after 30 other string cases have already been checked.</p>
+<p>Lets say you were walking down the corridor of a library, and the books were all stored in alphabetical order. If you were at the ‘A’ end of the corridor… and I asked you to fetch any book beginning with ‘Z’, how long would it take you? Answer: longer than it would take if I asked for a book beginning with ‘A’.</p>
+<h3>So Simple</h3>
+<p>When we check for the letter ‘G’ 64 times, and we start at ‘_00’ it takes longer than if we flip the corridor to start at ‘G’. To compensate for this corridor effect, we should weight code to deal with specific shapes, patterns and probability in our data.</p>
+<h2>Thinking Rocks</h2>
+<p>Another way to think of this idea comes from gardening. Imagine you loaded a sieve with different size rocks, ready to separate the small rocks from the large. If you were to stack the large rocks on the bottom and the fine grains on the top… you would expend more energy in the process than if you stacked them the other way around.</p>
+<p>If you are processing text, weight your switch to deal with the most common letters in the English language first. If you’re processing HTML, XML, you will want &lt;div&gt;’s to be closer to the top than &lt;blockquote&gt;’s. If you are processing natural data and you know the probability law that your data set is following, stack it in favor of your CPU.</p>
+<h2>Switching to Literals</h2>
+<p>When you switch the method to calling functions from a literal object, something really cool happens.</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> dna = <span class="hljs-string">'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG'</span>;
+
+<span class="hljs-keyword">var</span> times = <span class="hljs-number">1000000</span>,
+    len = dna.<span class="hljs-property">length</span>;
+
+<span class="hljs-keyword">var</span> obj1 = {
+  G   : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _00 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _01 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _02 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _03 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _04 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _05 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _06 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _07 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _08 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _09 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _10 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _11 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _12 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _13 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _14 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _15 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _16 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _17 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _18 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _19 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _20 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _21 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _22 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _23 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _24 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _25 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _26 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _27 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _28 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _29 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _30 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> }
+};
+
+<span class="hljs-keyword">var</span> obj2 = {
+  _00 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _01 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _02 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _03 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _04 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _05 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _06 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _07 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _08 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _09 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _10 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _11 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _12 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _13 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _14 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _15 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _16 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _17 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _18 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _19 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _20 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _21 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _22 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _23 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _24 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _25 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _26 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _27 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _28 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _29 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  _30 : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> },
+  G   : <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>){ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> }
+};
+
+<span class="hljs-comment">// Faster Processing</span>
+<span class="hljs-keyword">var</span> inc = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>();
+<span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span> ; j &lt; times; j++ ){
+  <span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; len; i++ ){
+    inc += obj1[ dna[i] ]();
+  }
+}
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">'Fast: '</span>, [ <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>() - time,  ( inc == times * len ) ] );
+
+<span class="hljs-comment">// Slower Processing</span>
+<span class="hljs-keyword">var</span> inc = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> time = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>();
+<span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span> ; j &lt; times; j++ ){
+  <span class="hljs-keyword">for</span>( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span> ; i &lt; len; i++ ){
+    inc += obj2[ dna[i] ]();
+  }
+}
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">'Slow: '</span>, [ <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>().<span class="hljs-title function_">getTime</span>() - time,  ( inc == times * len ) ] );
+</code></pre>
+<h3>Results:</h3>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">/* 1st Run */</span>
+<span class="hljs-title class_">Fast</span>: [<span class="hljs-number">36369</span>, <span class="hljs-literal">true</span>]
+<span class="hljs-title class_">Slow</span>: [<span class="hljs-number">41355</span>, <span class="hljs-literal">true</span>]
+
+<span class="hljs-comment">/* 2nd Run */</span>
+<span class="hljs-title class_">Fast</span>: [<span class="hljs-number">39752</span>, <span class="hljs-literal">true</span>]
+<span class="hljs-title class_">Slow</span>: [<span class="hljs-number">42457</span>, <span class="hljs-literal">true</span>]
+
+<span class="hljs-comment">/* 3rd Run */</span>
+<span class="hljs-title class_">Fast</span>: [<span class="hljs-number">40697</span>, <span class="hljs-literal">true</span>]
+<span class="hljs-title class_">Slow</span>: [<span class="hljs-number">42928</span>, <span class="hljs-literal">true</span>]
+<span class="hljs-string">``</span><span class="hljs-string">`
+
+Consider now that I am running this test 1 million times, compared to the 100 thousand times in the switch array. That means the literal-object test is iterating 10 times as much as the switch, but the results are not proportional. This really demonstrates the some of the awesome power that can be unleashed using objects instead of switch statements.
+
+The same is true of objects in general. For example: 
+
+~~~js
+  var obj1 = function(){};
+  obj1.prototype.G = function(){ return 1 };
+  obj1.prototype._00 = function(){ return 1 };
+  obj1.prototype._01 = function(){ return 1 };
+  obj1.prototype._02 = function(){ return 1 };
+</span></code></pre>
+<p>Yields the following, similar results</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-title class_">Fast</span>:  [<span class="hljs-number">39753</span>, <span class="hljs-literal">true</span>]
+<span class="hljs-title class_">Slow</span>: [<span class="hljs-number">43426</span>, <span class="hljs-literal">true</span>]
+</code></pre>
+<h3>Conclusion:</h3>
+<p>If you are going to make any kind of program that processes a significant amount of data, and you have a way of learning the inherent probability within your data set… time is of the essence, so stack wisely.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/quickest-loop-through-an-object/" rel="prev">Quickest Loop Through an Object</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/long-division-in-javascript/" rel="next">Long Division In Javascript</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/faster-javascript-part-2/ -->
+  
+
+</body></html>

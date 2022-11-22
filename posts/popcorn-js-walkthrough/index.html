@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popcorn.js Walkthrough</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Popcorn.js Walkthrough</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Popcorn.js, which I <a href="/bocoup_lume/weblog/popcorn-js/" target="_blank" rel="noopener">wrote about</a> recently, is an infant javascript library that allows film makers to better showcase their videos on the web using html5’s video element. Using popcorn, directors can incorporating social media and integrate several features such as subtitles and credits that may be beneficial in the context of the web. Although typically, javascript libraries are written for programmers, popcorn can be configured with less technical knowledge solely by using xml, documented <a href="https://processing-js.lighthouseapp.com/projects/52212/xml" target="_blank" rel="noopener">here</a>.</p>
+<p>You can view a demo we built for the Mozilla Summit <a href="http://matrix.senecac.on.ca/~dhhodgin/video/">here</a> (best in Firefox)</p>
+<h2>Setup</h2>
+<p>Note: Version 0.1 of popcorn.js has just been released, and the library is not even close to stable. If you have specific issues you’re having, talk to us at irc.mozilla.org/popcorn.</p>
+<p>Setting up popcorn is really easy, and requires only basic knowledge of html. First, download <a href="http://matrix.senecac.on.ca/~dhhodgin/video/popcorn.js">popcorn.js</a> and include it using</p>
+<p class="snippet caption">index.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"popcorn.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<p>Next, you have to tell popcorn which video it should care about by setting its data-timeline-sources attribute. Your video should look something like this:</p>
+<p class="snippet caption">index.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">video</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"video.ogv"</span> <span class="hljs-attr">data-timeline-sources</span>=<span class="hljs-string">"popcorn.xml"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">video</span>&gt;</span>
+</code></pre>
+<h2>How to use popcorn</h2>
+<p>Popcorn is very simple to use, and is completely managed through the xml file addressed earlier.</p>
+<p>Popcorn focuses heavily on the video’s timeline. Nearly every element of popcorn has an ‘in’ and ‘out’ method that tells popcorn when the feature should be visible on the page. The syntax for these methods is hours:minutes:seconds:frames. For example, two minutes three seconds would be 00:02:03:00.</p>
+<p>A basic example of popcorn that requires no additional html elements would be implementing subtitles. The syntax to do so would be:</p>
+<p class="snippet caption">popcorn.xml</p>
+<pre><code class="xml hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">popcorn</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">subtitles</span> <span class="hljs-attr">language</span>=<span class="hljs-string">"en"</span> <span class="hljs-attr">align</span>=<span class="hljs-string">"center"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">subtitle</span> <span class="hljs-attr">in</span>=<span class="hljs-string">"00:00:00:03"</span> <span class="hljs-attr">out</span>=<span class="hljs-string">"00:00:01:06"</span>&gt;</span>All right let's take a look and show me some<span class="hljs-tag">&lt;/<span class="hljs-name">subtitle</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">subtitle</span> <span class="hljs-attr">in</span>=<span class="hljs-string">"00:00:01:06"</span> <span class="hljs-attr">out</span>=<span class="hljs-string">"00:00:03:00"</span>&gt;</span>of the neat things you can do on the internet<span class="hljs-tag">&lt;/<span class="hljs-name">subtitle</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">subtitles</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">popcorn</span>&gt;</span>
+</code></pre>
+<p>This is just one part of popcorn, for further information, view the <a href="https://processing-js.lighthouseapp.com/projects/52212/xml">xml specification</a>.</p>
+<h2>Notable Features</h2>
+<h3>Social Integration</h3>
+<p>Popcorn has strong integration with social media sites such as Twitter, Tumblr, and Wikipedia. Each service has slightly different syntax and variables, view the <a href="https://processing-js.lighthouseapp.com/projects/52212/xml">xml documentation</a> for more details.</p>
+<p><img decoding="async" loading="lazy" title="keyboard" src="https://static.bocoup.com/blog/popcorn-keyboard.png" width="570" height="402"></p>
+<hr>
+<h3>Credits</h3>
+<p>Hierarchical&nbsp;credits, which automatically play at the commencement of your video, are automatically generated by popcorn.js. Currently, credits are coded into the library, but they will soon be implemented into the xml.</p>
+<p><img decoding="async" loading="lazy" title="credits" src="https://static.bocoup.com/blog/popcorn-credits.png" alt="" width="457" height="298"></p>
+<hr>
+<h3>Subtitles</h3>
+<p>Subtitling, I feel, is perhaps the most interesting facet of popcorn.js. The credits used in popcorn.js evolves from my earlier, overly-animated&nbsp;<a href="http://nickcammarata.com/html5video">work</a>.</p>
+<p><img decoding="async" loading="lazy" title="subtitles" src="https://static.bocoup.com/blog/popcorn-subtitles.png" alt="" width="572" height="309"></p>
+<hr>
+<h3>Accessibility</h3>
+<p>Although often ignored, accessibility is extremely important, and can broaden your target audience immensely. Those with hearing disabilities can understand the video’s contents by reading it, and the subtitles can be translated in realtime using the wonderful Google translate API. Furthermore, your video’s content is stored as text, making your html more accessible to search engines than flash alternatives.</p>
+<p>I’m really excited to see how popcorn matures. While content producers have done amazing things with video on the web, browsers have lagged behind. A long overdue push for accessible video is underway, and popcorn will advance the effort.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-typed-arrays/" rel="prev">JavaScript Typed Arrays</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/popcorn-js/" rel="next">Popcorn.js</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/popcorn-js-walkthrough/ -->
+  
+
+</body></html>

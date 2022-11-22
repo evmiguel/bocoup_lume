@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery Docs Keyboard Navigation</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">jQuery Docs Keyboard Navigation</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Today, keyboard navigation went live on the new jQuery documentation site: <a href="http://api.jquery.com">api.jquery.com</a>. <a href="http://twitter.com/rwaldron">Rick</a> worked really hard on getting the interaction just right, and we think this makes using the documentation a faster and easier experience . We hope that this feature improves developers’ interaction with the documentation.</p>
+<p>We recently had the opportunity to work with part of the jQuery team on releasing the <a href="http://api.jquery.com">new jQuery API site</a> alongside the heavily anticipated <a href="http://blog.jquery.com/2009/12/04/jquery-14-alpha-1-released/">release of jQuery 1.4</a>. There was a lot of grunt work involved with formatting all of the new docs, which are essentially updated and modified examples from the old docs combined with descriptions and explanations from Karl Swedberg and Jonathan Chaffer’s forthcoming book: <a href="http://www.packtpub.com/jquery-reference-guide-Open-Source/book">jQuery Reference Guide</a>.</p>
+<p>It was a lot of fun to work with the group as we trudged through the xml formatting and got it all done in a weekend. I even got to write example code for some of the new methods in 1.4.</p>
+<p>Next up came working on the theme. The jQuery team decided to build the new docs site using WordPress (which is a dream to use). I executed a hard port of <a href="http://scottjehl.com/">Scott Jehl</a>‘s design, markup and style from the main dot com site, and redesigned the doc pages to accommodate the increased volume of information.</p>
+<p>The most exciting feature in the new docs site (after the new docs of course), is the new live search/keyboard navigation. Special thanks to <a href="http://paulirish.com">Paul Irish</a> for  suggesting live search/keyboard nav for the docs site in the first place. If it wasn’t for him, we wouldn’t have had so much fun implementing it.</p>
+<p>I used a combinations of <a href="http://ejohn.org/apps/livesearch/jquery.livesearch.js">John Resig’s jquery re-port</a> of <a href="http://orderedlist.com/our-writing/blog/articles/live-search-with-quicksilver-style-for-jquery/">John Nunemaker’s javascript port</a> of Quicksilver for the quick search. I changed John’s live search a little to play well with <a href="http://amountaintop.com/project/keynav">Mike Hostetler’s jQuery.keynav()</a>, and wrote/rewrote a couple of Mike’s functions to accommodate the API site’s markup. Once we had proof of concept, Rick completely rewrote the keyboard navigation system from the ground up, incorporating the best parts of the concept and adapting them to suite the needs of the task – all adapted code is noted in <a href="http://static.jquery.com/api/navi.js">the source</a>.</p>
+<p>And that made for a nice little docs site that you don’t need your mouse to use. We’ll be putting up some demo pages and code examples soon, and hopefully get around to making a jQuery plugin for the hole system. For now, just view source on <a href="http://api.jquery.com">the api site</a>.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/pollenjs-contributor-announcement/" rel="prev">PollenJS Contributor Announcement</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/wild-card-sub-domains/" rel="next">Wild Card Sub Domains</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/jquery-docs-keyboard-navigation/ -->
+  
+
+</body></html>

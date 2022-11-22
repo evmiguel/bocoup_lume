@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript Typed Arrays: Method Support</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Javascript Typed Arrays: Method Support</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Al MacDonald recently posted <a href="/bocoup_lume/weblog/javascript-typed-arrays/">https://bocoup.com/weblog/javascript-typed-arrays</a> – which is an interesting look at the benchmarkable speed differences between FireFox 4’s <code>Float32Array constructor</code> and the traditional <code>Array constructor</code>.</p>
+<hr>
+<p>As expected, the <a href="https://developer.mozilla.org/en/JavaScript_typed_arrays">Typed Arrays</a> are definitively faster due entirely to native optimization: they only allow integer or floating point numbers (respectively to their Int or Float prefix); additionally length is required and immutable.</p>
+<hr>
+<p>What about the nitty gritty? I whipped up a basic test suite to check support for methods of the traditional <code>Array</code> object – take a look:</p>
+<hr>
+<ul>
+<li>+ supported </li>
+<li>– unsupported </li>
+</ul>
+<hr>
+<p class="snippet caption">results.txt</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-title class_">Array</span>
+  + concat
+  + every
+  + filter
+  + forEach
+  + indexOf
+  + join
+  + lastIndexOf
+  + length
+  + map
+  + pop
+  + push
+  + reduce
+  + reduceRight
+  + reverse
+  + shift
+  + slice
+  + some
+  + sort
+  + splice
+  + toLocaleString
+  + toString
+  + unshift
+
+<span class="hljs-title class_">Int8Array</span>
+  - concat
+  - every
+  - filter
+  - forEach
+  - indexOf
+  - join
+  - lastIndexOf
+  + length
+  - map
+  - pop
+  - push
+  - reduce
+  - reduceRight
+  - reverse
+  - shift
+  + slice
+  - some
+  - sort
+  - splice
+  + toLocaleString
+  + toString
+  - unshift
+
+<span class="hljs-title class_">Int16Array</span>
+  - concat
+  - every
+  - filter
+  - forEach
+  - indexOf
+  - join
+  - lastIndexOf
+  + length
+  - map
+  - pop
+  - push
+  - reduce
+  - reduceRight
+  - reverse
+  - shift
+  + slice
+  - some
+  - sort
+  - splice
+  + toLocaleString
+  + toString
+  - unshift
+
+<span class="hljs-title class_">Int32Array</span>
+  - concat
+  - every
+  - filter
+  - forEach
+  - indexOf
+  - join
+  - lastIndexOf
+  + length
+  - map
+  - pop
+  - push
+  - reduce
+  - reduceRight
+  - reverse
+  - shift
+  + slice
+  - some
+  - sort
+  - splice
+  + toLocaleString
+  + toString
+  - unshift
+
+<span class="hljs-title class_">Float32Array</span>
+  - concat
+  - every
+  - filter
+  - forEach
+  - indexOf
+  - join
+  - lastIndexOf
+  + length
+  - map
+  - pop
+  - push
+  - reduce
+  - reduceRight
+  - reverse
+  - shift
+  + slice
+  - some
+  - sort
+  - splice
+  + toLocaleString
+  + toString
+  - unshift
+
+<span class="hljs-title class_">Float64Array</span>
+  - concat
+  - every
+  - filter
+  - forEach
+  - indexOf
+  - join
+  - lastIndexOf
+  + length
+  - map
+  - pop
+  - push
+  - reduce
+  - reduceRight
+  - reverse
+  - shift
+  + slice
+  - some
+  - sort
+  - splice
+  + toLocaleString
+  + toString
+  - unshift
+</code></pre>
+<hr>
+<p>Understandably, the following methods don’t fit the paradigm of an array with a required, immutable length:</p>
+<ul>
+<li><code>concat</code></li>
+<li><code>push</code></li>
+<li><code>pop</code></li>
+<li><code>shift</code></li>
+<li><code>unshift</code></li>
+</ul>
+<p>But I fail to see why “slice” gets preferential treatment (<a href="https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/doc/spec/TypedArray-spec.html">by name in the spec</a>) while other useful methods such as “indexOf”, “reverse”, “sort”, “filter”, “forEach”, etc are not included in the spec. Note that Firefox 4 supports all of these methods for traditional arrays.</p>
+<hr>
+<h2>Want to try these at home? You’ll need FireFox 4 Beta 1 and these: </h2>
+<p class="snippet caption">typedarrayssupports.js</p>
+<pre><code class="js hljs language-javascript">(<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) {
+
+  <span class="hljs-keyword">var</span> arrayMethods  = [<span class="hljs-string">'concat'</span>, <span class="hljs-string">'every'</span>, <span class="hljs-string">'filter'</span>, <span class="hljs-string">'forEach'</span>,
+                       <span class="hljs-string">'indexOf'</span>, <span class="hljs-string">'join'</span>, <span class="hljs-string">'lastIndexOf'</span>,
+                       <span class="hljs-string">'length'</span>, <span class="hljs-string">'map'</span>, <span class="hljs-string">'pop'</span>, <span class="hljs-string">'push'</span>,
+                       <span class="hljs-string">'reduce'</span>, <span class="hljs-string">'reduceRight'</span>, <span class="hljs-string">'reverse'</span>,
+                       <span class="hljs-string">'shift'</span>, <span class="hljs-string">'slice'</span>, <span class="hljs-string">'some'</span>, <span class="hljs-string">'sort'</span>,
+                       <span class="hljs-string">'splice'</span>, <span class="hljs-string">'toLocaleString'</span>,
+                       <span class="hljs-string">'toString'</span>, <span class="hljs-string">'unshift'</span>],
+
+      arrayNames    = [ <span class="hljs-string">'Array'</span>,
+                        <span class="hljs-string">'Int8Array'</span>,  <span class="hljs-string">'Int16Array'</span>,  <span class="hljs-string">'Int32Array'</span>,
+                        <span class="hljs-string">'Float32Array'</span>,  <span class="hljs-string">'Float64Array'</span> ],
+
+      arrayTypes    = [ <span class="hljs-keyword">new</span> <span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>),
+                        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Int8Array</span>(<span class="hljs-number">10</span>),
+                        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Int16Array</span>(<span class="hljs-number">10</span>),
+                        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Int32Array</span>(<span class="hljs-number">10</span>),
+                        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float32Array</span>(<span class="hljs-number">10</span>),
+                        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Float64Array</span>(<span class="hljs-number">10</span>) ];
+
+  <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; arrayTypes.<span class="hljs-property">length</span>; i++ ) {
+
+
+    <span class="hljs-keyword">var</span> temp  = arrayTypes[i];
+
+    <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> x = <span class="hljs-number">0</span>; x &lt; temp.<span class="hljs-property">length</span>; x++ ) {
+      temp[x] = arrayNames[i].<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">'Int'</span>) &gt; -<span class="hljs-number">1</span> ? x : <span class="hljs-number">0.123456789</span> ;
+    }
+
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">group</span>( arrayNames[i] );
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(temp);
+
+    <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> m = <span class="hljs-number">0</span>; m &lt; arrayMethods.<span class="hljs-property">length</span>; m++ ) {
+
+      <span class="hljs-keyword">if</span> ( arrayMethods[m] <span class="hljs-keyword">in</span> temp ) {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">' + '</span> + arrayMethods[m]);
+      } <span class="hljs-keyword">else</span> {
+        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">' - '</span> + arrayMethods[m]);
+      }
+
+    }
+    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">groupEnd</span>(arrayNames[i]);
+
+
+  }
+})();
+</code></pre>
+<p class="snippet caption">typedarrayssupports.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://getfirebug.com/firebug-lite-beta.js"</span>&gt;</span><span class="language-javascript">
+{
+  <span class="hljs-attr">startOpened</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">enableTrace</span>: <span class="hljs-literal">true</span>
+}
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"typedarrayssupports.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<hr>
+<h2><a href="https://gist.github.com/477196">Get the entire gist here</a></h2>
+<p><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" title="JavaScript JS Documentation: JS Array Example: Creating a Two-dimensional Array, JavaScript Array Example: Creating a Two-dimensional Array"><img src="https://static.bocoup.com/blog/promotejsvs.png" height="280" width="160" alt="JavaScript JS Documentation: JS Array Example: Creating a Two-dimensional Array, JavaScript Array Example: Creating a Two-dimensional Array"></a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/welcome-pete-karl/" rel="prev">Welcome Pete Karl</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/record-terminal-output-to-txt-file/" rel="next">Record Terminal Output to .txt File</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-typed-arrays-method-support/ -->
+  
+
+</body></html>

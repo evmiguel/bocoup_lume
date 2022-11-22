@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make your own JavaScript Ninja with Processing.js</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Make your own JavaScript Ninja with Processing.js</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <div style="float:left;margin:0px 20px 20px 0px;width:200px;"><img decoding="async" src="https://static.bocoup.com/assets/2010/06/practical-web-design.jpg" title="Look Mum I'm famous!" style="float:left;margin:20px 20px 20px 0;"><b>.NET Magazine:</b> Mom <i>will</i> be proud!</div>
+<p>I was asked back at the start of the year by <a href="http://www.netmag.co.uk/">.NET Magazine (Practical Web Design in the US)</a> to write a JavaScript article on the subject of my choice. I doubt you read the article because I went to the stores and bought all the copies. (Had to send copies to dear old Mom n’ Pop and everyone else back at the Shire, you know how it is. ;)).</p>
+<p>With the Boston stores being completely out of stock, and <a href="https://static.bocoup.com/assets/2010/06/canvas-processingjs-javascript.jpg">my dog hogging the last copy</a>, I thought it would be good idea to throw the article in to a blog post. Plus… who wants to go to all the effort of copying all that code from the pages of a magazine, or go hunting through a CD to find the demo? Not me! So without further ado, here is a copy of the Processing.js tutorial, with working code examples.</p>
+<p>But if you have absolutely no intention of learning how cool Processing.js is, or you’re just a bit short of time and want to see the Processing.js Ninja in action, <a href="https://code.bocoup.com/js-ninja/">click here to check out the final demo</a>.</p>
+<div style="float:right;margin:20px 0 20px 20px;width:270px;"><img decoding="async" src="https://static.bocoup.com/assets/2010/06/ninja.png" title="JavaScript Ninja" width="270"><br><b>Play anywhere:</b> Processing.js gives web developers and artists a way of producing online games and animations, without having to use any Flash or Java applets.</div>
+<h2>Master Canvas &amp; Processing.js</h2>
+<p><b>Knowledge needed:</b> JavaScript, HTML, CSS<br>
+<b>Requires Text editor:</b> any browser except Internet Explorer<br>
+<b>Project time:</b> 2 hours</p>
+<p><strong>Rich interactive web content used to be available in two flavors, Flash or Java. Today, the technological landscape looks very different. One of the ideas popularised in the 1990s was that the desktop as we know it could be replaced by an entirely web-based operating system. At the time, the idea seemed ridiculous, but modern browsers are powerful enough to handle an ever-increasing array of tasks.</strong></p>
+<div style="float:left;margin:20px 20px 20px 0px;width:320px;"><img decoding="async" src="https://static.bocoup.com/assets/2010/06/copperlicht-javascript-3d-webgl-engine.png" title="Copperlicht JavaScript 3D Engine" width="320"><br><b>Add depth:</b> Our ninja is 2D, but the Copperlicht JavaScript 3D Engine can help you create scenes like this. To start developing for the 3D HTML context, download <a href="http://bit.ly/9C8nAp">the latest build of Firefox</a>, enable WebGL in <i>about:config</i> and visit <a href="http://learningwebgl.com">learningwebgl.com</a>.</div>
+<p>jQuery broke down the boundaries between the old paradigm and the new, giving us rich interactivity that was simple to implement, great to look at, and loaded quicker than any plug-in could. But it didn’t end there.</p>
+<p>One of the more interesting changes has been the advent of immediate-mode-graphics in the browser, commonly referred to as the canvas element. Originally invented by Apple to power mini-applications such as desktop widgets, the canvas element sparked a phenomenal movement of web artists, data visualizers, UI experimentalists and game creators, who just needed a browser, some JavaScript and a healthy dose of creativity to change the web. 3D hardware support for the browser has already crossed the horizon and will be with us shortly, even on our mobile phones. With all these features being handed to the front-side, we need solid ways to harness this power.</p>
+<h3>Processing Syntax</h3>
+<p>While the Processing language uses Java syntax, Processing.js supports both Java and JavaScript methods, enabling you to use JavaScript libraries such as jQuery in your code, adding a powerful DOM access layer between the visualization and the DOM. If you need help learning Processing.js, WebGL, or find bugs and missing features, point your IRC client to irc.mozilla.org, join the #processing.js channel and introduce yourself to the community.</p>
+<h2>Sketching your Figure</h2>
+<p>Processing.js code is lightweight, simple to learn and ideal for developing web-based games. In this tutorial, we’re going to use Processing.js to create a ninja. Obviously you can adapt the skeleton we’ll build here to create all sorts of animated figures for your web projects. First, take a quick look at the HTML:</p>
+<pre lang="HTML"><script src="processing.js"></script>
+<canvas data-src="ninja.pjs" width="400" height="300">
+</canvas></pre>
+<div style="float:right;margin:20px 0 20px 20px;width:270px;"><img decoding="async" src="https://static.bocoup.com/assets/2010/06/processingjs-green-screen-of-life.png" title="JavaScript" ninja"="" width="270"><br><b>Congratulations:</b> This green square means you’ve set up Processing.js successfully.</div>
+<p>The first line loads Processing.js. You can get it from this issue’s CD, or download a copy from processingjs.org. The processing.js file handles all the drawing events and interactions. The second line contains a canvas element with the width and height attributes set. Being an arty environment, Processing projects are called sketches. The data-src attribute points to the location of your sketch file and is loaded after the DOM content. Next, create a file called ninja.pjs and copy in the following Processing code:</p>
+<div style="style=float:left!important;width:300px;">
+<pre lang="javascript">background(#00ff00);
+</pre>
+</div>
+<p>Open your index.html document. If you see a green square in your window, you’re up and running with Processing.js! Now you can start building up your JavaScript ninja, but before you do: let’s extend Processing.js with some reusable classes to save time and effort. Copy ninja.classes.lib into your working directory and update your HTML to this:</p>
+<pre lang="HTML"><script src="processing.js"></script>
+<script src="ninja.classes.lib"></script>
+<canvas data-src="ninja.pjs" width="400" height="300">
+</canvas></pre>
+<div style="float:right;margin:20px 0 20px 20px;width:270px;"><img decoding="async" src="https://static.bocoup.com/assets/2010/06/processingjs-getting-started.png" title="JavaScript" ninja"="" width="270"><br><b>Zen:</b> The development environment is remarkably simple.</div>
+<p>The ninja classes are recycled from code examples found on the Processing website. This library import extends Processing.js to handle the cartoon physics and provide some shortcuts for styling the ninja with fewer lines of code.</p>
+<p>Update the code in your sketch to include two functions called <b>setup()</b> and <b>draw()</b>. Processing sketches usually follow this simple pattern: first, any variable or class definitions outside the main functions are set, then the <b>setup()</b> function is called, where the screen and environment are set up. <b>Setup()</b> can also be recalled when a sketch starts over, to reinitialize variables. Finally, the <b>draw()</b> loop is called for every frame of your program, creating your animation.</p>
+<pre lang="javascript">// Setup Screen
+void setup(){
+  frameRate(60);
+  size(400, 300);
+};
+
+int ninjaX=width/2; ninjaY=height/2;
+
+// Main Looping Draw Rountine
+void draw(){
+  background(#555658);
+  noStroke();
+  fill(#3e3e40);
+  rect(0, height/2, width, height);
+};
+</pre>
+<p><b>Background(#555658)</b> fills the background with a light shade of grey and <b>noStroke()</b> forces shapes to be drawn without borders around them. <b>Fill(#3e3e40)</b> tells Processing.js that the following shape will be filled with a darker shade of grey and <b>rect(0, height/2, width, height)</b> draws the rectangle that’ll become the floor on which the ninja crouches. You may have noticed that global variables such as <b>width</b> and <b>height</b>, as well as <b>size()</b> and <b>frameRate()</b>, are automatically available to your sketch.</p>
+<p>Coming equipped with an array of global variables and useful methods makes Processing.js a quick and powerful tool for developing visual interaction on the web. Having set the stage, you need an actor. Update <b>ninja.pjs</b> with:</p>
+<pre lang="javascript">// Setup Screen
+void setup(){
+  frameRate(60);
+  size(400, 300);
+};
+
+int ninjaX=width/2; ninjaY=height/2;
+float trackAngle=0, trackX=0, trackY=0;
+
+// Main Looping Draw Routine
+void draw(){ 
+  style({ background:#555658, noStroke:true, fill:#3e3e40 }); 
+  rect(0, height/2, width, height);
+  drawNinja();
+};
+
+void mouseMoved(){
+  
+  // Track Ninja to Mouse
+  trackX = mouseX-ninjaX; trackY = mouseY-ninjaY;
+
+  // Set the Track Angle
+  trackAngle = -atan2(trackX, trackY);
+};
+
+void drawNinja(){
+  pushMatrix();
+    translate(ninjaX, ninjaY);
+    pushMatrix();
+
+      // Offset Ninja by Tracking Angle
+      translate(-sin(trackAngle)*4,0);
+      fill(0);
+      rect(-20, 0, 40, 40); // Draw Body Box
+      pushMatrix();
+        translate(-sin(trackAngle), -40);
+
+        // Draw Head
+        arc(0, 0, 60, 0, TWO_PI, false);
+      popMatrix();
+    popMatrix();
+  popMatrix();
+}
+</pre>
+<div style="float:right;margin:20px 0 20px 20px;width:270px;"><img decoding="async" src="https://static.bocoup.com/assets/2010/06/spoongraphics.png" width="270"><br><b>Ninja style:</b> The styles of our ninja are based on the excellent work of Chris Spooner as seen on his web site: <a href="http://blog.spoongraphics.co.uk">http://blog.spoongraphics.co.uk</a>.</div>
+<p>This introduces some key features. Firstly, you’ve reduced the four lines needed to draw the background by using the <b>style()</b> function. This function isn’t native to Processing.js but is one of the extensions in <b>ninja.classes.lib</b>. Second, you’ve added tracking variables so that your character can follow the movement of the mouse. This is computed in the <b>mouseMoved()</b> method, so that the variables are updated whenever the mouse moves on the canvas. Thirdly, you’ve added the <b>drawNinja()</b> method, which draws the body and head of the ninja, offsetting the draw commands by the value stored in the tracking variable. This creates the effect that the ninja is commanded by the movement of your mouse pointer.</p>
+<p>You’re using the <b>fill()</b> command with a different type of variable here. Before, you passed in a hexadecimal colour as an argument. This time, it’s a single integer, creating a greyscale fill from 0-255. You can also pass in three or four integers: <b>fill(255, 0, 0)</b> for red or <b>fill(0, 255, 0, 128)</b> for transparent green.</p>
+<p>Also introduced is the <b>arc()</b> command, with the following arguments: <b>arc(x, y, width, height, start-angle, stop-angle)</b>. The angles are calculated in radians, but Processing.js, being the useful language it is, can convert between radians and degrees by calling <b>radians(degrees)</b> or <b>degrees(radians)</b>.</p>
+<h3>Enter The Matrix</h3>
+<p>Matrix maths is a key component of any graphics language. Even if you’re more familiar with Photoshop and Illustrator than with graphics programming languages, you’ll have used transformation matrices, whether you were aware of it or not. When you create a new layer, you’re creating a new transformation matrix. A transformation matrix enables you to apply transformations to a group of objects.</p>
+<p>Transformation matrices are powerful tools. It’s far easier to calculate geometry locally and transform a group’s spacial coordinates than it is to account for all your transformations manually. Fortunately, the transformation matrix commands in Processing are simple to master:</p>
+<p><b>pushMatrix():</b> Think of this command as creating a new layer. Every command, from this point onwards, will share the same coordinate space, and move in unison.</p>
+<p><b>popMatrix():</b> Making a call to <b>popMatrix()</b> ends the current layer and returns Processing.js to the previous coordinate space.</p>
+<p><b>translate(x, y):</b> Translating the matrix offsets the current set of coordinates by the x and y values passed.</p>
+<p><b>rotate(radians):</b> This turns the current matrix about its origin. If you think of the current matrix as a sheet of paper, the origin would be the pin that tacks it to a board. If you turn the paper, it rotates around the position of the pin. The default origin for a matrix is <b>(0x, 0y)</b>, so to rotate a layer around its centre, there are two solutions. The first is to draw your objects around the origin, so the top-left coordinates of a 100-pixel wide box would become <b>(-50x, -50y)</b>. Sometimes, you don’t have the luxury of redefining every coordinate in your matrix this way, in which case you can combine <b>translate()</b> and <b>rotate()</b> to get the job done. To rotate a 100-pixel box around its center, shift the matrix like so:</p>
+<table>
+<tbody><tr valign="top">
+<td width="33%"><img decoding="async" loading="lazy" src="https://static.bocoup.com/assets/2010/06/rotate-zero2.png" title="No Rotation" width="150" height="150"><br>For no rotation of the box:<br><b>rotate(0);</b></td>
+<td width="33%"><img decoding="async" loading="lazy" src="https://static.bocoup.com/assets/2010/06/rotate-point-five.png" title="0.5 Radians Rotation" width="150" height="150"><br>To rotate around origin of box (0x, 0y):<br><b>rotate(0.5);</b></td>
+<td><img decoding="async" loading="lazy" src="https://static.bocoup.com/assets/2010/06/rotate-translate.png" title="Rotate About Center" width="150" height="150"><br>To translate the origin to (50x, 50y):<br><b>translate(50, 50);<br>rotate(0.5);<br>translate(-50, -50);</b></td>
+</tr>
+</tbody></table>
+<p>&nbsp;<br><b>scale(x, y):</b> This changes the size of the current matrix. You can pass one argument to scale the matrix’s X and Y axes proportionally, or pass different values for X and Y to warp the image. <b>Scale(2)</b> will multiply the coordinates by 200% and <b>scale(0.5)</b> will halve the size of everything within your matrix.</p>
+<h3>Stop Hitting Yourself!</h3>
+<p>An effective ninja wouldn’t be complete without limbs. So use the Limb class from ninja.classes.lib to add the following to the top of your sketch:</p>
+<pre lang="javascript">// Something to hit with...
+Limb armL = new Limb({ x: -30, y: 0, restX: 0, restY: 0, boneLength: 30 });
+Limb armR = new Limb({ x: 30,  y: 0, restX: 400, restY: 0, boneLength: 30 });
+Limb legL = new Limb({ x: -65, y: 75, restX: 25, restY: 40, boneLength: 30 });
+Limb legR = new Limb({ x: 65,  y: 75, restX: 25, restY: 40, boneLength: 30 });
+</pre>
+<p>The Limb class handles the simple physics for your ninja’s arms. The <b>restX</b> and <b>restY</b> variables store the direction at which the arms come to rest. For your ninja, the arms will always rest in the direction of the mouse. To achieve this, we add the following code to the beginning of our <b>drawNinja()</b> function.</p>
+<pre lang="javascript">void drawNinja(){
+  armL.restX = trackX; armL.restY = trackY; // Apply Tracking to Left Arm
+  armR.restX = trackX; armR.restY = trackY; // Apply Tracking to Right Arm
+  legL.restX = -25-sin(trackAngle); // Apply Tracking to Left Leg
+  legR.restX = 25-sin(trackAngle); // Apply Tracking to Right Leg
+  pushMatrix();
+</pre>
+<p>Now that the Limbs know where to point next, call the method that does the pointing: <b>limb.calc()</b>. After the limb’s position has been updated, you can call <b>limb.draw()</b> to render the object to the canvas. Add the following code between the matrices in the <b>drawNinja()</b> function.</p>
+<pre lang="javascript">void drawNinja(){
+  armL.restX = trackX; armL.restY = trackY; // Apply Tracking to Left Arm
+  armR.restX = trackX; armR.restY = trackY; // Apply Tracking to Right Arm
+  legL.restX = -25-sin(trackAngle); // Apply Tracking to Left Leg
+  legR.restX = 25-sin(trackAngle); // Apply Tracking to Right Leg
+  ...
+       popMatrix();
+       armL.calc(); armL.draw();
+       armR.calc(); armR.draw();
+     popMatrix();
+     legL.calc(); legL.draw();
+     legR.calc(); legR.draw();    
+   popMatrix();
+  }
+}
+</pre>
+<p>The deepest nested matrix can be called <b>matrix 3</b>. This contains the ninja’s head. The second deepest is for the body and the shallowest represents the whole ninja object, which is offset by the values of <b>ninjaX</b> and <b>ninjaY</b>. Placing different parts of the body in different matrices enables you to control various parts of the character independently. So add the arms to the same matrix as the body – since the arms are primarily attached to the body, they should move when it moves.</p>
+<p>The legs are primarily attached to the ground, so place the legs in the root matrix, and point them in the direction of the body to create the sense that your ninja behaves much like he would in the real world.</p>
+<p>Now that your character can move like a ninja, it’s time you made him look like one. There’s a nice shortcut you can take when you want to apply an array of styles to multiple objects. Create a function to do just this.</p>
+<pre lang="javascript">// Apply Common Styles Before Draw Callbacks
+void ninjaStyle(Object callBack){
+  style({ noFill:true, stroke:#000000, strokeWeight:20.5 });
+  callBack();
+  style({ stroke:#2a2a2b, strokeWeight:15 });
+  callBack();
+  style({ strokeJoin:ROUND, fill:#1d1d1e, stroke:#1d1d1e, strokeWeight:10 });
+  callBack();
+};
+</pre>
+<p>The <b>ninjaStyle()</b> function takes one argument: a function. The function you pass to your style method contains an arbitrary <b>draw</b> command. The styles for your ninja are created by stroking thinner grey lines over thicker black ones. When the <b>ninjaStyle()</b> function receives a <b>draw</b> command, it applies the first style, then executes the command it was passed. Next, it applies the second style, and so on. This significantly reduces the number of lines of code in the sketch. Next, update the code in <b>drawNinja()</b> to apply some stealthy styles:</p>
+<pre lang="javascript">void drawNinja(){
+  ...
+  popMatrix();  
+  armL.calc();
+  ninjaStyle(function(){ armL.draw(); });
+  armR.calc();
+  ninjaStyle(function(){ armR.draw(); });
+  popMatrix();
+  legL.calc();
+  ninjaStyle(function(){ legL.draw(); });
+  legR.calc();
+  ninjaStyle(function(){ legR.draw(); });
+  popMatrix();
+}
+</pre>
+<p>Finally, add the finishing touches to the ninja. To reduce the total number of lines of code and make it easier to read, create an intermediary stage to handle the limbs. The <b>drawLimbs()</b> function receives an array of <b>Limb</b> objects, calculates their positions and passes them to the <b>ninjaStyle()</b> function to draw.</p>
+<pre lang="javascript">void drawLimbs(Object limbs){
+  for (var i=0, l=limbs.length; i &lt; l; i++) {
+    limbs[i].calc();
+    ninjaStyle(function(){ limbs[i].draw(); });
+  }
+};
+</pre>
+<p>With this intermediary function, you can calculate and draw the arms with:</p>
+<pre lang="javascript">drawLimbs([armL, armR]);
+</pre>
+<p>Now things are neater, give the ninja a face with the <b>beginShape()</b>, <b>bezierVertex(x, y, x1, y1, x2, y2)</b> and <b>endShape()</b> commands. You can use the previously mentioned tracking variables to make the eyes follow the mouse, and even apply the common styles to his body. Here’s the complete code:</p>
+<pre lang="javascript">// Something to hit with...
+Limb armL = new Limb({ x: -30, y: 0, restX: 0, restY: 0, boneLength: 30 });
+Limb armR = new Limb({ x: 30, y: 0, restX: 400, restY: 0, boneLength: 30 });
+Limb legL = new Limb({ x: -65, y: 75, restX: 25, restY: 40, boneLength: 30 });
+Limb legR = new Limb({ x: 65, y: 75, restX: 25, restY: 40, boneLength: 30 });
+
+// Setup Screen
+void setup(){
+  frameRate(60);
+  size(400, 300);
+};
+
+int ninjaX=width/2; ninjaY=height/2;
+float trackAngle=0, trackX=0, trackY=0;
+
+// Main Looping Draw Rountine
+void draw(){
+  style({ background:#555658, noStroke:true, fill:#3e3e40 });
+  rect(0, height/2, width, height);
+  drawNinja();
+};
+
+void mouseMoved(){
+  trackX = mouseX-ninjaX; trackY = mouseY-ninjaY; // Track Ninja to Mouse
+  trackAngle = -atan2(trackX, trackY); // Set the Track Angle
+};
+
+void drawNinja(){
+  armL.restX = trackX; armL.restY = trackY; // Apply Tracking to Left Arm
+  armR.restX = trackX; armR.restY = trackY; // Apply Tracking to Right Arm
+  legL.restX = -25-sin(trackAngle); // Apply Tracking to Left Leg
+  legR.restX = 25-sin(trackAngle); // Apply Tracking to Right Leg
+  pushMatrix();
+    translate(ninjaX, ninjaY);
+    fill(#3a3a3c);
+    ellipse(0+sin(trackAngle)*2, 80, 160, 30); // Shadow
+    drawLimbs([legL, legR]); // Draw Legs
+    pushMatrix();
+      translate(-sin(trackAngle)*4,0); // Offset Ninja by Tracking Angle
+      ninjaStyle(function(){ rect(-20, 0, 40, 40); }); // Draw Body Box
+      pushMatrix(); // Draw Mask
+        translate(-sin(trackAngle), -40);
+        ninjaStyle(function(){ arc(0, 0, 60, 0, TWO_PI, false); }); // Draw Head
+        style({ fill:#eac89e, stroke:#2a2a2b, strokeWeight:3 });
+        beginShape(); // Draw Skin on Face
+          bezierVertex(-30, 0, -60, 0, -25, 25);
+          bezierVertex(-15, 30, 25, 25, 30, 0);
+        endShape();
+        style({ fill:#000000, stroke:#caab8e, strokeWeight:3 });
+        arc(-10-sin(trackAngle)*7, 8, 6, 6, TWO_PI, 0); // Draw Left Eye
+        arc( 10-sin(trackAngle)*7, 8, 6, 6, TWO_PI, 0); // Draw Right Eye
+        popMatrix();
+        drawLimbs([armL, armR]);
+    popMatrix();
+  popMatrix();
+};
+
+void drawLimbs(Object limbs){
+  for (var i=0, l=limbs.length; i &lt; l; i++) {
+    limbs[i].calc();
+    ninjaStyle(function(){ limbs[i].draw(); });
+  }
+};
+
+// Apply Common Styles Before Draw Callbacks
+void ninjaStyle(Object callBack){
+  style({ noFill:true, stroke:#000000, strokeWeight:20.5 });
+  callBack();
+  style({ stroke:#2a2a2b, strokeWeight:15 });
+  callBack();
+  style({ strokeJoin:ROUND, fill:#1d1d1e, stroke:#1d1d1e, strokeWeight:10 });
+  callBack();
+};
+</pre>
+<p>Congratulations on making your own JavaScript ninja without any browser plug-ins! What you decide to do with your ninja is up to you. I turned mine into the main character of a dojo-smashing arcade game that updates the DOM with your score. Try out the <a href="https://code.bocoup.com/js-ninja/">ninja-final-game</a> find out ... is your foo strong enough to beat the clock?</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/canvas-in-ie9-too-good-to-be-true/" rel="prev">Canvas in IE9&amp;#8230;Too Good To Be True?</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/alternate-x-axis-intervals-in-g-raphael-js-linechart/" rel="next">Alternate x axis Intervals In g.raphaël.js linechart()</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/make-your-own-javascript-ninja-with-processing-js/ -->
+  
+
+</body></html>

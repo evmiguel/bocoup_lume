@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript: Creating an EventSource within a Worker</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript: Creating an EventSource within a Worker</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>After spending the day finishing out cross-browser EventSource support in the form of <a href="http://github.com/rwldrn/jquery.eventsource" target="_blank" rel="noopener">jQuery.EventSource.js</a>, then wrapping up with a commit of 55 new unit tests, I finally left the Bocoup Loft for the day around 8 o’clock… But as most developers know, no matter how hard you try, you just can’t leave this kind of work at the office. On the short ride home I had some time to reflect on the developments of modern browsers and how exciting things like Workers, SharedWorkers and EventSource are…</p>
+<p>… And that’s when it occurred to me… Could it be possible that when the Chromium crew implemented the EventSource API, that they extended the interface across processes so that both the renderer and worker processes had access to the constructor?</p>
+<p>After taking Alli the Dog for a quick walk, I spun together this demo…</p>
+<p>Some HTML to facilitate running the test in a browser:</p>
+<p class="snippet caption">renderer.html</p>
+<pre><code class="html hljs language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"renderer.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+</code></pre>
+<p>The contents of renderer.js; this will create the worker object and then send a quick dummy message out to it.</p>
+<p class="snippet caption">renderer.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> worker  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Worker</span>(<span class="hljs-string">'worker.js'</span>);
+
+worker.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-keyword">var</span> message = event.<span class="hljs-property">data</span>;
+
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">group</span>(<span class="hljs-string">'Message Received'</span>);
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( message );
+  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">groupEnd</span>();
+
+}, <span class="hljs-literal">false</span>);
+
+<span class="hljs-comment">//  This will trigger a message event in the worker</span>
+worker.<span class="hljs-title function_">postMessage</span>(<span class="hljs-literal">true</span>);
+
+</code></pre>
+<p>The contents of worker.js; this will receive the dummy message, declare a new EventSource and start listening to it.</p>
+<p class="snippet caption">worker.js</p>
+<pre><code class="js hljs language-javascript">self.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+  <span class="hljs-keyword">var</span> thisp     = <span class="hljs-variable language_">this</span>,
+      eventSrc  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">EventSource</span>(<span class="hljs-string">'event-source.php'</span>);
+
+  eventSrc.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">'message'</span>, <span class="hljs-keyword">function</span> (<span class="hljs-params">event</span>) {
+
+    <span class="hljs-keyword">var</span> message = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(event.<span class="hljs-property">data</span>);
+
+    thisp.<span class="hljs-title function_">postMessage</span>(message);
+
+  }, <span class="hljs-literal">false</span>);
+}, <span class="hljs-literal">false</span>);
+</code></pre>
+<p>The contents of event-source.php; this simply sends a modified text/event-stream header then echoes a small json fragment, prepended with the ‘data; ‘ tag:</p>
+<p class="snippet caption">event-source.php</p>
+<pre><code class="php hljs language-php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-title function_ invoke__">header</span>(<span class="hljs-string">"Content-Type: text/event-stream\n\n"</span>);
+
+<span class="hljs-keyword">echo</span> <span class="hljs-string">'data: '</span> . <span class="hljs-title function_ invoke__">json_encode</span>(
+                  <span class="hljs-keyword">array</span>(
+                    <span class="hljs-string">'from'</span> =&gt; <span class="hljs-string">'event-source'</span>
+                  )
+                ) . <span class="hljs-string">"\n"</span>;
+<span class="hljs-meta">?&gt;</span>
+</code></pre>
+<p>… So what was the result? While I wrote this, I ran the demo in another tab and at this moment 355 EventSource messages were received by the Worker, which in turn sent 355 messages back to the renderer (client/browser) which then logged them to the javascript console.</p>
+<p>It’s not much, but it’s proof that it can be done – bear in mind that only the WebKit browsers support EventSource, therefore this will only work in either Chrome 5+ or Safari 5+.</p>
+<p><a href="https://gist.github.com/552549" target="_blank" rel="noopener">Download the demo files from Github</a></p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-is-object-oriented-programming/" rel="prev">JavaScript IS Object Oriented Programming</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/jquery-eventsource-yakyakface-com/" rel="next">JavaScript: YakYakFace.com uses jQuery.EventSource</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-creating-an-eventsource-within-a-worker/ -->
+  
+
+</body></html>

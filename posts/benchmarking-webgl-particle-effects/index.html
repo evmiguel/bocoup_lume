@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benchmarking WebGL Particle Effects</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Benchmarking WebGL Particle Effects</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/data visualization/" class="tag">data visualization</a>
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><em>Bocoup is excited to announce that we are working with <a href="http://www.gradient-studios.com/">Gradient Studios</a> to port the hit mobile game <a href="http://fieldrunners.com/">Fieldrunners</a>, by Subatomic Studios, to HTML5. This is the first in a series of <a href="https://bocoup.com/weblog/category/fieldrunners">weekly development blog posts</a>.</em></p>
+<p>One of the earliest tasks in porting an existing game to a new platform is to assess feasibility. This task involves evaluating things like user input, delivery methods, and monetization opportunity, but above all comes performance testing. As part of pre-production for the Fieldrunners port, we ran WebGL performance tests on a variety of laptops and browsers.</p>
+<p>We identified Chrome 12 (Stable) as our target recommended browser, and a <a href="http://www.everymac.com/systems/apple/macbook_pro/stats/macbook-pro-core-i7-2.66-aluminum-15-mid-2010-unibody-specs.html">MacBook Pro 6,2</a> as our recommended specification.</p>
+<p><iframe loading="lazy" src="https://spreadsheets1.google.com/a/bocoup.com/spreadsheet/pub?key=0AjFjD_7JiIsYdGc3NVNtclVjeVkyQ0NKS2tWeWZhWVE&amp;single=true&amp;gid=0&amp;output=html&amp;ndplr=1" frameborder="0" width="580" height="300"></iframe></p>
+<p><a href="https://static.bocoup.com/blog/webgl-chart_1-11.png"><br>
+  <img decoding="async" loading="lazy" title="Chrome 12 (Stable) in Mac OS 10.6.8 on MacBookPro6,2" src="https://static.bocoup.com/blog/webgl-chart_1-11.png" alt="Chrome 12 (Stable) in Mac OS 10.6.8 on MacBookPro6,2" width="336" height="208"><br>
+</a></p>
+<p>We ran a simple WebGL benchmark test generating particles of a certain size, while varying the number of particles rendered and measuring frames per second (FPS). Click the chart see it in full size, or grab the tabular data from&nbsp;<a href="https://spreadsheets.google.com/spreadsheet/ccc?key=0AjFjD_7JiIsYdGc3NVNtclVjeVkyQ0NKS2tWeWZhWVE&amp;hl=en_US">this spreadsheet</a>.</p>
+<p>The biggest surprise for me was a pleasant one! Our first benchmark was to test particles from 20×20 (400 pixels) up to 100×100 (10,000 pixels). Every single one of these tests performed at nearly 60.0 FPS — we probably would have seen higher, but we were using&nbsp;webkitRequestAnimationFrame, which for a variety of reasons caps out at 60 FPS in Chrome on desktop. (Whereas on a Chromebook it caps out at 30 FPS.) So in order to create informative charts, we had to increase our benchmarks to go all the way up to 500×500 (250,000 pixels).</p>
+<p>We also collected Firefox 5.0.1 data:</p>
+<p><iframe loading="lazy" src="https://spreadsheets1.google.com/a/bocoup.com/spreadsheet/pub?key=0AjFjD_7JiIsYdGc3NVNtclVjeVkyQ0NKS2tWeWZhWVE&amp;single=true&amp;gid=1&amp;output=html" frameborder="0" width="580" height="300"></iframe></p>
+<p>Fieldrunners has an upper bound of about 500 primitives, so we set ourselves a goal of 1000 primitives at 30 FPS in our test. Fortunately, we more than exceeded our expectations, performing at about 60 FPS for reasonably sized sprites. After running these tests were confident that we could run the game on our recommended spec in WebGL on Chrome 12 without compromising the game design by reducing particle or sprite counts.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/fieldrunners-webgl-particle-system-demo/" rel="prev">Fieldrunners WebGL Particle System Demo</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/announcing-new-game-conference/" rel="next">Announcing: New Game Conference</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/benchmarking-webgl-particle-effects/ -->
+  
+
+</body></html>

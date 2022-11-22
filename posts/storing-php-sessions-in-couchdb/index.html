@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storing PHP Sessions in CouchDB</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Storing PHP Sessions in CouchDB</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>One of the more common architectural tasks when designing a web based system that you expect to scale horizontally is deciding how to handle and store sessions. This is because each front end server is running its own PHP install and their session data is stored locally on the disk instead of being shared between environments. This creates a split brain problem between your servers.</p>
+<p>Common solutions include forcing users to always be routed to the same web server (“sticky sessions”), so that they’ll end up back on the server that initiated and is storing their session data, and using a common storage area for the servers’ session data. Sticky sessions can be a pain to set up, decreases the fault tolerance of your front line web servers, can cause bad user experience if they get routed to the “wrong” server, and doesn’t take full advantage of any load balancing you’re doing.</p>
+<p>There are some load balancers that will store sessions at their layer of the architecture, but we’ll assume you’ve got a fairly small architecture or don’t want to keep bolting on complexity.</p>
+<p>Since your application likely already has a common persistence layer (a la database) that you put thought into making fault tolerant, and you&nbsp;<strong>obviously</strong> chose CouchDB, we’re going to look at storing your session data there.  Here’s a quick break down of how we’re going to do it:</p>
+<ul>
+<li>We’re going to use PHP’s&nbsp;<a href="http://www.php.net/session_set_save_handler"><code>session_set_save_handler()</code></a>, which lets us provide callbacks (functions) for opening, closing, reading, writing, destroying, and garbage collecting sessions.</li>
+<li>Connecting to CouchDB will be done with&nbsp;<a href="http://www.saggingcouch.com/">Sag v0.4</a>. Our session&nbsp;<a href="http://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> functions map nicely to&nbsp;<a href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods">HTTP’s verbs</a>, which Sag directly exposes to us.</li>
+<li>Each session will be stored in its own document, using PHP’s session ID as the document’s <code>_id</code>. It will also store when the session was last written to for garbage collection purposes. We would be worried about index and database sizes when using large IDs, but garbage collection of expired sessions will constrain the file sizes nicely. And more sessions should mean more users, and therefore cash and fame, so that’s a nifty problem to have.</li>
+<li>The database name will be the session name (from&nbsp;<a href="http://www.php.net/session_name"><code>session_name()</code></a>). That means we can have different applications, or sub-applications, using this methodology more easily by having them use their own session names.</li>
+<li>Because there can be a lot of I/O operations on a session, we don’t want to have to go back to the database every time, especially when&nbsp;<a href="http://guide.couchdb.org/draft/consistency.html">CouchDB’s MVCC architecture</a> requires that we retrieve a document from the server before updating it. To protect against this we’re going to use Sag’s MemoryCache, which stores the document’s object in memory during the script’s execution. Sag’s caching uses&nbsp;<a href="http://en.wikipedia.org/wiki/HTTP_ETag">Etags</a> to cache the docs locally, much like your web browser does with web pages.</li>
+</ul>
+<h2>The Code: class CouchSessionStore</h2>
+<p>Refer to the code here: <a title="http://gul.ly/zr" href="http://gul.ly/zr" target="_blank" rel="noopener">﻿http://gul.ly/zr</a> (GitHub)</p>
+<p><code>CouchSessionStore</code> is set up to have little impact on your application’s code, exposing a series of static functions that will act as PHP’s session CRUD callbacks. These callbacks are provided to PHP with <code>session_set_save_handler()</code> at the bottom of the file, after the class definition. One great place for improvement of this class would be to use the <a href="http://en.wikipedia.org/wiki/Factory_(software_concept)" target="_blank" rel="noopener">factory design pattern</a> to set up <code>CouchSessionStorage</code> and call <code>session_set_save_handler()</code>, moving this work out of the global scope.</p>
+<p>There’s an additional hook at <code>CouchSessionStore::setSag($sag)</code> that accepts an initialized Sag object. This means you can specify a different SagCache implementation, use your own server info and credentials, etc., overwriting the default configuration. If you pass <code>CouchSessionStore::setSag($sag)</code> NULL it will revert back to its default Sag configuration. The only thing that you cannot change through this hook is the database name: <code>CouchSessionStore</code> will always set this to the PHP session name in lower case, decreasing the risk of bugs.</p>
+<p>If you really want to use a different naming scheme you can extend <code>CouchSessionStore</code> and re-implement <code>setSag($sag)</code>, like this:</p>
+<pre><code class="php hljs language-php"><span class="hljs-meta">&lt;?php</span>
+<span class="hljs-keyword">require_once</span> <span class="hljs-string">'CouchSessionStore.php'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SuperCouchSessionStore</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">CouchSessionStore</span>
+</span>{
+  <span class="hljs-keyword">public</span> <span class="hljs-built_in">static</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setSag</span>(<span class="hljs-params"><span class="hljs-variable">$sag</span></span>)
+  </span>{
+    <span class="hljs-comment">//use CouchSessionStore to set everything up, so our $this-&gt;sag == $sag</span>
+    <span class="hljs-built_in">parent</span>::<span class="hljs-title function_ invoke__">setSag</span>(<span class="hljs-variable">$sag</span>);
+
+    <span class="hljs-comment">//overwrite the baked in database naming, creating it in Couch if it doesn't exist</span>
+    <span class="hljs-variable language_">$this</span>-&gt;sag-&gt;<span class="hljs-title function_ invoke__">setDatabase</span>(<span class="hljs-string">'super-database-name'</span>, <span class="hljs-literal">true</span>);
+
+    <span class="hljs-comment">//obey our parent class's definitions</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;sag;
+  }
+}
+<span class="hljs-meta">?&gt;</span>
+</code></pre>
+<h2>Design Document Creation</h2>
+<p>One of the really neat things that we do is check whether our design document, the index that maps creation times to documents for easy garbage collection, exists when we open the session, creating it if it does not. This is a great example of the power a schemaless database gives you – we do not have to worry about deploying new schemas or too much about what the data will look like before developing our application.</p>
+<p>This also allows us to roll out new design document code as we develop our application, baking our “schema” and querying into our application’s versioning. For example, instead of just checking whether the design document exists, we could retrieve it and compare its map reduce code to ours, sending the new code if it did not match. You could also define your application’s version into the design document and compare against that if you are worried about earlier code versions overwriting your newer versions’ code.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/welcome-richard-worth/" rel="prev">Welcome Richard Worth</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/welcome-sam-bisbee/" rel="next">Welcome Sam Bisbee</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/storing-php-sessions-in-couchdb/ -->
+  
+
+</body></html>

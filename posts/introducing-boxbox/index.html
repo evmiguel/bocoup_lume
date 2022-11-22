@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducing boxbox</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Introducing boxbox</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/client side/" class="tag">client side</a>
+    
+      <a href="/bocoup_lume/tags/open source/" class="tag">open source</a>
+    
+      <a href="/bocoup_lume/tags/tutorial/" class="tag">tutorial</a>
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>Bocoup loves HTML5 games, so <a href="http://tinysubversions.com/">Darius Kazemi</a> and<br>
+<a href="http://incompl.com">I</a> have been running a training called<br>
+<a href="https://bocoup.com/education/">Intro to HTML5 Game Development</a>.<br>
+We cover lots of fun stuff, including canvas animation<br>
+and audio. When designing the training, we wanted trainees to make a simple game using a<br>
+JavaScript physics engine. <a href="http://code.google.com/p/box2dweb/">Box2dWeb</a><br>
+came up as a good one to use, but I had a few concerns about it.</p>
+<p>Box2dWeb is a port of <a href="http://www.box2dflash.org/">Box2DFlash</a><br>
+to JavaScript. Box2dFlash is a port of <a href="http://box2d.org/">Box2D</a>,<br>
+a C++ rigid body physics simulation. You have probably played at least one game that uses<br>
+Box2D, such as Angry Birds. The C++ code style persists in these ports, and what you get is<br>
+distinctly non-JavaScripty code like this: (comments by me)</p>
+<p class="snippet caption">box2dweb-example.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Code from http://lib.ivank.net/?p=demos&amp;amp;d=box2D</span>
+
+<span class="hljs-comment">// These look like imports, but in JavaScript they are just busy-work.</span>
+<span class="hljs-keyword">var</span>
+    b2Vec2          = <span class="hljs-title class_">Box2D</span>.<span class="hljs-property">Common</span>.<span class="hljs-property">Math</span>.<span class="hljs-property">b2Vec2</span>,
+    b2BodyDef       = <span class="hljs-title class_">Box2D</span>.<span class="hljs-property">Dynamics</span>.<span class="hljs-property">b2BodyDef</span>,
+    b2Body          = <span class="hljs-title class_">Box2D</span>.<span class="hljs-property">Dynamics</span>.<span class="hljs-property">b2Body</span>,
+    b2FixtureDef    = <span class="hljs-title class_">Box2D</span>.<span class="hljs-property">Dynamics</span>.<span class="hljs-property">b2FixtureDef</span>,
+    b2World         = <span class="hljs-title class_">Box2D</span>.<span class="hljs-property">Dynamics</span>.<span class="hljs-property">b2World</span>,
+    b2PolygonShape  = <span class="hljs-title class_">Box2D</span>.<span class="hljs-property">Collision</span>.<span class="hljs-property">Shapes</span>.<span class="hljs-property">b2PolygonShape</span>;
+
+<span class="hljs-comment">// Constructor functions should use ProperCase in JavaScript.</span>
+world = <span class="hljs-keyword">new</span> <span class="hljs-title function_">b2World</span>(<span class="hljs-keyword">new</span> <span class="hljs-title function_">b2Vec2</span>(<span class="hljs-number">0</span>, <span class="hljs-number">10</span>),  <span class="hljs-literal">true</span>);
+
+<span class="hljs-comment">// Someone without a programming background may not be able to guess</span>
+<span class="hljs-comment">// what this abbreviation means.</span>
+up = <span class="hljs-keyword">new</span> <span class="hljs-title function_">b2Vec2</span>(<span class="hljs-number">0</span>, -<span class="hljs-number">7</span>);
+
+<span class="hljs-comment">// Here we're creating a fixture, then a body, then a shape. For</span>
+<span class="hljs-comment">// simple learning exercises these distinctions aren't useful.</span>
+<span class="hljs-keyword">var</span> fixDef = <span class="hljs-keyword">new</span> <span class="hljs-title function_">b2FixtureDef</span>();
+fixDef.<span class="hljs-property">density</span> = <span class="hljs-number">1.0</span>;
+
+<span class="hljs-keyword">var</span> bodyDef = <span class="hljs-keyword">new</span> <span class="hljs-title function_">b2BodyDef</span>();
+bodyDef.<span class="hljs-property">type</span> = b2Body.<span class="hljs-property">b2_staticBody</span>; <span class="hljs-comment">// mixed camelCase and _s</span>
+fixDef.<span class="hljs-property">shape</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_">b2PolygonShape</span>();
+
+<span class="hljs-comment">// Here ProperCase is used for methods, which should be reserved</span>
+<span class="hljs-comment">// for constructors in JavaScript.</span>
+bodyDef.<span class="hljs-property">position</span>.<span class="hljs-title class_">Set</span>(<span class="hljs-number">9</span>, stage.<span class="hljs-property">stageHeight</span>/<span class="hljs-number">100</span> + <span class="hljs-number">1</span>);
+fixDef.<span class="hljs-property">shape</span>.<span class="hljs-title class_">SetAsBox</span>(<span class="hljs-number">10</span>, <span class="hljs-number">1</span>);
+world.<span class="hljs-title class_">CreateBody</span>(bodyDef).<span class="hljs-title class_">CreateFixture</span>(fixDef);
+</code></pre>
+<p>In a training where we have non-programmers and programmers who are new to JavaScript,<br>
+this isn’t what I want people to learn from.</p>
+<p>Don’t get me wrong: I love Box2D, Box2DFlash, and Box2dWeb. I wouldn’t use them if I didn’t.<br>
+These are issues that naturally arise in semi-automated cross-language ports.<br>
+Since I wanted to use Box2dWeb but with sugar, I made boxbox.</p>
+<p><a href="http://incompl.github.com/boxbox/"><img decoding="async" src="https://static.bocoup.com/blog/boxbox.png"></a></p>
+<p><a href="http://incompl.github.com/boxbox/">boxbox</a> is a library that you use along with<br>
+Box2dWeb. It wraps Box2dWeb and provides a simpler API and some handy new features. It<br>
+is great for learning, prototyping, and simple games.</p>
+<p>In this article, I am going to<br>
+step through the process of creating a simple boxbox game. If you want to follow along,<br>
+start out with the boilerplate here:</p>
+<p><a href="http://static.incompl.com/bocoup/introducing-boxbox/starting-point.zip">download boilerplate</a></p>
+<p>This project already includes boxbox and Box2dWeb as well as a simple stylesheet. If you<br>
+load up <code>index.html</code> in a browser you’ll see a blank slate.</p>
+<h2>Getting Started</h2>
+<p>Edit <code>game.js</code>. The first thing we’re going to do is create a “world”, which is a stand-alone<br>
+physics simulation. It takes a canvas element as a parameter, since boxbox provides canvas<br>
+rendering.</p>
+<p class="snippet caption">game-step-1.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> canvas = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">"game"</span>);
+<span class="hljs-keyword">var</span> world = boxbox.<span class="hljs-title function_">createWorld</span>(canvas);
+</code></pre>
+<h2>Create the Player</h2>
+<p>The world is pretty boring without anything in it, so lets create our first entity. All<br>
+entity options have defaults in boxbox, so if you create an entity without any options,<br>
+you’ll get the most basic entity possible: a gray square in the middle of the screen.</p>
+<p class="snippet caption">game-step-2.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> player = world.<span class="hljs-title function_">createEntity</span>();
+</code></pre>
+<p>The world has gravity by default, so when you run the game, the square will just fall<br>
+off the screen.</p>
+<p><a href="http://static.incompl.com/bocoup/introducing-boxbox/game-step-2/">Try it!</a></p>
+<h2>Create the Ground</h2>
+<p>Let’s create an entity for the ground. This time we’ll provide some options to get the<br>
+sort of entity we want.</p>
+<p class="snippet caption">game-step-3.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> ground = world.<span class="hljs-title function_">createEntity</span>({
+  <span class="hljs-attr">color</span>: <span class="hljs-string">"green"</span>,
+  <span class="hljs-attr">x</span>: <span class="hljs-number">13</span>,
+  <span class="hljs-attr">y</span>: <span class="hljs-number">18</span>,
+  <span class="hljs-attr">width</span>: <span class="hljs-number">12</span>,
+  <span class="hljs-attr">height</span>: <span class="hljs-number">0.5</span>,
+  <span class="hljs-attr">type</span>: <span class="hljs-string">"static"</span>
+});
+</code></pre>
+<p>This is still quite basic. We’re telling boxbox’s rendering layer to show this entity<br>
+in green. We’re giving it a starting position and a width and height. Setting the type<br>
+to static makes this entity immobile, so it will not be affected by gravity or collisions.</p>
+<p>Now when you run the game, the box falls and lands on the ground.</p>
+<p><a href="http://static.incompl.com/bocoup/introducing-boxbox/game-step-3/">Try it!</a></p>
+<h2>Keyboard Input</h2>
+<p>Let’s add keyboard input. To keep it simple, we’ll make it so that any key moves the player.</p>
+<p class="snippet caption">game-step-4.js</p>
+<pre><code class="js hljs language-javascript">player.<span class="hljs-title function_">onKeydown</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) {
+  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">applyImpulse</span>(<span class="hljs-number">100</span>, <span class="hljs-number">45</span>);
+});
+</code></pre>
+<p>If you’re used to making websites, this should look familiar. <code>this</code> is set to the boxbox<br>
+entity that the event was attached to. <code>applyImpulse</code> is a method that applies an instantaneous force on an entity. boxbox also supports continuous force with <code>applyForce</code>, but for now we’ll apply a swift kick to the entity each time a key is pressed. The first parameter to <code>applyImpulse</code> is the magnitude of the force (higher is stronger) and the second parameter is the direction of the force (in degrees). 45 degrees is to the upper right.</p>
+<h2>Create Targets</h2>
+<p>That works, but what fun is a physics engine without collisions? Let’s make a stack of<br>
+targets to knock over. Here I demonstrate a boxbox feature that lets you share<br>
+configuration among similar entities.</p>
+<p class="snippet caption">game-step-5.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-comment">// Reusable template</span>
+<span class="hljs-keyword">var</span> targetTemplate = {
+  <span class="hljs-attr">color</span>: <span class="hljs-string">"blue"</span>,
+  <span class="hljs-attr">height</span>: <span class="hljs-number">1.5</span>,
+  <span class="hljs-attr">width</span>: <span class="hljs-number">0.25</span>
+};
+
+<span class="hljs-comment">// Bottom level</span>
+world.<span class="hljs-title function_">createEntity</span>(targetTemplate, {<span class="hljs-attr">x</span>: <span class="hljs-number">18</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">15</span>});
+world.<span class="hljs-title function_">createEntity</span>(targetTemplate, {<span class="hljs-attr">x</span>: <span class="hljs-number">21</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">15</span>});
+world.<span class="hljs-title function_">createEntity</span>(targetTemplate, {<span class="hljs-attr">x</span>: <span class="hljs-number">24</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">15</span>});
+
+<span class="hljs-comment">// Bottom horizontal platform</span>
+world.<span class="hljs-title function_">createEntity</span>({
+  <span class="hljs-attr">color</span>: <span class="hljs-string">"purple"</span>,
+  <span class="hljs-attr">width</span>: <span class="hljs-number">3</span>,
+  <span class="hljs-attr">height</span>: <span class="hljs-number">0.25</span>,
+  <span class="hljs-attr">x</span>: <span class="hljs-number">21</span>,
+  <span class="hljs-attr">y</span>: <span class="hljs-number">13</span>
+});
+
+<span class="hljs-comment">// Middle</span>
+world.<span class="hljs-title function_">createEntity</span>(targetTemplate, {<span class="hljs-attr">x</span>: <span class="hljs-number">23</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">11</span>});
+world.<span class="hljs-title function_">createEntity</span>(targetTemplate, {<span class="hljs-attr">x</span>: <span class="hljs-number">19</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">11</span>});
+
+<span class="hljs-comment">// Top horizontal platform</span>
+world.<span class="hljs-title function_">createEntity</span>({
+  <span class="hljs-attr">color</span>: <span class="hljs-string">"purple"</span>,
+  <span class="hljs-attr">width</span>: <span class="hljs-number">2</span>,
+  <span class="hljs-attr">height</span>: <span class="hljs-number">0.25</span>,
+  <span class="hljs-attr">x</span>: <span class="hljs-number">21</span>,
+  <span class="hljs-attr">y</span>: <span class="hljs-number">9</span>
+});
+
+<span class="hljs-comment">// Top level</span>
+world.<span class="hljs-title function_">createEntity</span>(targetTemplate, {<span class="hljs-attr">x</span>: <span class="hljs-number">21</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">7</span>});
+</code></pre>
+<p>Now you can see the beginnings of what this physics engine can do. You can<br>
+also imagine what sort of game you can make from it 😉</p>
+<p><a href="http://static.incompl.com/bocoup/introducing-boxbox/game-completed/">Try it!</a></p>
+<h2>What’s Next</h2>
+<p>Want to take it to the next level? Try adding images instead of solid colors<br>
+(boxbox takes care of rotating / scaling images), more keyboard control over the<br>
+player, or tweak the density and friction of each entity to get different<br>
+dynamics. If you want to report any bugs or make any changes, boxbox is MIT<br>
+licensed and on <a href="https://github.com/incompl/boxbox">Github</a>. Happy coding!</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-arduino-programming-with-nodejs/" rel="prev">JavaScript: Arduino Programming on Node.js</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/txjs-conf-training/" rel="next">Announcing Sponsorship and Training at TXJS</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/introducing-boxbox/ -->
+  
+
+</body></html>

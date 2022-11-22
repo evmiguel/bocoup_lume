@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem with DigiNotar SSL Certificates</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Problem with DigiNotar SSL Certificates</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/web applications/" class="tag">web applications</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p>While executing the all too familiar morning routine of a geek today – coffee, various news feeds, and mailing lists – I came across a disturbing bit of news. It turns out that <a href="http://www.diginotar.com">DigiNotar</a>, an SSL certificate issuer in the Netherlands (think VeriSign but less reputable), issued a wildcard SSL certificate for Google domains (*.google.com) to an unknown entity. If you understand how SSL works then you are probably not reading this post anymore and are instead deleting DigiNotar’s root certificate from all your systems.</p>
+<p>For those who do not understand the implications of this, I urge you to <a href="http://en.wikipedia.org/wiki/Secure_Sockets_Layer">read up on SSL</a>. The salient point that you will find is that SSL certificates are only meaningful if they are signed (verified) by a central issuer that you trust. This is why your web browser gets angry when you go to your company’s QA server using HTTPS, only to find a self issued SSL certificate. Anyone can generate a self signed SSL certificate, <em>including malicious users</em>.</p>
+<p>How would a malicious user take advantage of a self signed certificate, or in DigiNotar’s case, a wildcard SSL certificate for Google domains that appears legitimate? I will not rehash man-in-the-middle attacks, but you should read up on them to fully appreciate signed SSL certificates: <a href="https://www.owasp.org/index.php/Man-in-the-middle_attack">https://www.owasp.org/index.php/Man-in-the-middle_attack</a>. According to Google they had reports of this exact type of attack being used primarily in Iran over the last few days.</p>
+<h3>So Now What?</h3>
+<p>You should revoke DigiNotar’s root certificate from your system. Google, Microsoft, and Mozilla (Firefox) are all in the process of doing this already, since DigiNotar obviously cannot be trusted to implement a trustworthy signing process. Without the root certificate on your machine or in your web browser you will not be able to verify SSL certificates issued by DigiNotar, including the wildcard Google certificate. Instead you will get a warning much like the one you get when you use a self signed SSL certificate.</p>
+<p>There are already plenty of instructions on Google to help you revoke a certificate from your browser. Even though browser vendors are pushing patches to revoke the certificate, you might not get the patch in time and should revoke it now.</p>
+<p>I also removed their root certificate on all my Linux boxes (path might be Debian specific), including my servers, and you should do the same:</p>
+<pre lang="bash">sudo rm /etc/ssl/certs/DigiNotar_Root_CA.pem</pre>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/html5-video-synchronizing-playback-of-two-videos/" rel="prev">HTML5 Video: Synchronizing Playback of Two Videos</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/fieldrunners-playing-to-the-strengths-of-html5-audio-and-web-audio/" rel="next">Fieldrunners: Playing to the Strengths of HTML5 Audio and Web Audio</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/problem-with-diginotar-ssl-certificates/ -->
+  
+
+</body></html>

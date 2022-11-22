@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Augmented Reality</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">JavaScript Augmented Reality</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/data visualization/" class="tag">data visualization</a>
+    
+      <a href="/bocoup_lume/tags/tools and workflow/" class="tag">tools and workflow</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <div style="float:right;margin:0 0 5px 20px;"><img decoding="async" src="https://static.bocoup.com/blog/augmented-reality-javascript1.png" alt="Augmented Reality Markers being tracked with WebGL" title="augmented-reality-javascript"><br><b>Augmented Reality:</b> using JSARToolkit with WebGL &amp; HTML5 Video</div>
+<p>Last week I spent some time running tests and generally familiarizing myself with the <a href="https://github.com/kig/JSARToolKit">JSARToolkit</a> code. I also built a JavaScript wrapper for the library to make it easier to use.</p>
+<p>JSARToolkit is a JavaScript library converted from FLARToolkit (Flash), and is developed for tracking AR Markers in video footage. The ARToolkit converts the data from the markers into 3D coordinates with-which you can super-impose images and other 3D or 2D content.</p>
+<h3>What is Augmented Reality?</h3>
+<blockquote style="font-size:1em"><p>“Augmented reality (AR) is a term for a live direct or an indirect view of a physical, real-world environment whose elements are augmented by computer-generated sensory input, such as sound or graphics. It is related to a more general concept called mediated reality, in which a view of reality is modified (possibly even diminished rather than augmented) by a computer. As a result, the technology functions by enhancing one’s current perception of reality. By contrast, virtual reality replaces the real-world with a simulated one.<br>– <a href="http://en.wikipedia.org/wiki/Augmented_reality">Wikipedia</a></p></blockquote>
+<p>You may have already seen JSARToolkit in action on <a href="http://fhtr.org/">Ilmari Heikkinen’s</a> awesome <a href="https://mozillademos.org/demos/remixingreality/demo.html">“Remixing Reality” demo</a>. Ilmari’s demo is part of Mozilla’s <a href="https://demos.mozilla.org/en-US/">“Web O’ Wonder”</a>, a site showcasing some of the new technology being released in <a href="http://www.mozilla.com/en-US/firefox/RC/">Firefox 4</a>. Props to llmari for an inspiring demo!</p>
+<h3>Resources:</h3>
+<p><a href="https://github.com/Bocoup/JSARToolkit-Wrapper">JSARToolkit-Wrapper on Github</a></p>
+<p>You will need the latest version of <a href="http://www.mozilla.com/en-US/firefox/RC/">Firefox 4</a> or <a href="http://www.google.com/landing/chrome/beta/">Chrome</a> to see these demos working.</p>
+<h2>HTML5 Music-Video Research</h2>
+<p>We were asked by a client to evaluate the feasibility of using JSARToolkit for an online HTML5-infused music video. (We were only asked to consider users that were using the latest version of Firefox and Chrome.) Some of the questions we wanted to answer were:</p>
+<ol>
+<li>Would the processing be fast enough for slower machines?</li>
+<li>How many AR markers can we track at once?</li>
+<li>How fast can you move the marker before it becomes un-track-able?</li>
+<li>What is the maximum distance at which the camera can track?</li>
+</ol>
+<p>Answers to these questions can be found below.</p>
+<h2>Recording Video</h2>
+<div style="float:left;margin:0 20px 5px 0;"><img decoding="async" src="https://static.bocoup.com/blog/augmented-reality-FlipUltraHD1.png" alt="Flip Ultra HD Video Camera" title="Flip Ultra HD Video Camera"><br><b>Flip Ultra HD:</b> video camera</div>
+<p>To record some test video I used a <a href="http://www.theflip.com/en-us/products/ultra.aspx">Flip Ultra HD</a> video camera. While the quality on the Flip Ultra HD is pretty good, it’s obviously not a production-level camera. We knew that the results we came up with the Flip would be a <em>worst case scenario</em>. The main problem we found with such a low-grade video device was it’s inability to switch the<strong> shutter speed</strong>.</p>
+<p>This meant there was absolutely nothing we could do about the blurring of the AR Trackers when moving too fast. We were surprised to see how quickly we lost the ability to track a marker when moving from side-to-side. However, we are very confident that shooting in a well-lit studio with a high-shutter speed, there would be very few un-track-able frames.</p>
+<h2>Printing The AR Markers</h2>
+<div style="float:right;margin:0 0 5px 20px;"><img decoding="async" src="https://static.bocoup.com/blog/printed-augmented-reality-markers.png" alt="Augmented Reality Markers being tracked with WebGL" title="augmented-reality-javascript"><br><b>AR Markers:</b> printed markers for HTML5 video tracking</div>
+<p>I printed out some AR Markers that came with the JSARToolkit and began filming basic tests on the kitchen counter. I did not expect things to work first try, but I kept throwing video at the library and almost everything seemed to work.</p>
+<p>The results were somewhat jumpy in places, but I have to reiterate, the quality of our camera is extremely poor compared to a production camera. We were also tracking the markers without any calibration for lens distortion, something that can add a significant amount of accuracy to the tracking.</p>
+<h2>Trans-coding Video to VP8 WebM</h2>
+<div style="float:left;margin:0 20px 5px 0px;"><img decoding="async" src="https://static.bocoup.com/blog/tracking-blur-augmented-reality1.png" alt="Augmented Reality Markers not good when moved too fast" title="augmented-reality-javascript"><br><b>Blured Markers:</b> impossible to track</div>
+<p>The videos were recorded on the Flip using H.264 Mpeg format. Working with HTML5 video, we needed to convert our videos to WebM. The first encoder I tried was Ffmpeg2Theora, which despite it’s name does encode WebM videos. However, I found that Ffmpeg2Theora to be rather troublesome. When I encoded videos in Linux, sometimes they would not play in Windows and vice-versa. I am constantly installing and un-installing video codecs on my machines, so I hope that my problems are not ones experienced by everybody trying to encode HTML5-ready video.</p>
+<p>After a bit of testing, I settled with <a href="http://www.mirovideoconverter.com/">Miro Video Converter</a> for all my trans-coding. Unfortunately Miro has no batch processing, but the actual encoder itself seemed to produce content that worked very well across all the browsers and platforms I tried.</p>
+<h2>Building A Wrapper</h2>
+<p>I wanted to have a quick go at writing a re-usable API for JSARToolkit, something simple that could be plugged in as part of another JavaScript library like <a href="http://popcornjs.org">Popcorn.js</a>. The code I found in Ilmari’s demo was tailored very specifically for the task at hand. With little in the way of comments, I found it difficult to understand what was going on without a lot of experimentation. I came up with a simple way to wrap the existing library.</p>
+<p>The first step is to using the JSARToolkit Wrapper is initiating your tracker. This can be done like so:</p>
+<pre><code><br></code></pre>
+<p>Once the tracker has been created, the next step is to add some content to the markers. Here we are adding a static image, then a 3D object exported from Blender3D:</p>
+<pre><code><br></code></pre>
+<p>This snippet of code below demonstrates how to update the properties of the marker after it has been created:</p>
+<pre><code><br></code></pre>
+<p>You can also add more complex behavior using the JSARToolkit-Wrapper. The following code demonstrates how to update properties in real time. This code makes the first marker spin and pulse:</p>
+<pre><code><br></code></pre>
+<p>To access and manipulate the video of the tracker, you can do something like this:</p>
+<pre><code><br></code></pre>
+<h2>Answers to Questions</h2>
+<p>
+<img decoding="async" src="https://static.bocoup.com/blog/tracking-100-augmented-reality-markers.png" alt="Augmented Reality Markers not good when moved too fast" title="augmented-reality-javascript"><br><b>Tracking 100 Markers:</b> BOOM!</p>
+<h4>Would the processing be fast enough for slower machines?</h4>
+<p>Processing the video to find and track the markers is actually very fast. I notice very little difference in the actual tracking-time between one marker and one-hundred markers. The bulk of the work being done seems to be the process of super-imposing new content over the video.</p>
+<h4>How many AR markers can we track at once?</h4>
+<p>I tracked 100 augmented reality markers simultaneously in JavaScript without any problems.</p>
+<h4>How fast can you move the marker before it becomes un-track-able?</h4>
+<p>This all depends on your particular video camera and how you film the footage. If you use high shutter speeds like those used when recording sports games, there will be very little (if any) blurring and markers should track very well.</p>
+<h4>What is the maximum distance at which the camera can track?</h4>
+<p>Again this also depends on a few factors. Namely, speed-of-movement and lighting. In a somewhat-well-lit room (not a video studio), I was able to track AR Markers reliably up to 35ft at away from the lens at 720p resolution. The higher-resolution you track at, the better results you will see. I tested the algorithm using a 2D canvas, moving the marker patterns around quickly (without any blurring) and it tracked perfectly. It’s seems remarkably accurate if there’s no blurring of the source footage. One thing that is worth mentioning, is that you can film and track your video at 1080p (and probably higher), then you could cache the tracking results in JavaScript, and reduce the amount of processing on the client side. This way you can use accurate tracking data from hi-res video sources, and continue to use a small compressed output for your final web-video production.</p>
+<p><b>Tip:</b><br>
+Adjust the <em>“ratio”</em> if you find things are not tracking properly or the <em>“threshold”</em> if the lighting is poor.</p>
+<h2>Conclusions</h2>
+<h3>Pros</h3>
+<ul>
+<li>Simple to implement.</li>
+<li>Tracking algorithm not too CPU intensive.</li>
+<li>Can track at least 100 AR Markers at once.</li>
+<li>Can export directly from Blender3D.</li>
+<li>Can overlay any content, images, video, 3D objects, etc.</li>
+</ul>
+<h3>Cons</h3>
+<ul>
+<li>Too many global variables in FLARToolkit conversion code.</li>
+<li>Blender3D export takes some tweaking to get some 3D objects to appear.</li>
+<li>No support for multiple simultaneous video sources in FLARToolkit conversion code.</li>
+<li>Lots of expensive getElementById() calls inside of frame-handlers.</li>
+</ul>
+<h3>Overall</h3>
+<p>There is definitely more work to be done if you wanted to use this code in a production environment or make it part of a larger library. But after a lot of testing and experimentation, I would say the code works surprisingly well! It is certainly feasible to do this kind of work with real-time with JavaScript if you have the ability to target a specific demographic.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/list-conflicted-files-with-git/" rel="prev">List Conflicted files with Git</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/mayor-menino-and-vencorps-announce-welcome-home-challenge-winner/" rel="next">Mayor Menino and VenCorps Announce Welcome Home Challenge Winner</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/javascript-augmented-reality/ -->
+  
+
+</body></html>

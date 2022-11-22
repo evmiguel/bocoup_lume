@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Data from our Fieldrunners WebGL Demo</title>
+    <meta name="description" content="Technical Consulting">
+    <link rel="stylesheet" href="/bocoup_lume/pagefind/pagefind-ui.css"><link rel="stylesheet" href="/bocoup_lume/styles.css">
+    <link rel="alternate" href="/bocoup_lume/feed.xml" type="application/atom+xml" title="Bocoup">
+    <link rel="alternate" href="/bocoup_lume/feed.json" type="application/json" title="Bocoup">
+  <script type="text/javascript" src="/bocoup_lume/pagefind/pagefind-ui.js"></script><script type="text/javascript">window.addEventListener('DOMContentLoaded', () => { new PagefindUI({"element":"#search","showImages":false,"showEmptyFilters":true,"resetStyles":false,"bundlePath":"/bocoup_lume/pagefind/","baseUrl":"/bocoup_lume/"}); });</script></head>
+  <body>
+    <nav class="navbar">
+      <a href="/bocoup_lume/" class="navbar-home">
+        <strong>Bocoup</strong>
+      </a>
+
+      <ul class="navbar-links">
+      </ul>
+
+      <div class="navbar-search">
+        <div id="search"></div>
+      </div>
+    </nav>
+
+    <main class="body-post">
+      <article class="post" data-pagefind-body="">
+  <div class="post-header">
+    <h1 class="post-title">Performance Data from our Fieldrunners WebGL Demo</h1>
+
+    <nav class="post-tags">
+    
+      <a href="/bocoup_lume/tags/performance/" class="tag">performance</a>
+    
+      <a href="/bocoup_lume/tags/testing/" class="tag">testing</a>
+    
+    </nav>
+
+    <time class="post-date" datetime="2022-11-22 19:17:22">
+      November 22nd, 2022
+    </time>
+  </div>
+
+  <div class="post-body">
+    
+    <p><em>Bocoup is excited to be working with <a href="http://www.gradient-studios.com/">Gradient Studios</a> to port the hit mobile game <a href="http://fieldrunners.com/">Fieldrunners</a>, by Subatomic Studios, to HTML5. This is the third in a <a href="/bocoup_lume/weblog/category/fieldrunners/">series of weekly development blog posts</a>.</em></p>
+<p>Last week we <a href="/bocoup_lume/weblog/fieldrunners-webgl-particle-system-demo/">posted a demo</a> of our WebGL port of the Fieldrunners particle system. What I didn’t mention in that post was that we were using the <a href="http://code.google.com/apis/analytics/docs/tracking/eventTrackerGuide.html">Google Analytics event tracking system</a> to collect performance data every time someone ran the demo! We ended up collecting over 14,000 samples from 837 unique users, about 16 samples per user.</p>
+<h3>How we collected the data</h3>
+<p>If you look at <a href="https://code.bocoup.com/webgl/FRGraphicsTest/demo.js">demo.js</a>, you’ll see this (<em>thanks <a href="http://benjaminalman.com/">Ben Alman</a> for providing a way to do this without so many DOM calls</em>):</p>
+<p class="snippet caption">demo.js</p>
+<pre><code class="js hljs language-javascript"><span class="hljs-keyword">var</span> fps = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> fpsElem = $(<span class="hljs-string">"#frameRate"</span>);
+<span class="hljs-built_in">setInterval</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  fpsElem.<span class="hljs-title function_">text</span>(fps);
+}, <span class="hljs-number">1000</span>);
+
+<span class="hljs-comment">// Handle form element changes.</span>
+<span class="hljs-keyword">var</span> opts = {};
+$(<span class="hljs-string">"#sprite, #rows, #columns, #x_offset, #y_offset"</span>).<span class="hljs-title function_">change</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  opts[<span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span>] = $(<span class="hljs-variable language_">this</span>).<span class="hljs-title function_">val</span>();
+}).<span class="hljs-title function_">change</span>();
+
+<span class="hljs-keyword">var</span> avgFrameRateCount = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> avgFrameRateTotal = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> lastSecond = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>;
+
+<span class="hljs-keyword">var</span> drawloop = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">var</span> now = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>;
+  <span class="hljs-keyword">var</span> elapsed = now - lastSecond;
+
+  <span class="hljs-comment">// ... lots of main loop functionality ...</span>
+
+  fps = ++frameCount / (elapsed / <span class="hljs-number">1000</span>);
+
+  <span class="hljs-keyword">if</span> (elapsed &amp;gt; <span class="hljs-number">1000</span>) {
+    avgFrameRateCount++;
+    avgFrameRateTotal += fps;
+    <span class="hljs-keyword">if</span> (avgFrameRateCount % <span class="hljs-number">8</span> == <span class="hljs-number">7</span>) {
+      _gaq.<span class="hljs-title function_">push</span>([
+        <span class="hljs-string">'_trackEvent'</span>,
+        <span class="hljs-string">'FRWebGL'</span>,
+        opts.<span class="hljs-property">sprite</span>,
+        <span class="hljs-string">'r'</span>+opts.<span class="hljs-property">rows</span>+<span class="hljs-string">'c'</span>+opts.<span class="hljs-property">columns</span>+<span class="hljs-string">'x'</span>+ops.<span class="hljs-property">x_offset</span>+<span class="hljs-string">'y'</span>+opts.<span class="hljs-property">y_offset</span>,
+        <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(avgFrameRateTotal/(avgFrameRateCount))
+      ]);
+      avgFrameRateCount = <span class="hljs-number">0</span>;
+      avgFrameRateTotal = <span class="hljs-number">0</span>;
+    }
+    frameCount = <span class="hljs-number">0</span>;
+    lastSecond = now;
+  }
+}; <span class="hljs-comment">// end main loop</span>
+</code></pre>
+<p>The big conditional block triggers roughly once a second, updating the FPS counter you see on screen in the demo. Each time this happens, we sum up the number of samples we’ve taken, and have a running total of the overall FPS. Then every 8 seconds we record the moving average of this 8-sample window to Google Analytics using the <em>_gaq.push()</em> function. We reset the moving average and start again. The eagle-eyed will notice that while the code runs every 8 seconds, it only starts doing so on the 7th second the demo is running. This is because I didn’t want to collect a 1-sample moving average as soon as the demo began.</p>
+<p>The Google Analytics event tracking system is flexible enough that I’m able to pass it a category (‘FRWebGL’ in this case), the name of the tower selected, and the overall format of the towers in a concatenated string (‘r4c4x64y64’ would be a 4×4 array of towers with an x/y offset of 64). What’s great about using Google Analytics is that each of these data points gets tied to a user session, which in turn is tied to things like browser version, OS, location, etc. For example, I can open up Google Analytics and see this (image edited to condense the content into a smaller screenshot):</p>
+<p><img decoding="async" loading="lazy" src="https://static.bocoup.com/blog/fieldrunners-frtestga.png" alt="Screenshot of some Google Analytics event results." title="Screenshot of some Google Analytics event results." width="537" height="256"></p>
+<p>You can see from this that over ALL 478 unique users who contributed flame tower data, Safari performed the best out of any browser. (“Unique events” in this case is equivalent to unique users.) However, you can also see that our sample size for Safari is very small at just 14 users, which is why I’m excluding Safari from the rest of the data in this post. The data we collect also includes any demo configuration, including people who generated 1 tower, and people who generated 2,000+ towers. Fortunately, Google Analytics lets us drill down even further to get more useful data. You can also export the data to a CSV using the <a href="http://code.google.com/apis/analytics/docs/gdata/gdataDeveloperGuide.html">Google Analytics Data Export API</a> (although I just used <a href="http://code.google.com/apis/analytics/docs/gdata/gdataExplorer.html">this tool</a> and did a copy-and-paste into a spreadsheet).</p>
+<h3>The data</h3>
+<p><iframe loading="lazy" width="580" height="450" src="https://code.bocoup.com/webgl/FRGraphicsTest/charts/chart.html"></iframe></p>
+<p>There’s nothing inherently super interesting about this data except to say that average performance is more than acceptable across both Chrome and Firefox. (As mentioned above, Safari was left off because we didn’t have a big enough sample size.) Remember that these are WebGL-enabled browsers, so we’re talking Firefox 4-8 and Chrome 12-15. We do see a dip in Lightning Tower performance on Firefox, but we haven’t exactly tracked down the cause of that.</p>
+<p><iframe loading="lazy" width="580" height="450" src="https://code.bocoup.com/webgl/FRGraphicsTest/charts/chart2.html"></iframe></p>
+<p>The overall data on operating system normally wouldn’t be super interesting (we care more about browser than OS), but Chrome OS is kind of neat. The reason why we’re seeing 29.3 FPS on Chrome OS, while other operating systems are at 51+ FPS, is because the Chrome browser on a Chrome OS system has its frame rate capped at 30 FPS.</p>
+<p>Also of note: when the data refers to “Chrome” as a browser elsewhere, it’s stripped of Chrome OS data due to this artificial FPS cap.</p>
+<p><iframe loading="lazy" width="580" height="450" src="https://code.bocoup.com/webgl/FRGraphicsTest/charts/chart3.html"></iframe></p>
+<p>Breaking down the general performance over browser versions on Firefox shows a slight increase in performance as version increases, but I suspect that’s more due to the fact that leet programmers with unstable builds of Firefox installed probably have better computers than the masses with Firefox 4.</p>
+<p><iframe loading="lazy" width="580" height="450" src="https://code.bocoup.com/webgl/FRGraphicsTest/charts/chart4.html"></iframe></p>
+<p>Chrome 12 performance is better overall than Firefox 4 (about 17% faster), but Firefox 5 catches up to it. We see Chrome’s performance drop by 3 FPS on Chrome 15, but our sample size for Chrome 15 is pretty small, so I wouldn’t draw any conclusions from it.</p>
+<p><iframe loading="lazy" width="580" height="450" src="https://code.bocoup.com/webgl/FRGraphicsTest/charts/chart6.html"></iframe></p>
+<p>Lastly, I’ve included a box plot to give a sense of distribution. This chart shows the quartile data for Firefox and Chrome running the 4×4 Flame Tower test with a 64 pixel x/y offset. You can see that while we did have some browsers score as low as 8.5 FPS on Firefox, 75% of all Firefox users showed a framerate of 45 FPS or higher. The lowest we saw on Chrome was an acceptable 28 FPS, with 75% getting above 47 FPS. You see that Chrome doesn’t go higher than 60 FPS — this is because Chrome’s rendering is capped at 60 FPS (the fact that we see 61 FPS is just an artifact of measuring frame rate).</p>
+<h3>Summary</h3>
+<p>These “in the wild” tests confirm what we’ve been seeing in-house at Bocoup: Fieldrunners is performing extremely well under WebGL!</p>
+<p>Of course, to get really robust numbers we’d need to know CPU, GPU, RAM, and other basic stats that we have no good way of passively collecting from a web browser. But considering that our overall performance across all tests (even the ones with thousands of towers) was 51.07 frames per second, we’re bullish on WebGL for games.</p>
+
+  </div>
+</article>
+
+<hr>
+
+<nav class="post-navigation">
+  <ul>
+    <li>
+      ← Previous: <a href="/bocoup_lume/posts/javascript-firefox-nightly-introduces-dom-joystick-events/" rel="prev">JavaScript: Firefox Nightly introduces DOM Joystick Events</a>
+    </li>
+    
+    <li>
+      <strong>Next: <a href="/bocoup_lume/posts/fieldrunners-webgl-particle-system-demo/" rel="next">Fieldrunners WebGL Particle System Demo</a> →</strong>
+    </li>
+    
+  </ul>
+</nav>
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /posts/performance-data-from-our-fieldrunners-webgl-demo/ -->
+  
+
+</body></html>
