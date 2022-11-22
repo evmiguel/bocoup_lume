@@ -3,6 +3,8 @@ const Requests = {
 }
 
 export const layout = "layouts/post.njk";
+
+export const renderOrder = -1;
 export default async function* () {
     const posts = await getPosts()
     for (const post of posts) {
