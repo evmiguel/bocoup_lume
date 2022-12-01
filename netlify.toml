@@ -4,3 +4,6 @@
     curl -fsSL https://deno.land/x/install/install.sh | sh && \
     /opt/buildhome/.deno/bin/deno task build \
   """
+
+[context.drafts.environment]
+  ENV = "development"
