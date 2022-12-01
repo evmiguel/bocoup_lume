@@ -33,6 +33,7 @@ const environment = Deno.env.get('ENV');
 
 if (environment === 'development') {
   site.use(onDemand());
+  console.info("Site is using on_demand plugin.")
 }
  
 export default site;
